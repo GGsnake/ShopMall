@@ -6,7 +6,9 @@ import com.superman.superman.model.Role;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.EverySign;
+import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.HttpRequest;
+import me.chanjar.weixin.common.bean.WxAccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,9 +122,20 @@ public class PddApiServiceImpl implements PddApiService {
         return res;
     }
 
-    //TODO 查询参数有待扩展
+    /**
+     *
+     * @param uid  用户id
+     * @param pagesize
+     * @param page
+     * @param sort_type
+     * @param with_coupon
+     * @param keyword 商品类目ID
+     * @param opt_id 商品标签类目ID
+     * @return
+     */
     @Override
-    public String getPddGoodList(Long uid) {
+    public JSONArray getPddGoodList(Long uid, Integer pagesize, Integer page, Integer sort_type, Boolean with_coupon, String keyword, Long opt_id,Integer merchant_type) {
+        //平台给运营商的分成 可调
         Double rang = RANGE / 100d;
         String res = null;
         String type = "pdd.ddk.goods.search";
@@ -131,37 +144,41 @@ public class PddApiServiceImpl implements PddApiService {
         urlSign.put("client_id", KEY);
         urlSign.put("type", type);
         urlSign.put("timestamp", timestamp);
-        urlSign.put("sort_type", "0");
-        urlSign.put("page", String.valueOf(1));
-        urlSign.put("page_size", String.valueOf(10));
-        urlSign.put("with_coupon", "true");
+        urlSign.put("sort_type", sort_type.toString());
+        urlSign.put("page", page.toString());
+        urlSign.put("page_size",pagesize.toString());
+        urlSign.put("with_coupon", with_coupon.toString());
+        if (keyword != null && keyword.equals("")) {
+            urlSign.put("keyword", keyword);
+        }
+        if (opt_id != null && opt_id.equals(0)) {
+            urlSign.put("opt_id", opt_id.toString());
+        }
+        urlSign.put("keyword", with_coupon.toString());
+        urlSign.put("keyword", with_coupon.toString());
         urlSign.put("data_type", "JSON");
         urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
         try {
-            res = HttpRequest.sendPost("https://gw-api.pinduoduo.com/api/router", urlSign);
+            res = HttpRequest.sendPost(PDD_URL, urlSign);
         } catch (IOException e) {
+            logger.error("错误========"+e.toString());
             e.printStackTrace();
         }
         Role role = new Role();
         role.setUserId(uid);
         Role role1 = userApiService.queryR(role);
         Float score = Float.valueOf(role1.getScore()) / 100;
-        Float bonus = null;
-        //佣金为0
-        if (role1.getScore() == 0) {
-            bonus = 0f;
-        }
-        //佣金为100代表总代理 90%返佣
-        if (role1.getScore() == 100) {
-            bonus = 1f;
-        }
-        bonus =score.floatValue();
+
+        Float bonus = EveryUtils.getCommission(score);
 
         JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject o = (JSONObject) jsonArray.get(i);
+            //佣金比率 千分比
             Long promotion_rate = o.getLong("promotion_rate");
+            //最低团购价 千分比
             Long min_group_price = o.getLong("min_group_price");
+            //优惠卷金额 千分比
             Long coupon_discount = o.getLong("coupon_discount");
             //佣金计算
             Float after = Float.valueOf(min_group_price - coupon_discount);
@@ -171,7 +188,8 @@ public class PddApiServiceImpl implements PddApiService {
             Float bondList = (rmb * bonus);
             o.put("bond",bondList);
         }
-        return jsonArray.toJSONString();
+
+        return jsonArray;
 
     }
 

@@ -25,16 +25,6 @@
     </properties>
 
     <dependencies>
-
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
-
-        <!--spring2.0集成redis所需common-pool2-->
-        <!-- 必须加上，jedis依赖此  -->
-        <!-- spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https://docs.spring.io/spring-boot/docs/2.0.3.RELEASE/reference/htmlsingle/-->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -42,12 +32,31 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!--<exclusions>-->
-            <!--<exclusion>-->
-            <!--<artifactId>jackson-databind</artifactId>-->
-            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-            <!--</exclusion>-->
-            <!--</exclusions>-->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13 </version>
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -64,47 +73,43 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.35</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-redis</artifactId>
             <version>RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-open</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
             <groupId>io.springfox</groupId>
-
             <artifactId>springfox-swagger2</artifactId>
-
             <version>2.6.1</version>
-
         </dependency>
-
         <dependency>
-
             <groupId>io.springfox</groupId>
-
             <artifactId>springfox-swagger-ui</artifactId>
-
             <version>2.6.1</version>
-
         </dependency>
+
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
