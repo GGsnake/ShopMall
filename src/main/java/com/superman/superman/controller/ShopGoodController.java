@@ -14,6 +14,7 @@ import com.jd.open.api.sdk.response.cps.UnionSearchGoodsParamQueryResponse;
 import com.jd.open.api.sdk.response.cps.UnionThemeGoodsServiceQueryCouponGoodsResponse;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
+import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.Result;
 import com.superman.superman.utils.WeikeResponse;
 import com.superman.superman.utils.WeikeResponseUtil;
@@ -23,7 +24,11 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/8.
@@ -35,17 +40,25 @@ public class ShopGoodController {
     private PddApiServiceImpl pddApiService;
     @Autowired
     private MemberService memberService;
-    static final String SERVER_URL="https://api.jd.com/routerjson";
-    static final String accessToken="ed69acd6-dbc7-4fc5-a830-135e63d19692";
-    static final String appKey="D4236C4D973B80F70F8B8929E2C226CB";
-    static final String appSecret="2d0d4a0563e543dab280774a8b946db3";
-    public JdClient client=new DefaultJdClient(SERVER_URL,accessToken,appKey,appSecret);
+    static final String SERVER_URL = "https://api.jd.com/routerjson";
+    static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
+    static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
+    static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
+    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
     private final static Logger logger = LoggerFactory.getLogger(ShopGoodController.class);
+
+
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @GetMapping("/index")
     public Result getIndex() {
 //        String pddGoodList = pddApiService.getPddGoodList();
-        return Result.ok();
+        long l = System.currentTimeMillis();
+        Object o = redisTemplate.opsForValue().get("Policy:1");
+        logger.info(String.valueOf(System.currentTimeMillis() - l));
+        return Result.ok(String.valueOf(System.currentTimeMillis() - l));
     }
 
     /**
@@ -69,17 +82,17 @@ public class ShopGoodController {
     ) {
 
         if (type == 0) {
-            JSONArray pddGoodList = pddApiService.getPddGoodList(1l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword,2l,1);
+            JSONArray pddGoodList = pddApiService.getPddGoodList(1l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
             return WeikeResponseUtil.success(pddGoodList);
         }
         if (type == 1) {
 
-            UnionThemeGoodsServiceQueryCouponGoodsRequest request=new UnionThemeGoodsServiceQueryCouponGoodsRequest();
+            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
             UnionThemeGoodsServiceQueryCouponGoodsResponse response;
-            request.setFrom( 1 );
-            request.setPageSize(10 );
+            request.setFrom(1);
+            request.setPageSize(10);
             try {
-               response=client.execute(request);
+                response = client.execute(request);
                 logger.info(response.getQueryCouponGoodsResult());
             } catch (JdException e) {
                 e.printStackTrace();
@@ -88,53 +101,47 @@ public class ShopGoodController {
 
         }
         if (type == 2) {
-            ServicePromotionGoodsInfoRequest request=new ServicePromotionGoodsInfoRequest();
+            JSONObject re = pddApiService.pddDetail(3846603883l, String.valueOf(1));
 
-            request.setSkuIds( "jingdong" );
-
-            try {
-                ServicePromotionGoodsInfoResponse response=client.execute(request);
-                logger.info(response.getGetpromotioninfoResult());
-
-            } catch (JdException e) {
-                e.printStackTrace();
-            }
+            return WeikeResponseUtil.success(re);
         }
-        if (type == 3) {
-            UnionSearchGoodsParamQueryRequest request=new UnionSearchGoodsParamQueryRequest();
-
-            request.setPageIndex( 1 );
-            request.setPageSize( 10 );
-
-            try {
-                UnionSearchGoodsParamQueryResponse response=client.execute(request);
-                String queryResult = response.getQueryPromotionGoodsByParamResult();
-
-                JSONArray jsonObject = JSON.parseArray(queryResult);
-                for (int i = 0; i < jsonObject.size(); i++) {
-                    JSONObject o = (JSONObject) jsonObject.get(i);
-                    //佣金比率 千分比
-                    Long promotion_rate = o.getLong("promotion_rate");
-                    //最低团购价 千分比
-                    Long min_group_price = o.getLong("min_group_price");
-                    //优惠卷金额 千分比
-                    Long coupon_discount = o.getLong("coupon_discount");
-                    //佣金计算
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    Float promoto = Float.valueOf(promotion_rate) / 1000;
-                    Float comssion = Float.valueOf(after * promoto);
-                    Integer rmb = (int) (comssion * rang);
-                    Float bondList = (rmb * bonus);
-                    o.put("bond",bondList);
-                }
-
-                logger.info(response.getQueryPromotionGoodsByParamResult());
-
-            } catch (JdException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (type == 3) {
+//            UnionSearchGoodsParamQueryRequest request=new UnionSearchGoodsParamQueryRequest();
+//
+//            request.setPageIndex( 1 );
+//            request.setPageSize( 10 );
+//
+//            try {
+//
+//                UnionSearchGoodsParamQueryResponse response=client.execute(request);
+//                String queryResult = response.getQueryPromotionGoodsByParamResult();
+//
+//                JSONArray jsonObject = JSON.parseArray(queryResult);
+//                for (int i = 0; i < jsonObject.size(); i++) {
+//                    JSONObject o = (JSONObject) jsonObject.get(i);
+//                    //佣金比率 千分比
+//                    Long promotion_rate = o.getLong("promotion_rate");
+//                    //最低团购价 千分比
+//                    Long min_group_price = o.getLong("min_group_price");
+//                    //优惠卷金额 千分比
+//                    Long coupon_discount = o.getLong("coupon_discount");
+//                    //佣金计算
+//                    Float after = Float.valueOf(min_group_price - coupon_discount);
+//                    Float promoto = Float.valueOf(promotion_rate) / 1000;
+//                    Float comssion = Float.valueOf(after * promoto);
+//                    Integer rmb = (int) (comssion * rang);
+//                    Float bondList = (rmb * bonus);
+//                    o.put("bond",bondList);
+//                }
+//
+//                logger.info(response.getQueryPromotionGoodsByParamResult());
+//
+//            } catch (JdException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         return null;
     }
+
 }

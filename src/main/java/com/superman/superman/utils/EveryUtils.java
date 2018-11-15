@@ -1,5 +1,7 @@
 package com.superman.superman.utils;
 
+import java.util.Calendar;
+
 /**
  * Created by liujupeng on 2018/11/9.
  */
@@ -23,4 +25,15 @@ public class EveryUtils {
         return bonus;
     }
 
+    public static Long getDay(){
+        Calendar calendar = Calendar.getInstance();
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        Long today=c.getTimeInMillis()/1000;
+        return (today+86400)-System.currentTimeMillis()/1000;
+    }
 }

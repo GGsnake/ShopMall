@@ -60,6 +60,11 @@
         SELECT COUNT(*) from test where agentId=#{id}
     </select>
 
+    <select id="seletTTTA" resultType="com.superman.superman.model.Dd"   >
+        SELECT *  from news_policy
+    </select>
+
+
     <!--&lt;!&ndash; delete user &ndash;&gt;-->
     <!--<delete id="delete" parameterType="int">-->
         <!--DELETE FROM USER WHERE ID=#{0}-->

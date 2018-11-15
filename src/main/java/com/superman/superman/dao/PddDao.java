@@ -1,8 +1,6 @@
 package com.superman.superman.dao;
 
-import com.superman.superman.model.Role;
-import com.superman.superman.model.Test;
-import com.superman.superman.model.UserPdd;
+import com.superman.superman.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,4 +20,6 @@ public interface PddDao {
     List<Role> selectRchidlist(@Param("list") List ll);
     List<Test> selectTchidlist(@Param("list") List ll);
    Integer countAgentId(@Param("id") Integer id);
+   List<Dd> seletTTTA();
+//    inform_content
 }

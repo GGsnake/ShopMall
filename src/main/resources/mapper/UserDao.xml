@@ -15,4 +15,19 @@
 	<insert id="createUser" >
 		insert into hot_user(userPhone,loginPwd,createTime) value (#{user.userPhone},#{user.loginPwd},now())
 	</insert>
+
+	<update id="updateUser">
+		update hot_user
+		<set>
+			<if test="user.userName != null">userName=#{user.userName},</if>
+			<if test="user.loginPwd != null">loginPwd=#{user.loginPwd},</if>
+			<if test="user.userScore != null">userScore=#{user.userScore},</if>
+		</set>
+		where id=#{user.id}
+	</update>
+
+
+	<update id="updateUserScore">
+		update hot_user set userScore=userScore+ #{user.userScore}	where id=#{user.id}
+	</update>
 </mapper>

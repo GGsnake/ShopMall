@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.superman.superman.dao.ScoreDao">
+    <select id="isExit" resultType="com.superman.superman.model.ScoreBean">
+        SELECT userId,score,scoreType,createTime FROM score_user
+        <where>
+            to_days(createTime) = to_days(now()) and userId=#{score.userId} and status=0
+            <if test="score.score != null">
+                And score = #{score.score}
+            </if>
+            <if test="score.dataSrc != null">
+                And dataSrc = #{score.dataSrc}
+            </if>
+            <if test="score.dataRemarks != null">
+                And dataRemarks = #{score.dataRemarks}
+            </if>
+            <if test="score.scoreType != null">
+                And scoreType = #{score.scoreType}
+            </if>
+            limit 0,1
+        </where>
+    </select>
+    <insert id="addScore" parameterType="com.superman.superman.model.ScoreBean">
+        insert into score_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            userId,createTime,
+            <if test="score.score != null">
+                score,
+            </if>
+            <if test="score.dataSrc != null">
+                dataSrc,
+            </if>
+            <if test="score.dataRemarks != null">
+                dataRemarks,
+            </if>
+            <if test="score.scoreType != null">
+                scoreType,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{score.userId},now(),
+            <if test="score.score != null">
+                #{score.score} ,
+            </if>
+            <if test="score.dataSrc != null">
+                #{score.dataSrc},
+            </if>
+            <if test="score.dataRemarks != null">
+                #{score.dataRemarks},
+            </if>
+            <if test="score.scoreType != null">
+                #{score.scoreType},
+            </if>
+        </trim>
+    </insert>
+</mapper>

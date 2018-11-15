@@ -14,5 +14,7 @@ public interface UserDao {
     User queryUser(@Param("user") User user);
     Integer createUser(@Param("user") User user);
     User selectByPhone(@Param("userPhone") String userPhone);
+    Integer updateUser(@Param("user") User user);
+    Integer updateUserScore(@Param("user") User user);
 
 }

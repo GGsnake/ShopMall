@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -30,6 +31,13 @@ public interface PddApiService {
      * @return
      */
     String newPromotion(String pid,Long[] goodIdList);
+
+    /** 拼多多商品详情
+     * 商品ID
+     * @param goodIdList
+     * @return
+     */
+     JSONObject pddDetail(Long goodIdList, String uid);
 
     /**
      * 拼多多通用商品搜索
