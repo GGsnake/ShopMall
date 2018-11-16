@@ -1,18 +1,46 @@
 package com.superman.superman.service.impl;
 
 import com.jd.open.api.sdk.response.cps.UnionServiceQueryCommissionOrdersResponse;
+import com.superman.superman.dao.ScoreDao;
+import com.superman.superman.model.ScoreBean;
 import com.superman.superman.service.JdApiService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.annotation.Id;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 
 /**
  * Created by liujupeng on 2018/11/14.
  */
+@Service("jdApiService")
 public class JdApiServiceImpl implements JdApiService {
-    @Override
-    public String queryJdOder() {
-        return null;
+    @Autowired
+    private ScoreDao scoreDao;
+
+    //    @Cacheable(value="signonCache",key="'petstore:signon:'+#username", unless="#result==null")
+    @Cacheable(value = "scoreBean", key = "#id")
+    public ScoreBean queryJdOder(String id) {
+        ScoreBean scoreBean=new ScoreBean();
+        scoreBean.setUserId(Long.valueOf(id));
+        scoreBean.setDataSrc(1);
+        ScoreBean exit = scoreDao.isExit(scoreBean);
+        return exit;
     }
-
-
+//
+//    @CachePut(value = "concurrenmapcache")
+//    public long save() {
+//        long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
+//        System.out.println("进行缓存：" + timestamp);
+//        return timestamp;
+//    }
+//
+//    public long getByCache() {
+//        ScoreBean exit = scoreDao.isExit(scoreBean);
+//        return exit;
+//    }
 //    @Override
 //    public String queryJdOder() {
 //        UnionSearchGoodsParamQueryRequest request=new UnionSearchGoodsParamQueryRequest();

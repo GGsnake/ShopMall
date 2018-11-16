@@ -6,6 +6,7 @@ import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.User;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.EveryUtils;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by liujupeng on 2018/11/14.
  */
+@Log
 @Service("ScoreService")
 public class ScoreServiceImpl implements ScoreService {
     @Autowired
@@ -40,13 +42,11 @@ public class ScoreServiceImpl implements ScoreService {
         Long size = setOperations.size(kv);
         return size>10?10:size;
     }
-    //查询今天每日浏览商品次数
+    //今日是否分享
     @Override
-    public Long countShare(Long uid) {
+    public Boolean countShare(Long uid) {
         String kv="score_share:" + uid.toString();
-        SetOperations setOperations = redisTemplate.opsForSet();
-        Long size = setOperations.size(kv);
-        return size>10?10:size;
+        return redisTemplate.hasKey(kv);
     }
     /**
      * 记录浏览商品次数
@@ -73,12 +73,21 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Transactional
     public Boolean addScore(ScoreBean scoreBean) {
-        scoreDao.addScore(scoreBean);
-        User user=new User();
-        user.setId(scoreBean.getUserId().intValue());
-        user.setUserScore(scoreBean.getScore().intValue());
-        userDao.updateUserScore(user);
-        return true;
+        try {
+            scoreDao.addScore(scoreBean);
+            User user=new User();
+            user.setId(scoreBean.getUserId().intValue());
+            user.setUserScore(scoreBean.getScore().intValue());
+
+            userDao.updateUserScore(user);
+            return true;
+        }
+        catch (Exception e){
+            log.warning("积分");
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
 }

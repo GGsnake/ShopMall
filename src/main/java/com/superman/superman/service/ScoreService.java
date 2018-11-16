@@ -25,7 +25,7 @@ public interface ScoreService {
      * @param uid
      * @return
      */
-    Long countShare(Long uid);
+    Boolean countShare(Long uid);
 
     /**
      * 记录浏览商品次数

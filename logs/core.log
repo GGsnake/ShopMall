@@ -17511,3 +17511,579 @@ com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Colu
 2018-11-15 19:51:55.906 DEBUG 9892 --- [http-nio-8080-exec-9] c.s.s.dao.UserDao.updateUserScore        : ==>  Preparing: update hot_user set userScore=userScore+ ? where id=? 
 2018-11-15 19:51:55.906 DEBUG 9892 --- [http-nio-8080-exec-9] c.s.s.dao.UserDao.updateUserScore        : ==> Parameters: 10(Integer), 2(Integer)
 2018-11-15 19:51:55.907 DEBUG 9892 --- [http-nio-8080-exec-9] c.s.s.dao.UserDao.updateUserScore        : <==    Updates: 1
+2018-11-15 20:03:50.774  INFO 8500 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 8500 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-15 20:03:50.775 DEBUG 8500 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-15 20:03:50.775  INFO 8500 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-15 20:03:50.818  INFO 8500 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6272173e: startup date [Thu Nov 15 20:03:50 CST 2018]; root of context hierarchy
+2018-11-15 20:03:51.918  INFO 8500 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-15 20:03:52.341  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$62f3342e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.349  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$1ab20176] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.380  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$63c43794] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.395  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration' of type [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$$EnhancerBySpringCGLIB$$5837fc38] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.416  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'spring.cache-org.springframework.boot.autoconfigure.cache.CacheProperties' of type [org.springframework.boot.autoconfigure.cache.CacheProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.424  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheManagerCustomizers' of type [org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.428  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration' of type [org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration$$EnhancerBySpringCGLIB$$8c99892] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.434  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConfiguration' of type [org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConfiguration$$EnhancerBySpringCGLIB$$60548703] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.447  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'spring.redis-org.springframework.boot.autoconfigure.data.redis.RedisProperties' of type [org.springframework.boot.autoconfigure.data.redis.RedisProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.453  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConnectionConfiguration' of type [org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConnectionConfiguration$$EnhancerBySpringCGLIB$$aeac2885] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.486  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConnectionFactory' of type [org.springframework.data.redis.connection.jedis.JedisConnectionFactory] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.509  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisTemplate' of type [org.springframework.data.redis.core.RedisTemplate] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.517  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheManager' of type [org.springframework.data.redis.cache.RedisCacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.518  INFO 8500 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheAutoConfigurationValidator' of type [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-15 20:03:52.863  INFO 8500 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-15 20:03:52.872  INFO 8500 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-15 20:03:52.874  INFO 8500 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-15 20:03:52.992  INFO 8500 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-15 20:03:52.993  INFO 8500 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2177 ms
+2018-11-15 20:03:53.236  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-15 20:03:53.237  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-15 20:03:53.240  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-15 20:03:53.240  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-15 20:03:53.240  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-15 20:03:53.240  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-15 20:03:53.241  INFO 8500 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-15 20:03:53.340  INFO 8500 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-15 20:03:54.063  INFO 8500 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-15 20:03:54.757  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-15 20:03:54.760  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-15 20:03:54.760  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-15 20:03:54.761  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-15 20:03:54.761  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-15 20:03:54.762  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-15 20:03:54.762  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-15 20:03:54.762  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-15 20:03:54.763  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-15 20:03:54.763  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-15 20:03:54.763  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-15 20:03:54.766  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-15 20:03:54.766  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-15 20:03:54.767  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-15 20:03:54.770  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-15 20:03:54.770  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-15 20:03:55.099  INFO 8500 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6272173e: startup date [Thu Nov 15 20:03:50 CST 2018]; root of context hierarchy
+2018-11-15 20:03:55.146  INFO 8500 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-15 20:03:55.147  INFO 8500 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-15 20:03:55.184  INFO 8500 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-15 20:03:55.596  INFO 8500 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2018-11-15 20:03:55.604  WARN 8500 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-15 20:03:55.769  INFO 8500 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-15 20:03:55.772  INFO 8500 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-15 20:03:55.772  INFO 8500 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-15 20:03:55.779  INFO 8500 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-15 20:03:55.780  INFO 8500 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-15 20:03:55.783  INFO 8500 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-15 20:03:55.783  INFO 8500 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-15 20:03:55.798  INFO 8500 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-15 20:03:55.814  INFO 8500 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-15 20:03:56.038  INFO 8500 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-15 20:03:56.043  INFO 8500 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 5.625 seconds (JVM running for 6.743)
+2018-11-15 20:05:07.715  INFO 8500 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-15 20:05:07.716  INFO 8500 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-15 20:05:07.744  INFO 8500 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 28 ms
+2018-11-15 20:05:25.317 DEBUG 8500 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And score = ? And dataSrc = ? And scoreType = ? limit 0,1 
+2018-11-15 20:05:25.332 DEBUG 8500 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 5(Long), 1(Integer), 0(Integer)
+2018-11-15 20:05:25.345 DEBUG 8500 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 0
+2018-11-15 20:05:25.353 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.superman.dao.ScoreDao.addScore       : ==>  Preparing: insert into score_user ( userId,createTime, score, dataSrc, scoreType ) values ( ?,now(), ? , ?, ? ) 
+2018-11-15 20:05:25.354 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.superman.dao.ScoreDao.addScore       : ==> Parameters: 2(Long), 5(Long), 1(Integer), 0(Integer)
+2018-11-15 20:05:25.355 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.superman.dao.ScoreDao.addScore       : <==    Updates: 1
+2018-11-15 20:05:25.356 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.s.dao.UserDao.updateUserScore        : ==>  Preparing: update hot_user set userScore=userScore+ ? where id=? 
+2018-11-15 20:05:25.356 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.s.dao.UserDao.updateUserScore        : ==> Parameters: 5(Integer), 2(Integer)
+2018-11-15 20:05:25.358 DEBUG 8500 --- [http-nio-8080-exec-3] c.s.s.dao.UserDao.updateUserScore        : <==    Updates: 1
+2018-11-15 20:05:29.025 DEBUG 8500 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And score = ? And dataSrc = ? And scoreType = ? limit 0,1 
+2018-11-15 20:05:29.025 DEBUG 8500 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 5(Long), 1(Integer), 0(Integer)
+2018-11-15 20:05:29.028 DEBUG 8500 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 16:55:25.855  INFO 5108 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 5108 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-16 16:55:25.860 DEBUG 5108 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-16 16:55:25.860  INFO 5108 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-16 16:55:25.919  INFO 5108 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@8d4058d: startup date [Fri Nov 16 16:55:25 CST 2018]; root of context hierarchy
+2018-11-16 16:55:27.098  INFO 5108 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-16 16:55:27.584  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$d0857226] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.593  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$88443f6e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.697  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$d156758c] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.713  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration' of type [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$$EnhancerBySpringCGLIB$$c5ca3a30] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.734  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'spring.cache-org.springframework.boot.autoconfigure.cache.CacheProperties' of type [org.springframework.boot.autoconfigure.cache.CacheProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.743  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheManagerCustomizers' of type [org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.747  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration' of type [org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration$$EnhancerBySpringCGLIB$$765bd68a] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.753  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConfiguration' of type [org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConfiguration$$EnhancerBySpringCGLIB$$cde6c4fb] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.765  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'spring.redis-org.springframework.boot.autoconfigure.data.redis.RedisProperties' of type [org.springframework.boot.autoconfigure.data.redis.RedisProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.771  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConnectionConfiguration' of type [org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration$RedisConnectionConfiguration$$EnhancerBySpringCGLIB$$1c3e667d] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.804  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConnectionFactory' of type [org.springframework.data.redis.connection.jedis.JedisConnectionFactory] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.836  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisTemplate' of type [org.springframework.data.redis.core.RedisTemplate] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.847  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheManager' of type [org.springframework.data.redis.cache.RedisCacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:27.847  INFO 5108 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'cacheAutoConfigurationValidator' of type [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheManagerValidator] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 16:55:28.237  INFO 5108 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-16 16:55:28.246  INFO 5108 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-16 16:55:28.247  INFO 5108 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-16 16:55:28.369  INFO 5108 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-16 16:55:28.369  INFO 5108 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2453 ms
+2018-11-16 16:55:28.651  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-16 16:55:28.653  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-16 16:55:28.657  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-16 16:55:28.657  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-16 16:55:28.657  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-16 16:55:28.657  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-16 16:55:28.657  INFO 5108 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-16 16:55:28.955  INFO 5108 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-16 16:55:29.743  INFO 5108 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-16 16:55:30.545  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-16 16:55:30.548  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ts],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.ts()
+2018-11-16 16:55:30.550  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-16 16:55:30.550  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-16 16:55:30.550  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-16 16:55:30.551  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-16 16:55:30.551  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-16 16:55:30.552  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-16 16:55:30.552  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-16 16:55:30.553  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-16 16:55:30.553  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-16 16:55:30.553  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-16 16:55:30.556  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-16 16:55:30.557  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-16 16:55:30.557  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-16 16:55:30.560  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-16 16:55:30.560  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-16 16:55:30.943  INFO 5108 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@8d4058d: startup date [Fri Nov 16 16:55:25 CST 2018]; root of context hierarchy
+2018-11-16 16:55:31.001  INFO 5108 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 16:55:31.001  INFO 5108 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 16:55:31.043  INFO 5108 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 16:55:31.451  INFO 5108 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2018-11-16 16:55:31.458  WARN 5108 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-16 16:55:31.625  INFO 5108 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-16 16:55:31.627  INFO 5108 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-16 16:55:31.627  INFO 5108 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-16 16:55:31.633  INFO 5108 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-16 16:55:31.634  INFO 5108 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-16 16:55:31.677  INFO 5108 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-16 16:55:31.678  INFO 5108 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-16 16:55:31.917  INFO 5108 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-16 16:55:31.937  INFO 5108 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-16 16:55:32.206  INFO 5108 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-16 16:55:32.211  INFO 5108 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 6.675 seconds (JVM running for 8.822)
+2018-11-16 17:11:16.208  INFO 5108 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-16 17:11:16.209  INFO 5108 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-16 17:11:16.242  INFO 5108 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 33 ms
+2018-11-16 17:11:16.315 DEBUG 5108 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:11:16.336 DEBUG 5108 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:11:16.376 DEBUG 5108 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 0
+2018-11-16 17:11:41.083 DEBUG 5108 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:11:41.083 DEBUG 5108 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:11:41.086 DEBUG 5108 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:12:02.485 DEBUG 5108 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:12:02.486 DEBUG 5108 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:12:02.488 DEBUG 5108 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:12:07.800 DEBUG 5108 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:12:07.800 DEBUG 5108 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:12:07.802 DEBUG 5108 --- [http-nio-8080-exec-4] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:12:12.752 DEBUG 5108 --- [http-nio-8080-exec-5] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:12:12.753 DEBUG 5108 --- [http-nio-8080-exec-5] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:12:12.754 DEBUG 5108 --- [http-nio-8080-exec-5] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:38:30.002  INFO 2792 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 2792 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-16 17:38:30.003 DEBUG 2792 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-16 17:38:30.003  INFO 2792 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-16 17:38:30.052  INFO 2792 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@69f7436c: startup date [Fri Nov 16 17:38:30 CST 2018]; root of context hierarchy
+2018-11-16 17:38:31.218  INFO 2792 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-16 17:38:31.634  INFO 2792 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$9e94a463] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 17:38:31.641  INFO 2792 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$565371ab] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 17:38:31.671  INFO 2792 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$9f65a7c9] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 17:38:32.042  INFO 2792 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-16 17:38:32.050  INFO 2792 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-16 17:38:32.051  INFO 2792 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-16 17:38:32.171  INFO 2792 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-16 17:38:32.171  INFO 2792 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2121 ms
+2018-11-16 17:38:32.403  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-16 17:38:32.405  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-16 17:38:32.408  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-16 17:38:32.408  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-16 17:38:32.408  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-16 17:38:32.408  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-16 17:38:32.408  INFO 2792 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-16 17:38:32.558  INFO 2792 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-16 17:38:33.197  INFO 2792 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-16 17:38:33.900  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-16 17:38:33.902  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ts],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.ts()
+2018-11-16 17:38:33.903  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-16 17:38:33.904  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-16 17:38:33.904  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-16 17:38:33.904  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-16 17:38:33.905  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-16 17:38:33.905  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-16 17:38:33.906  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-16 17:38:33.906  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-16 17:38:33.906  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-16 17:38:33.907  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-16 17:38:33.909  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-16 17:38:33.910  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-16 17:38:33.910  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-16 17:38:33.913  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-16 17:38:33.914  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-16 17:38:34.246  INFO 2792 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@69f7436c: startup date [Fri Nov 16 17:38:30 CST 2018]; root of context hierarchy
+2018-11-16 17:38:34.295  INFO 2792 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 17:38:34.295  INFO 2792 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 17:38:34.335  INFO 2792 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 17:38:34.674  WARN 2792 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2018-11-16 17:38:34.681  WARN 2792 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-16 17:38:34.830  INFO 2792 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-16 17:38:34.832  INFO 2792 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-16 17:38:34.832  INFO 2792 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-16 17:38:34.837  INFO 2792 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-16 17:38:34.837  INFO 2792 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-16 17:38:34.840  INFO 2792 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-16 17:38:34.840  INFO 2792 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-16 17:38:34.857  INFO 2792 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-16 17:38:34.869  INFO 2792 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-16 17:38:35.072  INFO 2792 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-16 17:38:35.077  INFO 2792 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 5.453 seconds (JVM running for 6.25)
+2018-11-16 17:38:49.675  INFO 2792 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-16 17:38:49.676  INFO 2792 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-16 17:38:49.704  INFO 2792 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 28 ms
+2018-11-16 17:38:49.759 DEBUG 2792 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:38:49.775 DEBUG 2792 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:38:49.789 DEBUG 2792 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:38:53.916 DEBUG 2792 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:38:53.917 DEBUG 2792 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:38:53.918 DEBUG 2792 --- [http-nio-8080-exec-2] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 17:38:56.150 DEBUG 2792 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 17:38:56.150 DEBUG 2792 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 17:38:56.151 DEBUG 2792 --- [http-nio-8080-exec-3] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 18:15:35.108  INFO 10228 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 10228 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-16 18:15:35.108 DEBUG 10228 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-16 18:15:35.109  INFO 10228 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-16 18:15:35.206  INFO 10228 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3371a0c9: startup date [Fri Nov 16 18:15:35 CST 2018]; root of context hierarchy
+2018-11-16 18:15:36.156  INFO 10228 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-16 18:15:36.470  INFO 10228 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$557cab0a] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:15:36.477  INFO 10228 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d3b7852] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:15:36.502  INFO 10228 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$564dae70] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:15:36.800  INFO 10228 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-16 18:15:36.807  INFO 10228 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-16 18:15:36.807  INFO 10228 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-16 18:15:36.908  INFO 10228 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-16 18:15:36.908  INFO 10228 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1705 ms
+2018-11-16 18:15:37.101  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-16 18:15:37.102  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-16 18:15:37.104  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-16 18:15:37.105  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-16 18:15:37.105  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-16 18:15:37.105  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-16 18:15:37.105  INFO 10228 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-16 18:15:37.224  INFO 10228 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-16 18:15:37.727  INFO 10228 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-16 18:15:38.313  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-16 18:15:38.315  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ts],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.ts()
+2018-11-16 18:15:38.316  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-16 18:15:38.316  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-16 18:15:38.316  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-16 18:15:38.316  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-16 18:15:38.317  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-16 18:15:38.318  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-16 18:15:38.318  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-16 18:15:38.318  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-16 18:15:38.319  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-16 18:15:38.319  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-16 18:15:38.322  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-16 18:15:38.322  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-16 18:15:38.323  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-16 18:15:38.325  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-16 18:15:38.326  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-16 18:15:38.629  INFO 10228 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3371a0c9: startup date [Fri Nov 16 18:15:35 CST 2018]; root of context hierarchy
+2018-11-16 18:15:38.681  INFO 10228 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:15:38.681  INFO 10228 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:15:38.715  INFO 10228 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:15:38.979  INFO 10228 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2018-11-16 18:15:38.984  WARN 10228 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-16 18:15:39.032  INFO 10228 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-16 18:15:39.033  INFO 10228 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-16 18:15:39.034  INFO 10228 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-16 18:15:39.038  INFO 10228 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-16 18:15:39.039  INFO 10228 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-16 18:15:39.041  INFO 10228 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-16 18:15:39.041  INFO 10228 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-16 18:15:39.051  INFO 10228 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-16 18:15:39.060  INFO 10228 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-16 18:15:39.221  INFO 10228 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-16 18:15:39.226  INFO 10228 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 4.42 seconds (JVM running for 5.138)
+2018-11-16 18:15:42.806  INFO 10228 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-16 18:15:42.807  INFO 10228 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-16 18:15:42.830  INFO 10228 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 23 ms
+2018-11-16 18:15:42.896 ERROR 10228 --- [http-nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.lang.ClassCastException: java.lang.Long cannot be cast to java.lang.String] with root cause
+
+java.lang.ClassCastException: java.lang.Long cannot be cast to java.lang.String
+	at org.springframework.data.redis.serializer.StringRedisSerializer.serialize(StringRedisSerializer.java:33) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCacheKey.serializeKeyElement(RedisCacheKey.java:74) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCacheKey.getKeyBytes(RedisCacheKey.java:49) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache$1.doInRedis(RedisCache.java:176) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache$1.doInRedis(RedisCache.java:172) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:207) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:169) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.core.RedisTemplate.execute(RedisTemplate.java:157) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache.get(RedisCache.java:172) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache.get(RedisCache.java:133) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.cache.interceptor.AbstractCacheInvoker.doGet(AbstractCacheInvoker.java:71) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.findInCaches(CacheAspectSupport.java:537) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.findCachedItem(CacheAspectSupport.java:503) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.execute(CacheAspectSupport.java:389) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.execute(CacheAspectSupport.java:327) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheInterceptor.invoke(CacheInterceptor.java:61) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:673) ~[spring-aop-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at com.superman.superman.service.impl.JdApiServiceImpl$$EnhancerBySpringCGLIB$$d87cc717.queryJdOder(<generated>) ~[classes/:na]
+	at com.superman.superman.controller.ScoreController.ts(ScoreController.java:53) ~[classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_181]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_181]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_181]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_181]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:872) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:661) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:742) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52) ~[tomcat-embed-websocket-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) ~[druid-1.1.10.jar:1.1.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:105) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:478) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:80) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:799) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1455) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [na:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [na:1.8.0_181]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at java.lang.Thread.run(Thread.java:748) [na:1.8.0_181]
+
+2018-11-16 18:31:47.171  INFO 5952 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 5952 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-16 18:31:47.172 DEBUG 5952 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-16 18:31:47.172  INFO 5952 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-16 18:31:47.224  INFO 5952 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@437f1056: startup date [Fri Nov 16 18:31:47 CST 2018]; root of context hierarchy
+2018-11-16 18:31:48.200  INFO 5952 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-16 18:31:48.510  INFO 5952 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$becdfd2d] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:31:48.517  INFO 5952 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$768cca75] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:31:48.540  INFO 5952 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$bf9f0093] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 18:31:48.833  INFO 5952 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-16 18:31:48.840  INFO 5952 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-16 18:31:48.840  INFO 5952 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-16 18:31:48.942  INFO 5952 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-16 18:31:48.942  INFO 5952 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1723 ms
+2018-11-16 18:31:49.135  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-16 18:31:49.136  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-16 18:31:49.138  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-16 18:31:49.138  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-16 18:31:49.139  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-16 18:31:49.139  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-16 18:31:49.139  INFO 5952 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-16 18:31:49.246  INFO 5952 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-16 18:31:49.800  INFO 5952 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-16 18:31:50.372  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-16 18:31:50.374  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ts],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.ts()
+2018-11-16 18:31:50.375  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-16 18:31:50.375  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-16 18:31:50.376  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-16 18:31:50.376  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-16 18:31:50.376  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-16 18:31:50.377  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-16 18:31:50.377  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-16 18:31:50.378  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-16 18:31:50.378  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-16 18:31:50.378  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-16 18:31:50.381  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-16 18:31:50.381  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-16 18:31:50.382  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-16 18:31:50.384  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-16 18:31:50.384  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-16 18:31:50.619  INFO 5952 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@437f1056: startup date [Fri Nov 16 18:31:47 CST 2018]; root of context hierarchy
+2018-11-16 18:31:50.655  INFO 5952 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:31:50.655  INFO 5952 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:31:50.683  INFO 5952 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 18:31:50.977  INFO 5952 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2018-11-16 18:31:50.981  WARN 5952 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-16 18:31:51.038  INFO 5952 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-16 18:31:51.040  INFO 5952 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-16 18:31:51.040  INFO 5952 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-16 18:31:51.045  INFO 5952 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-16 18:31:51.046  INFO 5952 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-16 18:31:51.048  INFO 5952 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-16 18:31:51.048  INFO 5952 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-16 18:31:51.059  INFO 5952 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-16 18:31:51.068  INFO 5952 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-16 18:31:51.335  INFO 5952 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-16 18:31:51.340  INFO 5952 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 4.48 seconds (JVM running for 5.23)
+2018-11-16 18:33:10.391  INFO 5952 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-16 18:33:10.392  INFO 5952 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-16 18:33:10.415  INFO 5952 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 23 ms
+2018-11-16 18:33:10.516 DEBUG 5952 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 18:33:10.532 DEBUG 5952 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 18:33:10.545 DEBUG 5952 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1
+2018-11-16 18:33:10.557 ERROR 5952 --- [http-nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is org.springframework.data.redis.serializer.SerializationException: Cannot serialize; nested exception is org.springframework.core.serializer.support.SerializationFailedException: Failed to serialize object using DefaultSerializer; nested exception is java.lang.IllegalArgumentException: DefaultSerializer requires a Serializable payload but received an object of type [com.superman.superman.model.ScoreBean]] with root cause
+
+java.lang.IllegalArgumentException: DefaultSerializer requires a Serializable payload but received an object of type [com.superman.superman.model.ScoreBean]
+	at org.springframework.core.serializer.DefaultSerializer.serialize(DefaultSerializer.java:43) ~[spring-core-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:63) ~[spring-core-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.core.serializer.support.SerializingConverter.convert(SerializingConverter.java:35) ~[spring-core-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.data.redis.serializer.JdkSerializationRedisSerializer.serialize(JdkSerializationRedisSerializer.java:91) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache$CacheValueAccessor.convertToBytesIfNecessary(RedisCache.java:471) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache$BinaryRedisCacheElement.<init>(RedisCache.java:504) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache.put(RedisCache.java:225) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.data.redis.cache.RedisCache.put(RedisCache.java:194) ~[spring-data-redis-1.8.6.RELEASE.jar:na]
+	at org.springframework.cache.interceptor.AbstractCacheInvoker.doPut(AbstractCacheInvoker.java:85) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport$CachePutRequest.apply(CacheAspectSupport.java:784) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.execute(CacheAspectSupport.java:417) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheAspectSupport.execute(CacheAspectSupport.java:327) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.cache.interceptor.CacheInterceptor.invoke(CacheInterceptor.java:61) ~[spring-context-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:673) ~[spring-aop-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at com.superman.superman.service.impl.JdApiServiceImpl$$EnhancerBySpringCGLIB$$620e605b.queryJdOder(<generated>) ~[classes/:na]
+	at com.superman.superman.controller.ScoreController.ts(ScoreController.java:51) ~[classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_181]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_181]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_181]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_181]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:872) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:661) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846) ~[spring-webmvc-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:742) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52) ~[tomcat-embed-websocket-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at com.alibaba.druid.support.http.WebStatFilter.doFilter(WebStatFilter.java:123) ~[druid-1.1.10.jar:1.1.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:105) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107) ~[spring-web-4.3.10.RELEASE.jar:4.3.10.RELEASE]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198) ~[tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:478) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:80) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:799) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1455) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [na:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [na:1.8.0_181]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-8.5.16.jar:8.5.16]
+	at java.lang.Thread.run(Thread.java:748) [na:1.8.0_181]
+
+2018-11-16 19:26:10.684  INFO 9912 --- [restartedMain] c.superman.superman.SupermanApplication  : Starting SupermanApplication on asus-PC with PID 9912 (D:\Mysup\superman\target\classes started by Administrator in D:\Mysup\superman)
+2018-11-16 19:26:10.685 DEBUG 9912 --- [restartedMain] c.superman.superman.SupermanApplication  : Running with Spring Boot v1.5.6.RELEASE, Spring v4.3.10.RELEASE
+2018-11-16 19:26:10.685  INFO 9912 --- [restartedMain] c.superman.superman.SupermanApplication  : No active profile set, falling back to default profiles: default
+2018-11-16 19:26:10.797  INFO 9912 --- [restartedMain] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6e992ce4: startup date [Fri Nov 16 19:26:10 CST 2018]; root of context hierarchy
+2018-11-16 19:26:11.830  INFO 9912 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-11-16 19:26:12.170  INFO 9912 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'redisConfig' of type [com.superman.superman.utils.RedisConfig$$EnhancerBySpringCGLIB$$efd3dd3e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 19:26:12.177  INFO 9912 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a792aa86] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 19:26:12.205  INFO 9912 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cache.annotation.ProxyCachingConfiguration' of type [org.springframework.cache.annotation.ProxyCachingConfiguration$$EnhancerBySpringCGLIB$$f0a4e0a4] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-11-16 19:26:12.548  INFO 9912 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2018-11-16 19:26:12.556  INFO 9912 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-11-16 19:26:12.556  INFO 9912 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.16
+2018-11-16 19:26:12.682  INFO 9912 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-11-16 19:26:12.682  INFO 9912 --- [localhost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1887 ms
+2018-11-16 19:26:12.878  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-11-16 19:26:12.879  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'statViewServlet' to [/druid/*]
+2018-11-16 19:26:12.881  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-11-16 19:26:12.882  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-11-16 19:26:12.882  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-11-16 19:26:12.882  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-11-16 19:26:12.882  INFO 9912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webStatFilter' to urls: [/*]
+2018-11-16 19:26:12.991  INFO 9912 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2018-11-16 19:26:13.533  INFO 9912 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2018-11-16 19:26:14.168  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/team/myTeam],methods=[GET]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.MemberController.getTeam()
+2018-11-16 19:26:14.170  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ts],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.ts()
+2018-11-16 19:26:14.172  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/upVis],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.upVis(java.lang.Integer,java.lang.Long)
+2018-11-16 19:26:14.172  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/quu],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.quee()
+2018-11-16 19:26:14.172  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/dayScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.dayScore()
+2018-11-16 19:26:14.172  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/shareScore],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ScoreController.shareScore()
+2018-11-16 19:26:14.173  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/index],methods=[GET]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.ShopGoodController.getIndex()
+2018-11-16 19:26:14.173  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/Shop/Search],methods=[POST]}" onto public com.superman.superman.utils.WeikeResponse com.superman.superman.controller.ShopGoodController.Search(java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Integer,java.lang.Integer)
+2018-11-16 19:26:14.174  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/getBillList],methods=[POST]}" onto public com.superman.superman.utils.Result com.superman.superman.controller.UserController.pddGoodList(java.lang.Integer,java.lang.Integer,java.lang.String,java.lang.Long[])
+2018-11-16 19:26:14.174  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/index]}" onto public com.superman.superman.model.User com.superman.superman.controller.UserController.redisIndex()
+2018-11-16 19:26:14.174  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/val],methods=[GET]}" onto public void com.superman.superman.controller.UserController.sysoo()
+2018-11-16 19:26:14.175  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/v2/api-docs],methods=[GET],produces=[application/json || application/hal+json]}" onto public org.springframework.http.ResponseEntity<springfox.documentation.spring.web.json.Json> springfox.documentation.swagger2.web.Swagger2Controller.getDocumentation(java.lang.String,javax.servlet.http.HttpServletRequest)
+2018-11-16 19:26:14.177  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/ui]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.UiConfiguration> springfox.documentation.swagger.web.ApiResourceController.uiConfiguration()
+2018-11-16 19:26:14.178  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources]}" onto org.springframework.http.ResponseEntity<java.util.List<springfox.documentation.swagger.web.SwaggerResource>> springfox.documentation.swagger.web.ApiResourceController.swaggerResources()
+2018-11-16 19:26:14.178  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/swagger-resources/configuration/security]}" onto org.springframework.http.ResponseEntity<springfox.documentation.swagger.web.SecurityConfiguration> springfox.documentation.swagger.web.ApiResourceController.securityConfiguration()
+2018-11-16 19:26:14.181  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-11-16 19:26:14.181  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-11-16 19:26:14.424  INFO 9912 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6e992ce4: startup date [Fri Nov 16 19:26:10 CST 2018]; root of context hierarchy
+2018-11-16 19:26:14.467  INFO 9912 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 19:26:14.467  INFO 9912 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 19:26:14.495  INFO 9912 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-11-16 19:26:14.773  INFO 9912 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2018-11-16 19:26:14.779  WARN 9912 --- [restartedMain] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2018-11-16 19:26:14.831  INFO 9912 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-11-16 19:26:14.832  INFO 9912 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'statFilter' has been autodetected for JMX exposure
+2018-11-16 19:26:14.833  INFO 9912 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-11-16 19:26:14.838  INFO 9912 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.alibaba.druid.spring.boot.autoconfigure:name=dataSource,type=DruidDataSourceWrapper]
+2018-11-16 19:26:14.839  INFO 9912 --- [restartedMain] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'statFilter': registering with JMX server as MBean [com.alibaba.druid.filter.stat:name=statFilter,type=StatFilter]
+2018-11-16 19:26:14.841  INFO 9912 --- [restartedMain] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-11-16 19:26:14.841  INFO 9912 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2018-11-16 19:26:14.853  INFO 9912 --- [restartedMain] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2018-11-16 19:26:14.863  INFO 9912 --- [restartedMain] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2018-11-16 19:26:15.064  INFO 9912 --- [restartedMain] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2018-11-16 19:26:15.069  INFO 9912 --- [restartedMain] c.superman.superman.SupermanApplication  : Started SupermanApplication in 4.752 seconds (JVM running for 5.548)
+2018-11-16 19:26:55.751  INFO 9912 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-11-16 19:26:55.751  INFO 9912 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2018-11-16 19:26:55.776  INFO 9912 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 25 ms
+2018-11-16 19:26:55.855 DEBUG 9912 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==>  Preparing: SELECT userId,score,scoreType,createTime FROM score_user WHERE to_days(createTime) = to_days(now()) and userId=? and status=0 And dataSrc = ? limit 0,1 
+2018-11-16 19:26:55.869 DEBUG 9912 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : ==> Parameters: 2(Long), 1(Integer)
+2018-11-16 19:26:55.881 DEBUG 9912 --- [http-nio-8080-exec-1] c.superman.superman.dao.ScoreDao.isExit  : <==      Total: 1

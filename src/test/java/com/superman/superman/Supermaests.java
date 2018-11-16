@@ -1,6 +1,7 @@
 package com.superman.superman;
 
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,8 @@ public class Supermaests {
     private RedisTemplate redisTemplate;
     @Autowired
     ScoreService scoreService;
+    @Autowired
+    JdApiService jdApiService;
 
     @Test
     public void test() throws Exception {
@@ -28,11 +31,11 @@ public class Supermaests {
 //        }
 //        Long aLong = scoreService.countLooks(33l);
 //        Long s = scoreService.countLooks(33l);
-        ScoreBean scoreBean1 = new ScoreBean();
-        scoreBean1.setUserId(122l);
-        scoreBean1.setScoreType(0);
-        scoreBean1.setScore(20002222l);
-        scoreService.addScore(scoreBean1);
+//        ScoreBean scoreBean1 = new ScoreBean();
+//        scoreBean1.setUserId(122l);
+//        scoreBean1.setScoreType(0);
+//        scoreBean1.setScore(20002222l);
+//        jdApiService.queryJdOder(scoreBean1);
 
     }
 

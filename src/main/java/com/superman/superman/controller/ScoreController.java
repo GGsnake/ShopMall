@@ -1,6 +1,7 @@
 package com.superman.superman.controller;
 
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.WeikeResponse;
@@ -23,13 +24,14 @@ public class ScoreController  {
     private RedisTemplate redisTemplate;
     @Autowired
     private ScoreService scoreService;
+    @Autowired
+    private JdApiService jdApiService;
 
     //浏览商品积分上报
     @PostMapping("/upVis")
     public WeikeResponse upVis(@RequestParam(value = "userId")Integer userId, @RequestParam(value = "goodId")Long goodId) {
         //TODO token校验
         String kv="score:" + userId.toString();
-
         return  WeikeResponseUtil.success("重新创建");
 
     }
@@ -41,7 +43,22 @@ public class ScoreController  {
         Boolean query = scoreService.isExitSign(scoreBean);
         return WeikeResponseUtil.success(query);
     }
+    //积分查询
+    @PostMapping("/ts")
+    public WeikeResponse ts(String id) {
+        //TODO token校验
 
+        ScoreBean query = jdApiService.queryJdOder(id);
+        return WeikeResponseUtil.success(query);
+    }
+    //积分查询
+    @PostMapping("/dede")
+    public WeikeResponse dede(String id) {
+        //TODO token校验
+
+        ScoreBean query = jdApiService.queryJdOder(id);
+        return WeikeResponseUtil.success(query);
+    }
 
     //每日浏览商品积分领取
     @PostMapping("/dayScore")
@@ -71,7 +88,12 @@ public class ScoreController  {
     @PostMapping("/shareScore")
     public WeikeResponse shareScore() {
         //TODO token校验
+        //TODO 校验
         Long uid=2l;
+        Boolean exit = scoreService.countShare(uid);
+        if (!exit){
+            return WeikeResponseUtil.fail("100042","今日未分享");
+        }
         ScoreBean scoreBean=new ScoreBean();
         scoreBean.setUserId(uid);
         scoreBean.setScore(5l);
