@@ -16,6 +16,7 @@ import java.sql.Timestamp;
  * Created by liujupeng on 2018/11/14.
  */
 @Service("jdApiService")
+@Cacheable
 public class JdApiServiceImpl implements JdApiService {
     @Autowired
     private ScoreDao scoreDao;
