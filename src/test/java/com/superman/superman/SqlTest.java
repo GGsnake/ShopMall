@@ -1,10 +1,10 @@
 package com.superman.superman;
 
 import com.superman.superman.model.CollectBean;
-import com.superman.superman.model.ScoreBean;
 import com.superman.superman.service.CollectService;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
+import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,12 +14,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * Created by liujupeng on 2018/11/15.
+ * Created by liujupeng on 2018/11/20.
  */
+@Log
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class Supermaests {
-
+public class SqlTest {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
@@ -30,20 +30,29 @@ public class Supermaests {
     CollectService collectService;
 
     @Test
-    public void test() throws Exception {
-//        for (long i=0;i<20;i++){
-//            scoreService.recordBrowse(33l,i);
-//        }
-//        Long aLong = scoreService.countLooks(33l);
-//        Long s = scoreService.countLooks(33l);
-//        ScoreBean scoreBean1 = new ScoreBean();
-//        scoreBean1.setUserId(122l);
-//        scoreBean1.setScoreType(0);
-//        scoreBean1.setScore(20002222l);
-//        jdApiService.queryJdOder(scoreBean1);
+    public void add() throws Exception {
+        var va=new CollectBean();
+        va.setUserId(22l);
+        va.setImage("yyyyyyyyyyyyl");
+        va.setPromotion_rate(1500l);
+        va.setCoupon(3000l);
+        va.setCoupon_price(2000l);
+        va.setSrc(0);
+        va.setGoodId(10l);
+        va.setPrice(5000l);
+        va.setTitle("gggggggggg抢ssssssssssss购");
+        collectService.addCollect(va);
 
+    } @Test
+    public void query() throws Exception {
+        var a=collectService.queryCollect(22l);
+        log.warning(a.toString());
     }
-
+    @Test
+    public void delete() throws Exception {
+//        var a=collectService.deleteCollect(2);
+//        log.warning(a.toString());
+    }
 
 
 }

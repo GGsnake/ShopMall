@@ -3,6 +3,7 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.PddApiService;
+import com.superman.superman.utils.MyException;
 import com.superman.superman.utils.Result;
 import com.superman.superman.utils.WeikeResponse;
 import com.superman.superman.utils.WeikeResponseUtil;
@@ -26,6 +27,11 @@ public class MemberController {
     public WeikeResponse getTeam() {
         JSONObject myTeam = memberService.getMyTeam(1l);
         return WeikeResponseUtil.success(myTeam);
+
+    }
+    @GetMapping("/js")
+    public String jsons()  throws  MyException{
+       throw new MyException("test");
 
     }
 

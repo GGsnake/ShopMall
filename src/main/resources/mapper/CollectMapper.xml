@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superman.superman.dao.CollectDao">
+    <select id="query" resultType="com.superman.superman.model.CollectBean">
+		select * from collect where  userId= #{id}
+	</select>
+
+    <!--<update id="updateUser">-->
+    <!--update hot_user-->
+    <!--<set>-->
+    <!--<if test="user.userName != null">userName=#{user.userName},</if>-->
+    <!--<if test="user.loginPwd != null">loginPwd=#{user.loginPwd},</if>-->
+    <!--<if test="user.userScore != null">userScore=#{user.userScore},</if>-->
+    <!--</set>-->
+    <!--where id=#{user.id}-->
+    <!--</update>-->
+    <delete id="delete">
+        delete  from  collect where id = #{id}
+    </delete>
+    <insert id="addCollect" parameterType="com.superman.superman.model.CollectBean">
+        insert into collect
+           (userId,goodId,title,src, price, coupon_price, image,promotion_rate,coupon,createTime)
+       values (
+            #{col.userId},#{col.goodId},#{col.title},#{col.src},
+            #{col.price},#{col.coupon_price},#{col.image},#{col.promotion_rate},#{col.coupon},
+           now())
+    </insert>
+</mapper>

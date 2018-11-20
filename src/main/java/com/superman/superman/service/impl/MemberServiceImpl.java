@@ -4,14 +4,20 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.Dto.TeamList;
+import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.PddDao;
 import com.superman.superman.model.Role;
 import com.superman.superman.model.Test;
 import com.superman.superman.service.MemberService;
+import com.superman.superman.service.OderService;
+import com.superman.superman.service.RoleService;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.var;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private PddDao pddDao;
+    @Autowired
+    private OderMapper oderMapper;
+
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public String aaaa() {
@@ -39,11 +50,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public String ccc() {
+        Long uid=0l;
+        var t1=new Test();
+
+        t1.setAgentId(uid.intValue());
+        pddDao.selectRchid(t1);
         return null;
     }
 
     @Override
-    public String getMyMoney(Long uid) {
+    public String getMyMoney(@NonNull Long uid) {
+        var role=roleService.getRole(uid);
+        if (role.getRoleId()==1){
+            //总代
+            oderMapper.selectByPrimaryKey()
+
+        }
+        if (role.getRoleId()==2){
+            //代理
+
+        }
+        if (role.getRoleId()==3){
+            //粉丝
+
+        }
         return null;
     }
 
