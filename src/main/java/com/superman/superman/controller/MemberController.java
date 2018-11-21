@@ -1,6 +1,7 @@
 package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.utils.MyException;
@@ -23,6 +24,7 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+    @LoginRequired
     @GetMapping("/myTeam")
     public WeikeResponse getTeam() {
         JSONObject myTeam = memberService.getMyTeam(1l);

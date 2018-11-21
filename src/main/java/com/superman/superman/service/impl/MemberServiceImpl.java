@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService {
         var role=roleService.getRole(uid);
         if (role.getRoleId()==1){
             //总代
-            oderMapper.selectByPrimaryKey()
+//            oderMapper.selectByPrimaryKey()
 
         }
         if (role.getRoleId()==2){

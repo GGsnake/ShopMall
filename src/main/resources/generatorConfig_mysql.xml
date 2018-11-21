@@ -37,7 +37,7 @@
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="oder" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+        <table tableName="hot_user" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
     </context>
 </generatorConfiguration>
