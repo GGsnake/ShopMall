@@ -2,15 +2,17 @@ package com.superman.superman.service.impl;
 
 import com.superman.superman.dao.PddDao;
 import com.superman.superman.dao.UserDao;
-import com.superman.superman.model.Role;
-import com.superman.superman.model.Test;
-import com.superman.superman.model.User;
-import com.superman.superman.model.UserPdd;
+import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.*;
 import com.superman.superman.service.UserApiService;
+import lombok.NonNull;
+import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -23,6 +25,11 @@ public class UserApiServiceImpl implements UserApiService {
     private PddDao pddDao;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
     private final static Logger logger = LoggerFactory.getLogger(UserApiServiceImpl.class);
 
@@ -42,9 +49,17 @@ public class UserApiServiceImpl implements UserApiService {
     }
 
     @Override
-    public Boolean createUser(User user) {
-        return null;
+    public Boolean createUser(Userinfo userinfo) {
+        var ha=redisTemplate.opsForValue();
+//        var code =ha.get("SMS:"+userinfo.getUserphone());
+//        if (code==null||!user.getLoginSecret().equals(code)){
+//            return false;
+        String loginPwd= DigestUtils.md5DigestAsHex(userinfo.getLoginpwd().getBytes());
+        userinfo.setLoginpwd(loginPwd);
+        int flag = userinfoMapper.insert(userinfo);
+        return flag==0?false:true;
     }
+
 
 //    public String userLogin(User user) {
 //        if (user==null||user.getUserPhone()==null||user.getLoginPwd()==null){
@@ -87,14 +102,8 @@ public class UserApiServiceImpl implements UserApiService {
 //    }
 
     @Override
-    public User queryUserByPhone(User user) {
-        if (user.getUserPhone()==null){
-            return null;
-        }
-        User info= userDao.selectByPhone(user.getUserPhone());
-        if (info==null){
-            return null;
-        }
+    public Userinfo queryUserByPhone(@NonNull String userPhone) {
+        Userinfo info= userinfoMapper.selectByPhone(userPhone);
         return info;
     }
 
@@ -106,6 +115,12 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public Role queryR(Role user) {
         return pddDao.selectR(Long.valueOf(user.getUserId()));
+    }
+
+    @Override
+    public Userinfo queryByUid(@NonNull Long uid) {
+        var userinfo = userinfoMapper.selectByPrimaryKey(uid);
+        return userinfo;
     }
 
 }

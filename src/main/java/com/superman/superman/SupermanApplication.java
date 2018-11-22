@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @EnableCaching
 @MapperScan("com.superman.superman.dao")
+
 public class SupermanApplication {
 
 

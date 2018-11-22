@@ -31,6 +31,7 @@ public class MemberController {
         return WeikeResponseUtil.success(myTeam);
 
     }
+
     @GetMapping("/js")
     public String jsons()  throws  MyException{
        throw new MyException("test");

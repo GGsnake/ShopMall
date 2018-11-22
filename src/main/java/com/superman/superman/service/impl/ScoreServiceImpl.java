@@ -29,7 +29,7 @@ public class ScoreServiceImpl implements ScoreService {
     private RedisTemplate redisTemplate;
 
 
-     //查询今天是否已经领取 过每日浏览积分
+    //查询今天是否已经领取 过每日浏览积分
     public Boolean isExitSign(ScoreBean scoreBean) {
         ScoreBean exit = scoreDao.isExit(scoreBean);
         return exit!=null?true:false;
