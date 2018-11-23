@@ -1,6 +1,7 @@
 package com.superman.superman.dao;
 
 import com.superman.superman.model.Agent;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -14,5 +15,6 @@ public interface AgentDao {
     List<Agent> queryForUserId(Integer id);
     @Select("SELECT * FROM agent WHERE agentId = #{id} and status=0")
     List<Agent> queryForAgentId(Integer id);
-
+    @Insert("INSERT INTO agent(agentId, userId,crateTime) VALUES(#{agentId}, #{userId},now()")
+    int insert(Agent agent);
 }

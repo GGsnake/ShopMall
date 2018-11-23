@@ -1,6 +1,8 @@
 package com.superman.superman;
 
+import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Agent;
 import com.superman.superman.model.CollectBean;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
@@ -33,6 +35,8 @@ public class Supermaests {
 //    CollectService collectService;
     @Autowired
     UserinfoMapper userinfoMapper;
+    @Autowired
+    AgentDao agentDao;
 
     @Test
     public void test() throws Exception {
@@ -40,6 +44,10 @@ public class Supermaests {
         a.add(1);
         a.add(2);
         a.add(3);
+        Agent agent = new Agent();
+        agent.setAgentId(33);
+        agent.setUserId(113);
+        agentDao.insert(agent);
 //        List<Userinfo> userinfos = userinfoMapper.selectIn(a);
 //        log.warning(userinfos.toString());
 //        for (long i=0;i<20;i++){
