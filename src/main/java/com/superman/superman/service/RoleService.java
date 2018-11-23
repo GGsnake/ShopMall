@@ -7,7 +7,7 @@ import com.superman.superman.model.UserRole;
  */
 public interface RoleService {
 
-        UserRole getRole(Long uid);
+        UserRole getRole(Integer score);
 
 
 }

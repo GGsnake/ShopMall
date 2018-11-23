@@ -9,6 +9,6 @@ public interface MemberService {
 String aaaa();
 String bbb();
 String ccc();
-String  getMyMoney(Long uid);
+Integer getMyMoney(Long uid);
 JSONObject getMyTeam(Long uid);
 }

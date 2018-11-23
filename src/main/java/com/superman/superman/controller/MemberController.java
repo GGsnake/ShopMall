@@ -19,12 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/team")
 public class MemberController {
-    @Autowired
-    PddApiService pddApiService;
+//    @Autowired
+//    PddApiService pddApiService;
     @Autowired
     MemberService memberService;
 
-    @LoginRequired
     @GetMapping("/myTeam")
     public WeikeResponse getTeam() {
         JSONObject myTeam = memberService.getMyTeam(1l);
@@ -32,10 +31,10 @@ public class MemberController {
 
     }
 
-    @GetMapping("/js")
-    public String jsons()  throws  MyException{
-       throw new MyException("test");
-
+    @GetMapping("/qu")
+    public String jsons()  {
+        Integer myMoney = memberService.getMyMoney(2l);
+        return myMoney.toString();
     }
 
 }
