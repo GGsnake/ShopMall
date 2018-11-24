@@ -2,13 +2,8 @@ package com.superman.superman;
 
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.model.Agent;
-import com.superman.superman.model.CollectBean;
-import com.superman.superman.model.ScoreBean;
-import com.superman.superman.model.Userinfo;
-import com.superman.superman.service.CollectService;
-import com.superman.superman.service.JdApiService;
-import com.superman.superman.service.ScoreService;
+import com.superman.superman.model.*;
+import com.superman.superman.service.*;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -36,18 +31,27 @@ public class Supermaests {
     @Autowired
     UserinfoMapper userinfoMapper;
     @Autowired
-    AgentDao agentDao;
+    LogService logService;
+    @Autowired
+    OderService oderService;
+//    @Autowired
+//    AgentDao agentDao;
 
     @Test
     public void test() throws Exception {
-        var a=new ArrayList<>();
-        a.add(1);
-        a.add(2);
-        a.add(3);
-        Agent agent = new Agent();
-        agent.setAgentId(33);
-        agent.setUserId(113);
-        agentDao.insert(agent);
+//        var a=new ArrayList<>();
+//        a.add(1);
+//        a.add(2);
+//        a.add(3);
+//        Agent agent = new Agent();
+//        agent.setAgentId(33);
+//        agent.setUserId(113);
+//        agentDao.insert(agent);
+//        var a=new UserLog();
+//        a.setUserId(22);
+//        a.setOperation(0);
+//        a.setIp("111111111111111111111");
+//        logService.addUserLoginLog(a);
 //        List<Userinfo> userinfos = userinfoMapper.selectIn(a);
 //        log.warning(userinfos.toString());
 //        for (long i=0;i<20;i++){
@@ -61,6 +65,13 @@ public class Supermaests {
 //        scoreBean1.setScore(20002222l);
 //        jdApiService.queryJdOder(scoreBean1);
 
+    }
+    @Test
+    public void pddoder(){
+
+        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
 
 

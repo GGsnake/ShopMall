@@ -12,6 +12,7 @@ import com.superman.superman.model.Role;
 import com.superman.superman.model.Test;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
+import com.superman.superman.service.OderService;
 import com.superman.superman.service.RoleService;
 import com.superman.superman.service.UserApiService;
 import lombok.NonNull;
@@ -36,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private AgentDao agentDao;
     @Autowired
-    private OderMapper oderMapper;
+    private OderService oderService;
     @Autowired
     private UserinfoMapper userinfoMapper;
 
@@ -77,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
             //代理
             case 2:
                 //查询我的订单收入
-                var temp = oderMapper.selectPid(pddPid);
+                var temp = oderService.countPddOderForId(pddPid);
                 var meIncome = temp == null ? 0 : temp;
 
                 //查询我的下级粉丝
@@ -97,7 +98,7 @@ public class MemberServiceImpl implements MemberService {
                     return meIncome;
                 }
                 //查询出粉丝贡献的订单收入
-                var fans = oderMapper.selectPidIn(userinfos);
+                var fans = oderService.countPddOderForIdList(userinfos);
                 logger.warn("粉丝收入==" + fans);
                 if (fans == null) {
                     return meIncome;

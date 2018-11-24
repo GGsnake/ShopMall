@@ -33,29 +33,23 @@ import java.util.concurrent.TimeUnit;
  */
 @Log
 public class AuthenticationInterceptor implements HandlerInterceptor {
-//    @Autowired
+    //    @Autowired
 //    private RedisTemplate redisTemplate;
     @Autowired
     private TokenService manager;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        if (!(handler instanceof HandlerMethod)) {
-//            return true;
-//        }
-//        HandlerMethod handlerMethod = (HandlerMethod) handler;
-//        Method method = handlerMethod.getMethod();
-//        LoginRequired methdAnno = method.getAnnotation(LoginRequired.class);
-//        if (methdAnno == null) {
-//            return true;
-//        }
-        log.warning("ssssssssssssssssssss");
         if (!(handler instanceof HandlerMethod)) {
-            response.sendError(401,"请登录");
+            response.sendError(401, "请登录");
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
+        LoginRequired methdAnno = method.getAnnotation(LoginRequired.class);
+        if (methdAnno == null) {
+            return true;
+        }
         //从header中得到token
         String authorization = request.getHeader(Constants.AUTHORIZATION);
         //验证token
@@ -67,7 +61,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         //如果验证token失败，并且方法注明了Authorization，返回401错误
         if (method.getAnnotation(LoginRequired.class) != null) {
-            response.sendError(401,"请登录");
+            response.sendError(401, "token失效，请重新登录");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }

@@ -31,8 +31,8 @@ public class ScoreController  {
     private RedisTemplate redisTemplate;
     @Autowired
     private ScoreService scoreService;
-    @Autowired
-    private JdApiService jdApiService;
+//    @Autowired
+//    private JdApiService jdApiService;
 
     //浏览商品积分上报
     @PostMapping("/upVis")
@@ -52,12 +52,12 @@ public class ScoreController  {
         return WeikeResponseUtil.success(query);
     }
     //积分查询
-    @PostMapping("/ts")
-    public WeikeResponse ts(String id) {
-        //TODO token校验
-        ScoreBean query = jdApiService.queryJdOder(id);
-        return WeikeResponseUtil.success(query);
-    }
+//    @PostMapping("/ts")
+//    public WeikeResponse ts(String id) {
+//        TODO token校验
+//        ScoreBean query = jdApiService.queryJdOder(id);
+//        return WeikeResponseUtil.success(query);
+//    }
     //积分查询
     @LoginRequired
     @PostMapping("/dede")

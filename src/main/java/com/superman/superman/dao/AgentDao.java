@@ -13,6 +13,7 @@ import java.util.List;
 public interface AgentDao {
     @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
     List<Agent> queryForUserId(Integer id);
+
     @Select("SELECT * FROM agent WHERE agentId = #{id} and status=0")
     List<Agent> queryForAgentId(Integer id);
     @Insert("INSERT INTO agent(agentId, userId,crateTime) VALUES(#{agentId}, #{userId},now()")
