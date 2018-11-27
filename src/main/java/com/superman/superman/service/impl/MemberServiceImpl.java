@@ -74,6 +74,8 @@ public class MemberServiceImpl implements MemberService {
         switch (roleId) {
             case 1:
                 //总代
+                var tt = oderService.countPddOderForId(pddPid);
+
                 break;
             //代理
             case 2:

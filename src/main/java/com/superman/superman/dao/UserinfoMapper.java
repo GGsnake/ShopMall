@@ -3,6 +3,7 @@ package com.superman.superman.dao;
 import com.superman.superman.model.Userinfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 @Mapper
@@ -39,6 +40,8 @@ public interface UserinfoMapper {
      */
     Userinfo selectByPrimaryKey(Long id);
     Userinfo selectByPhone(String userPhone);
+    @Select(" select SUM(promotion_amount) from oder where  p_id in (select pddPid from userinfo where  id in (select userId from agent where agentId=#{uid}))")
+    Integer queryAllPidForAgentId(Integer uid);
 
     List<String>selectIn(@Param("list") List userlist);
 

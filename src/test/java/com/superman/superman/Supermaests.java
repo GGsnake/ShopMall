@@ -1,6 +1,7 @@
 package com.superman.superman;
 
 import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
 import com.superman.superman.service.*;
@@ -34,6 +35,8 @@ public class Supermaests {
     LogService logService;
     @Autowired
     OderService oderService;
+    @Autowired
+    OderMapper oderMapper;
 //    @Autowired
 //    AgentDao agentDao;
 
@@ -68,8 +71,9 @@ public class Supermaests {
     }
     @Test
     public void pddoder(){
-
-        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
+        Integer integer = oderMapper.sumMoneyForIdToScore(0.2d,"4165519_37497222");
+        log.warning(String.valueOf(integer));
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
