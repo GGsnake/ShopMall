@@ -1,10 +1,12 @@
 package com.superman.superman;
 
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
 import com.superman.superman.service.*;
+import com.superman.superman.utils.PageParam;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -31,6 +33,8 @@ public class Supermaests {
 //    CollectService collectService;
     @Autowired
     UserinfoMapper userinfoMapper;
+    @Autowired
+    MemberService memberService;
     @Autowired
     LogService logService;
     @Autowired
@@ -71,8 +75,14 @@ public class Supermaests {
     }
     @Test
     public void pddoder(){
-        Integer integer = oderMapper.sumMoneyForIdToScore(0.2d,"4165519_37497222");
-        log.warning(String.valueOf(integer));
+        PageParam gp=new PageParam();
+        gp.setPageNo(1);
+        gp.setPageSize(2);
+
+//        JSONObject myMoney = memberService.getMyMoney(1l);
+        JSONObject myMoney = memberService.getMyNoFans(6l,gp);
+//        Integer integer = oderMapper.sumMoneyForIdToScore(0.2d,"4165519_37497222");
+        log.warning(String.valueOf(myMoney));
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");

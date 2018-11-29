@@ -21,8 +21,12 @@ public interface OderMapper {
     @Select("select * from oder where p_id =#{pid} and order_status=#{status}  ORDER BY order_create_time sort ")
     List<Oder> queryPddOderList(@Param("pid") String id,@Param("status") Integer status,@Param("sort") String sort);
 
-
-
+    /**根据返佣比率算出预估收入
+     *
+     * @param score
+     * @param id
+     * @return
+     */
     @Select("select sum(promotion_amount)*#{score} from oder where p_id =#{id}")
     Integer sumMoneyForIdToScore(@Param("score") Double score,@Param("id") String id);
 
@@ -43,10 +47,22 @@ public interface OderMapper {
     Oder selectByPrimaryKey(Long id);
 
 
-    
+
+
+
+
     List<Oder> selectAll(@Param("oder") Oder oder);
 
+    /**
+     * 单个PID统计订单预估总收入
+     * @param pid
+     * @return
+     */
+    @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status in ('1','2')")
     Integer selectPid(String pid);
+
+
+
     Integer selectPidIn(@Param("list") List list);
 
 

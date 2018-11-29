@@ -50,6 +50,11 @@ public class OderServiceImpl implements OderService {
         return oderMapper.selectPid(id);
     }
 
+    /**
+     * 根据列表PID查询计算订单的总收入
+     * @param list
+     * @return
+     */
     @Override
     public Integer countPddOderForIdList(List list) {
         return oderMapper.selectPidIn(list);

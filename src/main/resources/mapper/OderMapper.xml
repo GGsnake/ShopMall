@@ -47,12 +47,6 @@
     from oder
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectPid" resultType="java.lang.Integer"  parameterType="java.lang.String" >
-    select
-    SUM(promotion_amount)
-    from oder
-    where p_id = #{pid} and order_status in ('1','2')
-  </select>
   <select id="selectPidIn" resultType="java.lang.Integer"  >
     select
     SUM(promotion_amount)
