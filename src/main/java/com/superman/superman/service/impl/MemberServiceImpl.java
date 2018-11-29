@@ -1,11 +1,10 @@
 package com.superman.superman.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Agent;
-import com.superman.superman.model.Role;
 import com.superman.superman.model.Test;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
@@ -60,26 +59,32 @@ public class MemberServiceImpl implements MemberService {
 //        pddDao.selectRchid(t1);
         return null;
     }
-    //获取预估收入
+
+    /**
+     * 获取预估收入
+     *
+     * @param uid
+     * @return
+     */
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
-        var role = userinfoMapper.selectByPrimaryKey(uid);
-        var roleId = role.getRoleId();
-        var pddPid = role.getPddpid();
-        String userphoto = role.getUserphoto();
-        String username = role.getUsername();
-        JSONObject myJson=new JSONObject();
-        myJson.put("roleId",roleId);
-        myJson.put("image",userphoto==null?null:userphoto);
-        myJson.put("name",username==null?null:username);
+        var user = userinfoMapper.selectByPrimaryKey(uid);
+        var roleId = user.getRoleId();
+        var pddPid = user.getPddpid();
+        String userphoto = user.getUserphoto();
+        String username = user.getUsername();
+        JSONObject myJson = new JSONObject();
+        myJson.put("roleId", roleId);
+        myJson.put("image", userphoto == null ? null : userphoto);
+        myJson.put("name", username == null ? null : username);
         switch (roleId) {
             case 1:
                 //总代自己的收入
                 Long myMoney = Long.valueOf(oderService.countPddOderForId(pddPid));
-                myJson.put("myMoney",myMoney);
-                myJson.put("myAgentCount",0);
-                myJson.put("myTeamCount",1);
-                myJson.put("myTeamMoney",0);
+                myJson.put("myMoney", myMoney);
+                myJson.put("myAgentCount", 0);
+                myJson.put("myTeamCount", 1);
+                myJson.put("myTeamMoney", 0);
                 //查询代理或者直属粉丝
                 List<String> lowIdList = agentDao.queryForAgentId(uid.intValue());
                 if (lowIdList == null || lowIdList.size() == 0) {
@@ -108,15 +113,15 @@ public class MemberServiceImpl implements MemberService {
                 Integer fansMoney = oderService.countPddOderForIdList(fansIdList);
                 //我的代理的所有收入
                 Long agentMoney = 0l;
-                Long agentSum=0l;
+                Long agentSum = 0l;
                 if (agentIdList == null || agentIdList.size() == 0) {
-                    myJson.put("myMoney",fansMoney+myMoney);
-                    myJson.put("myTeamCount",lowIdList.size()+1);
-                    myJson.put("myTeamMoney",fansMoney);
+                    myJson.put("myMoney", fansMoney + myMoney);
+                    myJson.put("myTeamCount", lowIdList.size() + 1);
+                    myJson.put("myTeamMoney", fansMoney);
                     return myJson;
                 }
 
-                myJson.put("myAgentCount",agentIdList.size());
+                myJson.put("myAgentCount", agentIdList.size());
                 for (Userinfo userio : agentIdList) {
                     Long agentId = userio.getId();
                     String agentPddId = userio.getPddpid();
@@ -130,31 +135,31 @@ public class MemberServiceImpl implements MemberService {
                     var uidList = agentDao.queryForAgentId(agentId.intValue());
 
                     if (uidList == null || uidList.size() == 0) {
-                        agentMoney += ((lowAgentMoney * myScore)/100);
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
                         continue;
                     }
-                    agentSum+=uidList.size();
+                    agentSum += uidList.size();
                     //查询出粉丝的PID集合
                     List<String> userinfos = userinfoMapper.selectIn(uidList);
-                    if (userinfos == null||userinfos.size()==0) {
-                        agentMoney += ((lowAgentMoney * myScore)/100);
+                    if (userinfos == null || userinfos.size() == 0) {
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
                         continue;
                     }
                     //查询出粉丝贡献的订单收入
                     Integer fans = oderService.countPddOderForIdList(userinfos);
                     if (fans == null) {
-                        agentMoney += ((lowAgentMoney * myScore)/100);
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
                         continue;
                     }
 
-                    agentMoney += ((lowAgentMoney + fans)*myScore)/100;
+                    agentMoney += ((lowAgentMoney + fans) * myScore) / 100;
 
 
                 }
-                Long allMoney= myMoney + fansMoney + agentMoney;
-                myJson.put("myMoney",allMoney);
-                myJson.put("myTeamCount",userinfosList.size()+agentSum+1);
-                myJson.put("myTeamMoney",allMoney-myMoney);
+                Long allMoney = myMoney + fansMoney + agentMoney;
+                myJson.put("myMoney", allMoney);
+                myJson.put("myTeamCount", userinfosList.size() + agentSum + 1);
+                myJson.put("myTeamMoney", allMoney - myMoney);
 
 
                 return myJson;
@@ -164,22 +169,22 @@ public class MemberServiceImpl implements MemberService {
                 //查询我的订单收入
                 var temp = oderService.countPddOderForId(pddPid);
                 var meIncome = temp == null ? 0 : temp;
-                myJson.put("myMoney",meIncome);
-                myJson.put("myTeamCount",1);
-                myJson.put("myTeamMoney",0);
+                myJson.put("myMoney", meIncome);
+                myJson.put("myTeamCount", 1);
+                myJson.put("myTeamMoney", 0);
                 //查询我的下级粉丝
                 var uidList = agentDao.queryForAgentId(uid.intValue());
-                if (uidList == null|| uidList.size() == 0) {
+                if (uidList == null || uidList.size() == 0) {
                     return myJson;
                 }
                 //查询出粉丝的PID集合
                 List<String> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
                 if (userinfos == null || uidList.size() == 0) {
-                    myJson.put("myTeamCount",uidList.size()+1);
+                    myJson.put("myTeamCount", uidList.size() + 1);
                     return myJson;
                 }
-                myJson.put("myTeamCount",uidList.size()+1);
+                myJson.put("myTeamCount", uidList.size() + 1);
                 //查询出粉丝贡献的订单收入
                 var fans = oderService.countPddOderForIdList(userinfos);
                 if (fans == null) {
@@ -187,57 +192,126 @@ public class MemberServiceImpl implements MemberService {
 
                 }
                 Integer all = meIncome + fans;
-                myJson.put("myMoney",all);
-                myJson.put("myTeamMoney",all-meIncome);
+                myJson.put("myMoney", all);
+                myJson.put("myTeamMoney", all - meIncome);
 
                 return myJson;
             //粉丝
             case 3:
                 break;
             default:
-                logger.warn("switch穿透"+System.currentTimeMillis());
+                logger.warn("switch穿透" + System.currentTimeMillis());
                 break;
         }
         return null;
     }
 
+    /**
+     * 获取我的团队直属会员和直属代理
+     *
+     * @param userId
+     * @param pageParam 分页参数
+     * @return
+     */
     @Override
-    public JSONObject getMyTeam(Long uid, Integer i, Integer i1) {
-
-        getMyMoney(uid);
-        return null;
-    }
-
-    @Override
-    public JSONObject getMyTeam(long l, PageParam pageParam) {
-        List<Long> agents = agentDao.queryForUserIdLimt(l,1,2);
-        List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
-        List<JSONObject> jsonList = new ArrayList<>(40);
-
-        for (Userinfo us:userList)
-        {
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("roleId",us.getRoleId());
-            jsonObject.put("username",us.getUsername());
-            jsonObject.put("image",us.getUserphoto());
-            jsonObject.put("id",us.getId());
-            jsonObject.put("chidSum",0);
-            if (us.getRoleId()==2){
-                Integer chidSum = agentDao.countRecommd(us.getId());
-                jsonObject.put("chidSum",chidSum);
-            }
-            jsonList.add(jsonObject);
+    public JSONObject getMyTeam(Long userId, PageParam pageParam) {
+        if (pageParam == null) {
+            return null;
         }
-        logger.warn(agents.toString());
-        return null;
+        List<Long> agents = new ArrayList<>(40);
+        JSONObject data = new JSONObject();
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
+        if (userinfo.getRoleId()==1){
+            Integer sum = agentDao.queryForUserIdCount(userId);
+            //查询一级代理和直属粉丝
+            agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
+            if (agents==null||agents.size()==0){
+                data.put("pageCount", 0);
+                data.put("pageData",new JSONArray());
+                return data;
+            }
+            List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
+            data.put("pageCount", sum);
+            JSONArray jsonArray = new JSONArray();
+            for (Userinfo us : userList) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("roleId", us.getRoleId());
+                jsonObject.put("username", us.getUsername());
+                jsonObject.put("image", us.getUserphoto());
+                jsonObject.put("id", us.getId());
+                jsonObject.put("chidSum", 0);
+                if (us.getRoleId() == 2) {
+                    Integer chidSum = agentDao.countRecommd(us.getId());
+                    jsonObject.put("chidSum", chidSum);
+                }
+                jsonArray.add(jsonObject);
+            }
+            data.put("pageData", jsonArray);
+            return data;
+        }
+        Integer sum = agentDao.queryForUserIdCount(userId);
+        //查询粉丝
+        agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
+        if (agents==null||agents.size()==0){
+            data.put("pageCount", 0);
+            data.put("pageData",new JSONArray());
+            return data;
+        }
+        List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
+        data.put("pageCount", sum);
+        JSONArray jsonArray = new JSONArray();
+        for (Userinfo us : userList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", us.getUsername());
+            jsonObject.put("image", us.getUserphoto());
+            jsonObject.put("id", us.getId());
+            jsonObject.put("joinTime", us.getCreatetime());
+            jsonArray.add(jsonObject);
+        }
+        data.put("pageData", jsonArray);
+        return data;
+
     }
 
+    /**
+     * 总代的查找代理的会员下级
+     *
+     * @param userId
+     * @param pageParam
+     * @return
+     */
     @Override
-    public JSONObject getMyNoFans(long l, PageParam pageParam) {
-        List<Agent> idList = agentDao.countRecommdToSum(l, 1, 1);
+    public JSONObject getMyNoFans(Long userId, PageParam pageParam) {
+//        List<String> agList=new ArrayList<>(40);
+//        List<String> uidList=new ArrayList<>(40);
+        Integer sum = agentDao.countNoMyFansSum(userId);
+        JSONObject data=new JSONObject();
+        data.put("sum",sum);
+        if (sum==0||sum==null){
+            data.put("data",new JSONArray());
+            return data;
+        }
+        List<Agent> idList = agentDao.countNoMyFans(userId, pageParam.getStartRow(), pageParam.getPageSize());
+//        for (Agent uid : idList) {
+//            agList.add(String.valueOf(uid.getAgentId()));
+//            uidList.add(String.valueOf(uid.getUserId()));
+//        }
+        JSONArray jsonArray=new JSONArray();
 
-        JSONObject o = (JSONObject) JSONObject.toJSON(idList);
-        return o;
+//        List<Userinfo> uiList = userinfoMapper.selectInFans(uidList);
+//        List<Userinfo> pidList = userinfoMapper.selectInFans(agList);
+        for (int i=0;i<idList.size();i++){
+            Userinfo agent = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getAgentId()));
+            Userinfo uid = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getUserId()));
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("username",agent.getUsername());
+            jsonObject.put("pidname",uid.getUsername());
+            jsonObject.put("image",uid.getUserphoto());
+            jsonObject.put("uid",uid.getId());
+            jsonArray.add(jsonObject);
+        }
+        data.put("data",jsonArray);
+        return data;
     }
 
 //

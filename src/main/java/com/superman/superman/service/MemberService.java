@@ -11,8 +11,7 @@ String aaaa();
 String bbb();
 String ccc();
     JSONObject getMyMoney(Long uid);
-JSONObject getMyTeam(Long uid, Integer i, Integer i1);
 
-    JSONObject getMyTeam(long l, PageParam pageParam);
-    JSONObject getMyNoFans(long l, PageParam pageParam);
+    JSONObject getMyTeam(Long userId, PageParam pageParam);
+    JSONObject getMyNoFans(Long userId, PageParam pageParam);
 }

@@ -1,5 +1,6 @@
 package com.superman.superman;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
@@ -82,7 +83,7 @@ public class Supermaests {
 //        JSONObject myMoney = memberService.getMyMoney(1l);
         JSONObject myMoney = memberService.getMyNoFans(6l,gp);
 //        Integer integer = oderMapper.sumMoneyForIdToScore(0.2d,"4165519_37497222");
-        log.warning(String.valueOf(myMoney));
+        log.warning(myMoney.toJSONString());
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");

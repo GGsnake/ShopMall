@@ -48,7 +48,7 @@ spring:
 
 logging:
   level:
-    com.superman.superman: DEBUG
+    com.superman.superman: INFO
   file: ./logs/core.log
   root: INFO
 

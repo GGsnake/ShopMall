@@ -4,6 +4,7 @@ spring:
     name: mysql_test
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
+    
     druid:
       #监控统计拦截的filters
       filters: stat
@@ -48,7 +49,7 @@ spring:
 
 logging:
   level:
-    com.superman.superman: DEBUG
+    com.superman.superman: debug
   file: ./logs/core.log
   root: INFO
 

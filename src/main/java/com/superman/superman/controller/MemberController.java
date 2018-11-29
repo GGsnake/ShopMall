@@ -1,5 +1,6 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.model.Oder;
@@ -36,6 +37,7 @@ public class MemberController {
     public WeikeResponse getTeam() {
         PageParam pageParam = new PageParam();
         JSONObject myTeam = memberService.getMyTeam(1l,pageParam);
+
         return WeikeResponseUtil.success(myTeam);
 
     }

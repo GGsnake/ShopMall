@@ -17,5 +17,6 @@ public class Agent {
     private Integer userId;
     private Integer agentId;
     private String agentName;
+    private String userName;
     private Date createTime;
 }

@@ -45,6 +45,8 @@ public interface UserinfoMapper {
 
     List<String>selectIn(@Param("list") List userlist);
 
+    List<Userinfo>selectInFans(@Param("list") List userlist);
+
     //TODO sql待优化
     List<Userinfo>selectInUserInfo(@Param("list") List userlist);
 

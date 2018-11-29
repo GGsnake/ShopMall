@@ -56,6 +56,17 @@
     </if>
   </select>
 
+  <select id="selectInFans" resultType="com.superman.superman.model.Userinfo">
+    SELECT id,userName,userPhone
+    FROM  userinfo
+    <if test="list!= null">
+      WHERE id in
+      <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+
 
   <select id="selectInUserInfo" resultType="com.superman.superman.model.Userinfo">
     SELECT     <include refid="Base_Column_List" />
