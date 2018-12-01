@@ -62,7 +62,6 @@ public class HttpRequest {
 	 * @throws IOException
 	 */
 	public static String sendPost(String url, Map<String, String> params) throws IOException {
-		System.out.println(url);
 		String result=null;
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(30000).build();//.setSocketTimeout(120000)
@@ -80,7 +79,6 @@ public class HttpRequest {
 			httpPost.setEntity(new UrlEncodedFormEntity(formparams, encode));
 			CloseableHttpResponse response = httpclient.execute(httpPost);
 			try {
-				System.out.println(response.getStatusLine());
 				org.apache.http.HttpEntity entity = response.getEntity();
 				if(entity!=null){
 					result = EntityUtils.toString(response.getEntity(),encode);

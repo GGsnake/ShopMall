@@ -58,7 +58,24 @@
       </foreach>
     </if>
      and order_status in ('1','2')
+  </select> <select id="selectPidInOderTime" resultType="java.lang.Integer"  >
+    select
+    SUM(promotion_amount)
+    from oder
+    <if test="list!= null">
+      WHERE p_id in
+      <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="startTime!= null">
+        and order_create_time between #{startTime} and #{endTime}
+    </if>
+
+     and order_status in ('1','2')
   </select>
+
+
   <select id="selectAll" resultMap="BaseResultMap" parameterType="com.superman.superman.model.Oder" >
     <!--
       WARNING - @mbggenerated

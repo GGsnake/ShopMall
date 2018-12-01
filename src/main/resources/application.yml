@@ -6,4 +6,4 @@ pdd_pro:
   pdd-router-url: https://gw-api.pinduoduo.com/api/router
 spring:
   profiles:
-    active: dev
+    active: prod

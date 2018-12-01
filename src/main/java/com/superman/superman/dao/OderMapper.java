@@ -66,4 +66,8 @@ public interface OderMapper {
     Integer selectPidIn(@Param("list") List list);
 
 
+
+    Integer selectPidInOderTime(@Param("list") List list,@Param("startTime")Long startTime,@Param("endTime")Long endTime);
+
+
 }

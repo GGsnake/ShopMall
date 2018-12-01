@@ -1,5 +1,8 @@
 package com.superman.superman.service.impl;
 
+import com.pdd.pop.sdk.http.PopHttpClient;
+import com.pdd.pop.sdk.http.api.request.PddOrderListGetRequest;
+import com.pdd.pop.sdk.http.api.response.PddOrderListGetResponse;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.model.Oder;
 import com.superman.superman.service.OderService;
@@ -62,7 +65,34 @@ public class OderServiceImpl implements OderService {
 
     @Override
     public void queryTbOder(@NonNull String id) {
+        String clientId = "your clientId";
+        String clientSecret = "your clientSecret";
+        String code = "your code";
+        String accessToken = "your accessToken";
+        String refreshToken = "your refreshToken";
+        PopHttpClient client = new PopHttpClient("http://zeus-api.order.a.test.yiran.com/api/router", clientId, clientSecret);
+        PddOrderListGetRequest request = new PddOrderListGetRequest();
+        request.setAccessToken(accessToken);
+        request.setRefundStatus(1);
+        request.setOrderStatus(1);
+        request.setStartConfirmAt(1538040111L);
+        request.setEndConfirmAt(1538050447L);
+        request.setPage(1);
+        request.setPageSize(1);
+
+        try {
+            PddOrderListGetResponse response = (PddOrderListGetResponse)client.syncInvoke(request);
+            client.generateAccessToken(code);
+            client.refreshAccessToken(refreshToken);
+        } catch (Exception var11) {
+            System.out.println(var11);
+        }
 
 
+    }
+
+    @Override
+    public Integer coutOderMoneyForTime(List<String> pid, Long star, Long end) {
+        return oderMapper.selectPidInOderTime(pid,star,end);
     }
 }

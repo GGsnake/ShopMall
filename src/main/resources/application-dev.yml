@@ -4,7 +4,7 @@ spring:
     name: mysql_test
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
-    
+
     druid:
       #监控统计拦截的filters
       filters: stat
@@ -63,4 +63,7 @@ mybatis:
 
 juanhuang:
   range: 90
+eureka:
+  client:
+    eureka-server-u-r-l-context: http://localhost:8761/eureka/
 

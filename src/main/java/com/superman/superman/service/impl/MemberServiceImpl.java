@@ -10,6 +10,7 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.service.UserApiService;
+import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.PageParam;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -39,26 +40,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private UserApiService userApiService;
-
-    @Override
-    public String aaaa() {
-        return null;
-    }
-
-    @Override
-    public String bbb() {
-        return null;
-    }
-
-    @Override
-    public String ccc() {
-        Long uid = 0l;
-        var t1 = new Test();
-
-        t1.setAgentId(uid.intValue());
-//        pddDao.selectRchid(t1);
-        return null;
-    }
 
     /**
      * 获取预估收入
@@ -221,13 +202,13 @@ public class MemberServiceImpl implements MemberService {
         List<Long> agents = new ArrayList<>(40);
         JSONObject data = new JSONObject();
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-        if (userinfo.getRoleId()==1){
+        if (userinfo.getRoleId() == 1) {
             Integer sum = agentDao.queryForUserIdCount(userId);
             //查询一级代理和直属粉丝
             agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
-            if (agents==null||agents.size()==0){
+            if (agents == null || agents.size() == 0) {
                 data.put("pageCount", 0);
-                data.put("pageData",new JSONArray());
+                data.put("pageData", new JSONArray());
                 return data;
             }
             List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
@@ -252,9 +233,9 @@ public class MemberServiceImpl implements MemberService {
         Integer sum = agentDao.queryForUserIdCount(userId);
         //查询粉丝
         agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
-        if (agents==null||agents.size()==0){
+        if (agents == null || agents.size() == 0) {
             data.put("pageCount", 0);
-            data.put("pageData",new JSONArray());
+            data.put("pageData", new JSONArray());
             return data;
         }
         List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
@@ -282,37 +263,85 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public JSONObject getMyNoFans(Long userId, PageParam pageParam) {
-//        List<String> agList=new ArrayList<>(40);
-//        List<String> uidList=new ArrayList<>(40);
+
         Integer sum = agentDao.countNoMyFansSum(userId);
-        JSONObject data=new JSONObject();
-        data.put("sum",sum);
-        if (sum==0||sum==null){
-            data.put("data",new JSONArray());
+        JSONObject data = new JSONObject();
+        data.put("sum", sum);
+        if (sum == 0 || sum == null) {
+            data.put("data", new JSONArray());
             return data;
         }
         List<Agent> idList = agentDao.countNoMyFans(userId, pageParam.getStartRow(), pageParam.getPageSize());
-//        for (Agent uid : idList) {
-//            agList.add(String.valueOf(uid.getAgentId()));
-//            uidList.add(String.valueOf(uid.getUserId()));
-//        }
-        JSONArray jsonArray=new JSONArray();
 
-//        List<Userinfo> uiList = userinfoMapper.selectInFans(uidList);
-//        List<Userinfo> pidList = userinfoMapper.selectInFans(agList);
-        for (int i=0;i<idList.size();i++){
+        JSONArray jsonArray = new JSONArray();
+
+        for (int i = 0; i < idList.size(); i++) {
             Userinfo agent = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getAgentId()));
             Userinfo uid = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getUserId()));
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("username",agent.getUsername());
-            jsonObject.put("pidname",uid.getUsername());
-            jsonObject.put("image",uid.getUserphoto());
-            jsonObject.put("uid",uid.getId());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", agent.getUsername());
+            jsonObject.put("pidname", uid.getUsername());
+            jsonObject.put("image", uid.getUserphoto());
+            jsonObject.put("uid", uid.getId());
             jsonArray.add(jsonObject);
         }
-        data.put("data",jsonArray);
+        data.put("data", jsonArray);
         return data;
     }
+
+    @Override
+    public JSONObject queryMemberDetail(Long userId) {
+
+        Long todayTime = EveryUtils.getToday();
+        Long todayEndTime = todayTime + 86400;
+        Long yesDayTime = todayTime - 86400;
+        Long yesDayEndTime = todayTime - 1;
+        //本月第一天
+        Long timesMonthmorning = EveryUtils.getTimesMonthmorning();
+        //本月最后一天
+        Long timesMonthmorningLast = EveryUtils.getTimesMonthmorningLast();
+        //上月第一天
+        Long lastMonthTime = EveryUtils.getTopStar();
+        //上月最后一天
+        Long lastMonthTimeEnd = EveryUtils.getEnd();
+        JSONObject data=new JSONObject();
+
+
+        var pidList=new ArrayList<String>(30);
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
+        String pddpid = userinfo.getPddpid();
+        pidList.add(pddpid);
+        Integer todayMoney=oderService.coutOderMoneyForTime(pidList,todayTime,todayEndTime);
+        Integer yesDayMoney=oderService.coutOderMoneyForTime(pidList,yesDayTime,yesDayEndTime);
+        Integer yesMonthMoneyvar=oderService.coutOderMoneyForTime(pidList,timesMonthmorning,timesMonthmorningLast);
+        Integer yesLastMonthMoney=oderService.coutOderMoneyForTime(pidList,lastMonthTime,lastMonthTimeEnd);
+        data.put("today",todayMoney);
+        data.put("yesday",yesDayMoney);
+        data.put("yesMonday",yesMonthMoneyvar);
+        data.put("lastMonday",yesLastMonthMoney);
+        return data;
+    }
+//
+//    public JSONObject queryMemberDetail(@NonNull Long userId,@NonNull Integer type) {
+//        if (type==2){
+//
+//        }
+//        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
+//        JSONObject data=new JSONObject();
+//        List<Agent> agents = agentDao.queryForUserId(userId.intValue());
+//        if (agents==null||agents.size()==0){
+//            return data;
+//        }
+//        Agent agent = agents.get(0);
+//        agent
+//        if (userinfo.getRoleId()==2){
+//            agentDao.
+//            data.put("username",userinfo.getUsername());
+//            data.put("username",userinfo.getUsername());
+//            data.put("username",userinfo.getUsername());
+//        }
+//        return null;
+//    }
 
 //
 //    @Override

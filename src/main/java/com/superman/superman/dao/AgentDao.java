@@ -44,6 +44,11 @@ public interface AgentDao {
     @Select("SELECT count(userId)FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
      Integer countRecommdToIntCount(@Param("id") Long id);
 
+    @Select("SELECT * FROM agent WHERE agentId = #{id} and status=0")
+    List<Agent> queryForAgentList(Integer id);
+    @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
+    List<Agent> queryForUserList(Integer id);
+
     @Select("SELECT userId FROM agent WHERE agentId = #{id} and status=0")
     List<String> queryForAgentId(Integer id);
     @Insert("INSERT INTO agent(agentId, userId,crateTime) VALUES(#{agentId}, #{userId},now()")

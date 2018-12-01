@@ -1,6 +1,5 @@
 package com.superman.superman.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -50,6 +49,6 @@ public interface PddApiService {
      * @param opt_id
      * @return
      */
-    JSONArray getPddGoodList(Long uid, Integer pagesize, Integer page, Integer sort_type, Boolean with_coupon, String keyword, Long opt_id,Integer merchant_type);
+    JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, Integer sort_type, Boolean with_coupon, String keyword, Long opt_id, Integer merchant_type);
 
 }

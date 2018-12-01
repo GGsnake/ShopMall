@@ -51,10 +51,11 @@ public class MemberController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
     })
+    @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request)  {
-        Long uid = (Long) request.getAttribute("uid");
-        JSONObject myMoney = memberService.getMyMoney(uid);
+        String uid = (String) request.getAttribute("uid");
+        JSONObject myMoney = memberService.getMyMoney(Long.valueOf(uid));
         return WeikeResponseUtil.success(myMoney);
     }
 

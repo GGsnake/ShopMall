@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.PageParam;
@@ -58,21 +59,21 @@ public class TeamController {
         JSONObject query = memberService.getMyNoFans(Long.valueOf(uid),pageParam1);
         return WeikeResponseUtil.success(query);
     }
-   @ApiOperation(value = "查看会员详情")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "112", required = true, dataType = "Long"),
-    })
-    @LoginRequired
-    @PostMapping("/myFans")
-    public WeikeResponse getMyFansNoMe(HttpServletRequest request,Long userId) {
-
-        PageParam pageParam1=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-
-        if (uid)
-        JSONObject query = memberService.getMyNoFans(Long.valueOf(uid),pageParam1);
-        return WeikeResponseUtil.success(query);
-    }
+//   @ApiOperation(value = "查看会员详情")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "112", required = true, dataType = "Long"),
+//    })
+//    @LoginRequired
+//    @PostMapping("/detail")
+//    public WeikeResponse detail(HttpServletRequest request,Long userId) {
+//        //TODO 权限待校验
+//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+//
+//
+//        Userinfo query = memberService.queryMemberDetail(userId);
+//
+//        return WeikeResponseUtil.success(query);
+//    }
 
 
 }
