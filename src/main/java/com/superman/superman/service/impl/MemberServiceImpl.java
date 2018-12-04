@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Agent;
+import com.superman.superman.model.Oder;
 import com.superman.superman.model.Test;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
@@ -20,8 +21,7 @@ import org.springframework.stereotype.Service;
 import lombok.var;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liujupeng on 2018/11/8.
@@ -306,20 +306,127 @@ public class MemberServiceImpl implements MemberService {
         Long lastMonthTimeEnd = EveryUtils.getEnd();
         JSONObject data=new JSONObject();
 
+        //今日贡献佣金
+        Long todayMoneyCount=0l;
+        //昨日贡献佣金
+        Long yesDayMoneyCount=0l;
+        //本月贡献佣金
+        Long yesMonthMoneyvarCount=0l;
+        //上月贡献佣金
+        Long yesLastMonthMoneyCount=0l;
+
+        //本月订单数量
+        //本月订单数量
+        //本月订单数量
+        //本月订单数量
 
         var pidList=new ArrayList<String>(30);
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-        String pddpid = userinfo.getPddpid();
-        pidList.add(pddpid);
-        Integer todayMoney=oderService.coutOderMoneyForTime(pidList,todayTime,todayEndTime);
-        Integer yesDayMoney=oderService.coutOderMoneyForTime(pidList,yesDayTime,yesDayEndTime);
-        Integer yesMonthMoneyvar=oderService.coutOderMoneyForTime(pidList,timesMonthmorning,timesMonthmorningLast);
-        Integer yesLastMonthMoney=oderService.coutOderMoneyForTime(pidList,lastMonthTime,lastMonthTimeEnd);
-        data.put("today",todayMoney);
-        data.put("yesday",yesDayMoney);
-        data.put("yesMonday",yesMonthMoneyvar);
-        data.put("lastMonday",yesLastMonthMoney);
-        return data;
+        if (userinfo.getRoleId()==3){
+            String pddpid = userinfo.getPddpid();
+            pidList.add(pddpid);
+            List<Oder> todayMoney=oderService.coutOderMoneyForTime(pidList,todayTime,todayEndTime);
+            if (todayMoney.size()!=0){
+                for (int i = 0; i < todayMoney.size(); i++) {
+                    todayMoneyCount+=todayMoney.get(i).getPromotionAmount();
+                }
+
+            }
+
+            List<Oder> yesDayMoney=oderService.coutOderMoneyForTime(pidList,yesDayTime,yesDayEndTime);
+            if (yesDayMoney.size()!=0){
+                for (int i = 0; i < yesDayMoney.size(); i++) {
+                    yesDayMoneyCount+=yesDayMoney.get(i).getPromotionAmount();
+
+                }
+            }
+
+            List<Oder> yesMonthMoneyvar=oderService.coutOderMoneyForTime(pidList,timesMonthmorning,timesMonthmorningLast);
+            if (yesMonthMoneyvar.size()!=0){
+                for (int i = 0; i < yesMonthMoneyvar.size(); i++) {
+                    yesMonthMoneyvarCount+= yesMonthMoneyvar.get(i).getPromotionAmount();
+
+                }
+            }
+
+            List<Oder> yesLastMonthMoney=oderService.coutOderMoneyForTime(pidList,lastMonthTime,lastMonthTimeEnd);
+            if (yesLastMonthMoney.size()!=0){
+                for (int i = 0; i < yesLastMonthMoney.size(); i++) {
+                    yesLastMonthMoneyCount+= yesLastMonthMoney.get(i).getPromotionAmount();
+
+                }
+            }
+
+            data.put("today",todayMoneyCount);
+            data.put("todayOder",todayMoney.size());
+            data.put("yesday",yesDayMoneyCount);
+            data.put("yesdayOder",yesDayMoney.size());
+            data.put("yesMonday",yesMonthMoneyvarCount);
+            data.put("yesMondayOder",yesMonthMoneyvar.size());
+            data.put("lastMonday",yesLastMonthMoneyCount);
+            data.put("lastMondayOder",yesLastMonthMoney.size());
+            return data;
+        }
+        if (userinfo.getRoleId()==2) {
+            HashSet oderOpen=new HashSet();
+            HashSet oderOpen1=new HashSet();
+            HashSet oderOpen2=new HashSet();
+            HashSet oderOpen3=new HashSet();
+
+            String pddpid = userinfo.getPddpid();
+            pidList.add(pddpid);
+            List<String> strings = agentDao.queryForAgentId(userId.intValue());
+            List<Userinfo> userinfos = userinfoMapper.selectInFans(strings);
+            for (Userinfo ufo:userinfos){
+                pidList.add(ufo.getPddpid());
+            }
+            List<Oder> todayMoney=oderService.coutOderMoneyForTime(pidList,todayTime,todayEndTime);
+            if (todayMoney.size()!=0){
+                for (int i = 0; i < todayMoney.size(); i++) {
+                    todayMoneyCount+=todayMoney.get(i).getPromotionAmount();
+                    oderOpen.add(todayMoney.get(i).getpId());
+                }
+            }
+
+            List<Oder> yesDayMoney=oderService.coutOderMoneyForTime(pidList,yesDayTime,yesDayEndTime);
+            if (yesDayMoney.size()!=0){
+                for (int i = 0; i < yesDayMoney.size(); i++) {
+                    yesDayMoneyCount+=yesDayMoney.get(i).getPromotionAmount();
+                    oderOpen1.add(yesDayMoney.get(i).getpId());
+                }
+            }
+
+            List<Oder> yesMonthMoneyvar=oderService.coutOderMoneyForTime(pidList,timesMonthmorning,timesMonthmorningLast);
+            if (yesMonthMoneyvar.size()!=0){
+                for (int i = 0; i < yesMonthMoneyvar.size(); i++) {
+                    yesMonthMoneyvarCount+= yesMonthMoneyvar.get(i).getPromotionAmount();
+                    oderOpen2.add(yesMonthMoneyvar.get(i).getpId());
+                }
+            }
+
+            List<Oder> yesLastMonthMoney=oderService.coutOderMoneyForTime(pidList,lastMonthTime,lastMonthTimeEnd);
+            if (yesLastMonthMoney.size()!=0){
+                for (int i = 0; i < yesLastMonthMoney.size(); i++) {
+                    yesLastMonthMoneyCount+= yesLastMonthMoney.get(i).getPromotionAmount();
+                    oderOpen3.add(yesLastMonthMoney.get(i).getpId());
+                }
+            }
+
+            data.put("today",todayMoneyCount);
+            data.put("todayOder",todayMoney.size());
+            data.put("todayOpen",oderOpen.size());
+            data.put("yesday",yesDayMoneyCount);
+            data.put("yesdayOder",yesDayMoney.size());
+            data.put("yesdayOpen",oderOpen1.size());
+            data.put("yesMonday",yesMonthMoneyvarCount);
+            data.put("yesMondayOder",yesMonthMoneyvar.size());
+            data.put("yesMondayOpen",oderOpen2.size());
+            data.put("lastMonday",yesLastMonthMoneyCount);
+            data.put("lastMondayOder",yesLastMonthMoney.size());
+            data.put("lastMondayOpen",oderOpen3.size());
+            return data;
+        }
+        return null;
     }
 //
 //    public JSONObject queryMemberDetail(@NonNull Long userId,@NonNull Integer type) {

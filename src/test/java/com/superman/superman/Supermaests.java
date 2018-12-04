@@ -2,11 +2,6 @@ package com.superman.superman;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.pdd.pop.sdk.http.PopHttpClient;
-import com.pdd.pop.sdk.http.api.request.PddDdkOrderListIncrementGetRequest;
-import com.pdd.pop.sdk.http.api.request.PddOrderListGetRequest;
-import com.pdd.pop.sdk.http.api.response.PddDdkOrderListIncrementGetResponse;
-import com.pdd.pop.sdk.http.api.response.PddOrderListGetResponse;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
@@ -14,6 +9,12 @@ import com.superman.superman.model.*;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.PageParam;
+import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.domain.NTbkItem;
+import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.response.TbkItemGetResponse;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -47,6 +48,8 @@ public class Supermaests {
     @Autowired
     OderService oderService;
     @Autowired
+    TaoBaoApiService taoBaoApiService;
+    @Autowired
     OderMapper oderMapper;
 //    @Autowired
 //    AgentDao agentDao;
@@ -60,7 +63,7 @@ public class Supermaests {
 //
 //        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
 //        log.warning(String.valueOf(integer));
-        JSONObject jsonObject = memberService.queryMemberDetail(6l);
+        JSONObject jsonObject = memberService.queryMemberDetail(4l);
         log.warning(jsonObject.toJSONString());
 //        var a=new ArrayList<>();
 //        a.add(1);
@@ -91,22 +94,25 @@ public class Supermaests {
     }
     @Test
     public void pddoder(){
-        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
-        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
-        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
-        PddDdkOrderListIncrementGetRequest request = new PddDdkOrderListIncrementGetRequest();
-        request.setEndUpdateTime(1542380831l);
-        request.setStartUpdateTime(1542298031l);
-        request.setPage(1);
-        request.setPageSize(10);
+        JSONObject jsonObject = taoBaoApiService.serachGoods("ab", null, null, 1l, 10l, null, null);
 
-        try {
-            PddDdkOrderListIncrementGetResponse response = client.syncInvoke(request);
-            System.out.println(response.getOrderListGetResponse().getOrderList().get(0).getGoodsName());
-
-        } catch (Exception var11) {
-            System.out.println(var11);
-        }
+        log.warning(jsonObject.toJSONString());
+//        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
+//        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
+//        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
+//        PddDdkOrderListIncrementGetRequest request = new PddDdkOrderListIncrementGetRequest();
+//        request.setEndUpdateTime(1542380831l);
+//        request.setStartUpdateTime(1542298031l);
+//        request.setPage(1);
+//        request.setPageSize(10);
+//
+//        try {
+//            PddDdkOrderListIncrementGetResponse response = client.syncInvoke(request);
+//            System.out.println(response.getOrderListGetResponse().getOrderList().get(0).getGoodsName());
+//
+//        } catch (Exception var11) {
+//            System.out.println(var11);
+//        }
 
 //        JSONObject myMoney = memberService.getMyMoney(1l);
 //        JSONObject myMoney = memberService.getMyNoFans(6l,gp);

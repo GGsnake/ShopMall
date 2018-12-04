@@ -57,7 +57,7 @@
   </select>
 
   <select id="selectInFans" resultType="com.superman.superman.model.Userinfo">
-    SELECT id,userName,userPhone
+    SELECT id,userName,userPhone,pddPid
     FROM  userinfo
     <if test="list!= null">
       WHERE id in

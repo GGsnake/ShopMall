@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.service.MemberService;
+import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.Result;
@@ -29,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 public class ShopGoodController {
     @Autowired
     private PddApiServiceImpl pddApiService;
+    @Autowired
+    private TaoBaoApiService taoBaoApiService;
     @Autowired
     private MemberService memberService;
     static final String SERVER_URL = "https://api.jd.com/routerjson";
@@ -77,6 +80,8 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(pddGoodList);
         }
         if (type == 1) {
+            JSONObject jsonObject = taoBaoApiService.serachGoods(keyword, null, true, page.longValue(), pagesize.longValue(), null, null);
+            return WeikeResponseUtil.success(jsonObject);
 //
 //            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
 //            UnionThemeGoodsServiceQueryCouponGoodsResponse response;

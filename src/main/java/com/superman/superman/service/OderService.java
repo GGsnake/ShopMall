@@ -15,6 +15,6 @@ public interface OderService {
     Integer countPddOderForId(String id);
     Integer countPddOderForIdList(List list);
     void  queryTbOder(String id);
-    Integer  coutOderMoneyForTime(List<String> pid,Long star,Long end);
+    List<Oder> coutOderMoneyForTime(List<String> pid, Long star, Long end);
 
 }
