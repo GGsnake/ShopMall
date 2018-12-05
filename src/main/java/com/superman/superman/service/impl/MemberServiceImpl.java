@@ -292,6 +292,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public JSONObject queryMemberDetail(Long userId) {
 
+        JSONObject data=new JSONObject();
         Long todayTime = EveryUtils.getToday();
         Long todayEndTime = todayTime + 86400;
         Long yesDayTime = todayTime - 86400;
@@ -304,7 +305,6 @@ public class MemberServiceImpl implements MemberService {
         Long lastMonthTime = EveryUtils.getTopStar();
         //上月最后一天
         Long lastMonthTimeEnd = EveryUtils.getEnd();
-        JSONObject data=new JSONObject();
 
         //今日贡献佣金
         Long todayMoneyCount=0l;
@@ -322,6 +322,7 @@ public class MemberServiceImpl implements MemberService {
 
         var pidList=new ArrayList<String>(30);
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
+        //判断是粉丝
         if (userinfo.getRoleId()==3){
             String pddpid = userinfo.getPddpid();
             pidList.add(pddpid);
@@ -365,14 +366,18 @@ public class MemberServiceImpl implements MemberService {
             data.put("yesMondayOder",yesMonthMoneyvar.size());
             data.put("lastMonday",yesLastMonthMoneyCount);
             data.put("lastMondayOder",yesLastMonthMoney.size());
+            data.put("agentSum",0);
+            data.put("empMoney",0);
+            data.put("agentDate",0);
             return data;
         }
+        //判断是代理
         if (userinfo.getRoleId()==2) {
             HashSet oderOpen=new HashSet();
             HashSet oderOpen1=new HashSet();
             HashSet oderOpen2=new HashSet();
             HashSet oderOpen3=new HashSet();
-
+            List<Agent> agents = agentDao.queryForAgentList(userId.intValue());
             String pddpid = userinfo.getPddpid();
             pidList.add(pddpid);
             List<String> strings = agentDao.queryForAgentId(userId.intValue());
@@ -424,6 +429,9 @@ public class MemberServiceImpl implements MemberService {
             data.put("lastMonday",yesLastMonthMoneyCount);
             data.put("lastMondayOder",yesLastMonthMoney.size());
             data.put("lastMondayOpen",oderOpen3.size());
+            data.put("agentSum",strings.size());
+            data.put("empMoney",userinfo.getScore());
+            data.put("agentDate",agents.get(0).getCreateTime());
             return data;
         }
         return null;
