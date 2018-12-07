@@ -12,8 +12,8 @@ spring:
       url: jdbc:mysql://127.0.0.1:3306/yetdwell?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       #      url: jdbc:mysql://121.201.46.206:3306/skch?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: root
-#      password: root
-      password: gg5201314
+      password: root
+#      password: gg5201314
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1

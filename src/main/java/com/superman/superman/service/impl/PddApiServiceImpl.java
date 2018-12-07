@@ -231,6 +231,7 @@ public class PddApiServiceImpl implements PddApiService {
             Float bonus = 1f;
             JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
             for (int i = 0; i < jsonArray.size(); i++) {
+
                 JSONObject o = (JSONObject) jsonArray.get(i);
                 //佣金比率 千分比
                 Long promotion_rate = o.getLong("promotion_rate");

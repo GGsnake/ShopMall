@@ -14,7 +14,9 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.NTbkItem;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.request.TbkUatmFavoritesGetRequest;
 import com.taobao.api.response.TbkItemGetResponse;
+import com.taobao.api.response.TbkUatmFavoritesGetResponse;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -58,13 +60,25 @@ public class Supermaests {
     }
     @Test
     public void test() throws Exception {
+        final String url = "http://gw.api.taobao.com/router/rest";
+        final String appkey = "25338125";
+        final String secret = "c4d36be247e477a9d88704f022e1c514";
+
 //        var li=new ArrayList<>();
 //        li.add("4165519_37896294");
 //
 //        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
 //        log.warning(String.valueOf(integer));
-        JSONObject jsonObject = memberService.queryMemberDetail(4l);
-        log.warning(jsonObject.toJSONString());
+        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+        TbkUatmFavoritesGetRequest req = new TbkUatmFavoritesGetRequest();
+        req.setPageNo(1L);
+        req.setPageSize(20L);
+        req.setFields("favorites_title,favorites_id,type");
+        req.setType(1l);
+        TbkUatmFavoritesGetResponse rsp = client.execute(req);
+        System.out.println(rsp.getBody());
+//        JSONObject jsonObject = memberService.queryMemberDetail(4l);
+//        log.warning(jsonObject.toJSONString());
 //        var a=new ArrayList<>();
 //        a.add(1);
 //        a.add(2);
@@ -83,6 +97,7 @@ public class Supermaests {
 //        for (long i=0;i<20;i++){
 //            scoreService.recordBrowse(33l,i);
 //        }
+
 //        Long aLong = scoreService.countLooks(33l);
 //        Long s = scoreService.countLooks(33l);
 //        ScoreBean scoreBean1 = new ScoreBean();

@@ -152,7 +152,6 @@ public class ShopGoodController {
     public WeikeResponse Detail(@RequestParam(value = "goodId", required = true) Integer goodId
 ) {
         JSONObject jsonObject = pddApiService.pddDetail(goodId.longValue(), "7");
-
         return WeikeResponseUtil.success(jsonObject);
     }
 
