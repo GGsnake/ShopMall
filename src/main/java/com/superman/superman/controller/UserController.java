@@ -111,9 +111,7 @@ public class UserController {
         Userinfo user = userServiceApi.queryUserByPhone(userName);
         if (user == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-
         }
-
         //获取数据库中的密码，与输入的密码加密后比对
         if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
@@ -122,7 +120,6 @@ public class UserController {
         logService.addUserLoginLog(user.getId(),request.getRemoteAddr());
         //生成一个token，保存用户登录状态
         TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
-
         return WeikeResponseUtil.success(model);
     }
     /**

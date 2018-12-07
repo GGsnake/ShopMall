@@ -63,7 +63,4 @@ mybatis:
 
 juanhuang:
   range: 90
-eureka:
-  client:
-    eureka-server-u-r-l-context: http://localhost:8761/eureka/
 
