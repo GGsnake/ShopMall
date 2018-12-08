@@ -27,7 +27,8 @@ public class TaoBaoApiService implements com.superman.superman.service.TaoBaoApi
 
         TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
         TbkItemGetRequest req = new TbkItemGetRequest();
-        req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
+        req.setFields("num_iid,title,pict_url,reserve_price,zk_final_price,item_url,volume");
+//        req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick");
         if (Keywords != null) {
             req.setQ(Keywords);
         }
@@ -45,24 +46,32 @@ public class TaoBaoApiService implements com.superman.superman.service.TaoBaoApi
         }
         JSONObject datta=new JSONObject();
         JSONArray data=new JSONArray();
-
         req.setPageNo(page_no);
         req.setPageSize(page_size);
+
         TbkItemGetResponse rsp = null;
         try {
             rsp = client.execute(req);
             List<NTbkItem> results = rsp.getResults();
             if ( results== null) {
 
-                datta.put("array",data);
+                datta.put("data",data);
                 datta.put("sum",0);
                 return datta;
             }
             for (NTbkItem nk:results){
-                data.add(JSONObject.toJSON(nk));
-
+                Float pri= Float.valueOf(nk.getReservePrice());
+                Float zkFinalPrice = Float.valueOf(nk.getZkFinalPrice());
+                JSONObject nktb=new JSONObject();
+                nktb.put("goodsId",nk.getNumIid());
+                nktb.put("volume",nk.getVolume());
+                nktb.put("imgUrl",nk.getPictUrl());
+                nktb.put("price",nk.getReservePrice());
+                nktb.put("priceAfter",nk.getZkFinalPrice());
+                nktb.put("coupe",pri-zkFinalPrice);
+                data.add(nktb);
             }
-            datta.put("array",data);
+            datta.put("data",data);
             datta.put("sum",rsp.getTotalResults());
             return datta;
         } catch (ApiException e) {

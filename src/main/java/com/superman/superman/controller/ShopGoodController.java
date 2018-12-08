@@ -65,9 +65,9 @@ public class ShopGoodController {
      */
     @ApiOperation(value = "全局搜索", notes = "全局搜索")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "平台类型", required = false, dataType = "Integer", paramType = "/Search"),
+            @ApiImplicitParam(name = "type", value = "平台类型 0拼多多 1淘宝 2京东 3 唯品会", required = false, dataType = "Integer", paramType = "/Search"),
             @ApiImplicitParam(name = "keyword", value = "关键词", required = false, dataType = "Integer"),
-            @ApiImplicitParam(name = "sort", value = "排序方式", required = false, dataType = "Integer")
+            @ApiImplicitParam(name = "sort", value = "排序方式 ", required = false, dataType = "Integer")
     })
     @PostMapping("/Search")
     public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
