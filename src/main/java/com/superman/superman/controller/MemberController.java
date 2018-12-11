@@ -59,4 +59,13 @@ public class MemberController {
         return WeikeResponseUtil.success(myMoney);
     }
 
+    @LoginRequired
+    @PostMapping("/momeny")
+    public WeikeResponse getmomeny(HttpServletRequest request)  {
+//        String uid = (String) request.getAttribute("uid");
+
+        JSONObject myMoney = memberService.getMyMoneyOf(6l);
+        return WeikeResponseUtil.success(myMoney);
+    }
+
 }

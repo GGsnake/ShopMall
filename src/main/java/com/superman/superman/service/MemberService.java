@@ -37,4 +37,12 @@ public interface MemberService {
      * @return
      */
     JSONObject queryMemberDetail(Long userId);
+
+    /**
+     *
+     * @param uid
+     * @return 查询我的待结算
+     */
+    JSONObject getMyMoneyOf(Long uid);
+
 }

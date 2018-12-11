@@ -21,7 +21,6 @@
     <result column="tbPid" property="tbpid" jdbcType="VARCHAR" />
     <result column="wphPid" property="wphpid" jdbcType="VARCHAR" />
     <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
-    <result column="updateTime" property="updatselectByPrimaryKeyetime" jdbcType="TIMESTAMP" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="roleId" property="roleId" jdbcType="INTEGER" />
 

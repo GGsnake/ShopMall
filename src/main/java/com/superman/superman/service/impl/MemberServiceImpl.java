@@ -148,9 +148,10 @@ public class MemberServiceImpl implements MemberService {
             //代理
             case 2:
                 //查询我的订单收入
+                var agentScore=user.getScore();
                 var temp = oderService.countPddOderForId(pddPid);
                 var meIncome = temp == null ? 0 : temp;
-                myJson.put("myMoney", meIncome);
+                myJson.put("myMoney", (meIncome*agentScore)/100);
                 myJson.put("myTeamCount", 1);
                 myJson.put("myTeamMoney", 0);
                 //查询我的下级粉丝
@@ -172,9 +173,10 @@ public class MemberServiceImpl implements MemberService {
                     return myJson;
 
                 }
-                Integer all = meIncome + fans;
+                // TODO
+                Integer all = ((meIncome + fans)*agentScore)/100;
                 myJson.put("myMoney", all);
-                myJson.put("myTeamMoney", all - meIncome);
+                myJson.put("myTeamMoney", (all - (meIncome*agentScore))/100);
 
                 return myJson;
             //粉丝
@@ -433,6 +435,120 @@ public class MemberServiceImpl implements MemberService {
             data.put("empMoney",userinfo.getScore());
             data.put("agentDate",agents.get(0).getCreateTime());
             return data;
+        }
+        return null;
+    }
+
+    @Override
+    public JSONObject getMyMoneyOf(Long uid) {
+        var user = userinfoMapper.selectByPrimaryKey(uid);
+        var roleId = user.getRoleId();
+        var pddPid = user.getPddpid();
+        Long myScore = 100l - user.getScore();
+        JSONObject myJson = new JSONObject();
+        switch (roleId) {
+            case 1:
+                //总代自己的收入
+                Long myMoney = Long.valueOf(oderService.countPddOderForId(pddPid));
+                //查询代理或者直属粉丝
+                List<String> lowIdList = agentDao.queryForAgentId(uid.intValue());
+                if (lowIdList == null || lowIdList.size() == 0) {
+                    return myJson;
+                }
+                //查询运营商下所有用户的详情集合
+                List<Userinfo> userinfosList = userinfoMapper.selectInUserInfo(lowIdList);
+
+                //代理用户信息列表
+                ArrayList<Userinfo> agentIdList = new ArrayList<>(80);
+                //粉丝用户信息列表
+                ArrayList<Object> fansIdList = new ArrayList<>(80);
+                for (Userinfo useId : userinfosList) {
+                    if (useId.getRoleId() == 2) {
+                        agentIdList.add(useId);
+                        continue;
+                    }
+                    fansIdList.add(useId.getPddpid());
+                }
+                //查询所有粉丝的收入
+                Integer fansMoney = oderService.countPddOderForIdList(fansIdList);
+                //我的代理的所有收入
+                Long agentMoney = 0l;
+                Long agentSum = 0l;
+                if (agentIdList == null || agentIdList.size() == 0) {
+                    myJson.put("myMoney", fansMoney + myMoney);
+                    return myJson;
+                }
+                for (Userinfo userio : agentIdList) {
+                    Long agentId = userio.getId();
+                    String agentPddId = userio.getPddpid();
+                    //根据每个代理的不同佣金比率计算我的收入
+
+
+                    Integer lowAgentMoney = oderService.countPddOderForId(agentPddId);
+
+
+                    //查询我的下级粉丝
+                    var uidList = agentDao.queryForAgentId(agentId.intValue());
+
+                    if (uidList == null || uidList.size() == 0) {
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        continue;
+                    }
+                    agentSum += uidList.size();
+                    //查询出粉丝的PID集合
+                    List<String> userinfos = userinfoMapper.selectIn(uidList);
+                    if (userinfos == null || userinfos.size() == 0) {
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        continue;
+                    }
+                    //查询出粉丝贡献的订单收入
+                    Integer fans = oderService.countPddOderForIdList(userinfos);
+                    if (fans == null) {
+                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        continue;
+                    }
+
+                    agentMoney += ((lowAgentMoney + fans) * myScore) / 100;
+
+
+                }
+                Long allMoney = myMoney + fansMoney + agentMoney;
+                myJson.put("myMoney", allMoney);
+                return myJson;
+
+            //代理
+            case 2:
+                //查询我的订单收入
+                Integer score = user.getScore();
+                var temp = oderService.countPddOderForId(pddPid);
+                var meIncome = temp == null ? 0 : temp;
+                myJson.put("myMoney", (meIncome*score)/100);
+                //查询我的下级粉丝
+                var uidList = agentDao.queryForAgentId(uid.intValue());
+                if (uidList == null || uidList.size() == 0) {
+                    return myJson;
+                }
+                //查询出粉丝的PID集合
+                List<String> userinfos = userinfoMapper.selectIn(uidList);
+                //如果粉丝没有贡献
+                if (userinfos == null || uidList.size() == 0) {
+                    return myJson;
+                }
+                //查询出粉丝贡献的订单收入
+                var fans = oderService.countPddOderForIdList(userinfos);
+                if (fans == null) {
+                    return myJson;
+                }
+                Integer all = meIncome + fans;
+                myJson.put("myMoney", (all*score)/100);
+
+                return myJson;
+            //粉丝
+            case 3:
+                break;
+            default:
+                logger.warn("switch穿透" + System.currentTimeMillis());
+                break;
         }
         return null;
     }

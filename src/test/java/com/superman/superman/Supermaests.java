@@ -137,6 +137,35 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
+    @Test
+    public void sum(){
+        JSONObject jsonObject = memberService.getMyMoney(5l);
+        log.warning(jsonObject.toJSONString());
+//        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
+//        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
+//        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
+//        PddDdkOrderListIncrementGetRequest request = new PddDdkOrderListIncrementGetRequest();
+//        request.setEndUpdateTime(1542380831l);
+//        request.setStartUpdateTime(1542298031l);
+//        request.setPage(1);
+//        request.setPageSize(10);
+//
+//        try {
+//            PddDdkOrderListIncrementGetResponse response = client.syncInvoke(request);
+//            System.out.println(response.getOrderListGetResponse().getOrderList().get(0).getGoodsName());
+//
+//        } catch (Exception var11) {
+//            System.out.println(var11);
+//        }
+
+//        JSONObject myMoney = memberService.getMyMoney(1l);
+//        JSONObject myMoney = memberService.getMyNoFans(6l,gp);
+//        Integer integer = oderMapper.sumMoneyForIdToScore(0.2d,"4165519_37497222");
+//        log.warning(myMoney.toJSONString());
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
+//        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
+    }
 
 
 
