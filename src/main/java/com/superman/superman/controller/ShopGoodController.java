@@ -38,9 +38,8 @@ public class ShopGoodController {
     static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
     static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
     static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
-//    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
+    //    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
     private final static Logger logger = LoggerFactory.getLogger(ShopGoodController.class);
-
 
 
     @Autowired
@@ -71,16 +70,16 @@ public class ShopGoodController {
     })
     @PostMapping("/Search")
     public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false)  Integer with_coupon,   @RequestParam(value = "tbsort",required = false)  String tbsort
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false) String tbsort
 
     ) {
 
-            if (type == 0) {
-                JSONObject pddGoodList = pddApiService.getPddGoodList(6l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
-                return WeikeResponseUtil.success(pddGoodList);
-            }
+        if (type == 0) {
+            JSONObject pddGoodList = pddApiService.getPddGoodList(6l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
+            return WeikeResponseUtil.success(pddGoodList);
+        }
         if (type == 1) {
-            JSONObject jsonObject = taoBaoApiService.serachGoods(keyword, null, true, page.longValue(), pagesize.longValue(), tbsort, null);
+            JSONObject jsonObject = taoBaoApiService.serachGoods(6l,keyword, null, true, page.longValue(), pagesize.longValue(), tbsort, null);
             return WeikeResponseUtil.success(jsonObject);
 //
 //            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
@@ -150,7 +149,7 @@ public class ShopGoodController {
     })
     @PostMapping("/Detail")
     public WeikeResponse Detail(@RequestParam(value = "goodId", required = true) Integer goodId
-) {
+    ) {
         JSONObject jsonObject = pddApiService.pddDetail(goodId.longValue(), "7");
         return WeikeResponseUtil.success(jsonObject);
     }

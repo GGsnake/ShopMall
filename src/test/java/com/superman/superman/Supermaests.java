@@ -109,7 +109,7 @@ public class Supermaests {
     }
     @Test
     public void pddoder(){
-        JSONObject jsonObject = taoBaoApiService.serachGoods("ab", null, null, 1l, 10l, null, null);
+        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
 
         log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
@@ -139,7 +139,9 @@ public class Supermaests {
     }
     @Test
     public void sum(){
-        JSONObject jsonObject = memberService.getMyMoney(5l);
+//        JSONObject jsonObject = memberService.getMyMoney(5l);
+//        log.warning(jsonObject.toJSONString());
+        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,null, null, null, null, null, null, null);
         log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
 //        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";

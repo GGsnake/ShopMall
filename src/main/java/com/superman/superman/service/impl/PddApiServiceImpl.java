@@ -223,13 +223,16 @@ public class PddApiServiceImpl implements PddApiService {
 
         JSONObject data = new JSONObject();
 
-        String sum = JSONObject.parseObject(res).getJSONObject("goods_search_response").getString("total_count");
-        Integer count = Integer.valueOf(sum);
-        data.put("total", count);
+
         Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo==null){
+            return null;
+        }
         if (ufo.getRoleId() == 1) {
+            JSONArray dataArray = new JSONArray();
             Float bonus = 1f;
             JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
+            Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
             for (int i = 0; i < jsonArray.size(); i++) {
 
                 JSONObject o = (JSONObject) jsonArray.get(i);
@@ -245,15 +248,28 @@ public class PddApiServiceImpl implements PddApiService {
                 Float comssion = Float.valueOf(after * promoto);
                 Integer rmb = (int) (comssion * rang);
                 Float bondList = (rmb * bonus);
-                o.put("bond", bondList);
+                JSONObject dataJson=new JSONObject();
+                dataJson.put("imgUrl",o.getString("goods_image_url"));
+                dataJson.put("volume",o.getInteger("sold_quantity"));
+                dataJson.put("goodName",o.getString("goods_name"));
+                dataJson.put("zk_money",coupon_discount);
+                dataJson.put("price",min_group_price);
+                dataJson.put("zk_price",min_group_price-coupon_discount);
+                dataJson.put("goodId",o.getLong("goods_id"));
+                dataJson.put("istmall","false");
+                dataJson.put("agent", bondList);
+                dataArray.add(dataJson);
             }
-            data.put("goodlist",jsonArray);
-
+            data.put("data",dataArray);
+            data.put("count",total_count);
             return data;
         }
         Float score = Float.valueOf(ufo.getScore()) / 100;
         Float bonus = EveryUtils.getCommission(score);
         JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
+        Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
+        JSONArray dataArray = new JSONArray();
+
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject o = (JSONObject) jsonArray.get(i);
             //佣金比率 千分比
@@ -268,9 +284,20 @@ public class PddApiServiceImpl implements PddApiService {
             Float comssion = Float.valueOf(after * promoto);
             Integer rmb = (int) (comssion * rang);
             Float bondList = (rmb * bonus);
-            o.put("bond", bondList);
+            JSONObject dataJson=new JSONObject();
+            dataJson.put("imgUrl",o.getString("goods_image_url"));
+            dataJson.put("volume",o.getInteger("sold_quantity"));
+            dataJson.put("goodName",o.getString("goods_name"));
+            dataJson.put("zk_money",coupon_discount);
+            dataJson.put("price",min_group_price);
+            dataJson.put("zk_price",min_group_price-coupon_discount);
+            dataJson.put("goodId",o.getLong("goods_id"));
+            dataJson.put("istmall","false");
+            dataJson.put("agent", bondList);
+            dataArray.add(dataJson);
         }
-        data.put("goodlist",jsonArray);
+        data.put("data",dataArray);
+        data.put("count",total_count);
 
         return data;
 

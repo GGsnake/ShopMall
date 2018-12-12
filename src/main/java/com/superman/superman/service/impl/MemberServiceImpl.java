@@ -442,12 +442,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public JSONObject getMyMoneyOf(Long uid) {
         var user = userinfoMapper.selectByPrimaryKey(uid);
+        if(user==null){
+            return  null;
+        }
         var roleId = user.getRoleId();
         var pddPid = user.getPddpid();
-        Long myScore = 100l - user.getScore();
         JSONObject myJson = new JSONObject();
         switch (roleId) {
             case 1:
+                //计算总代的分成比例
+
                 //总代自己的收入
                 Long myMoney = Long.valueOf(oderService.countPddOderForId(pddPid));
                 //查询代理或者直属粉丝
@@ -479,7 +483,10 @@ public class MemberServiceImpl implements MemberService {
                     return myJson;
                 }
                 for (Userinfo userio : agentIdList) {
+
                     Long agentId = userio.getId();
+                    Long agentScore = 100l-userio.getScore();
+
                     String agentPddId = userio.getPddpid();
                     //根据每个代理的不同佣金比率计算我的收入
 
@@ -491,24 +498,24 @@ public class MemberServiceImpl implements MemberService {
                     var uidList = agentDao.queryForAgentId(agentId.intValue());
 
                     if (uidList == null || uidList.size() == 0) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        agentMoney += ((lowAgentMoney * agentScore) / 100);
                         continue;
                     }
                     agentSum += uidList.size();
                     //查询出粉丝的PID集合
                     List<String> userinfos = userinfoMapper.selectIn(uidList);
                     if (userinfos == null || userinfos.size() == 0) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        agentMoney += ((lowAgentMoney * agentScore) / 100);
                         continue;
                     }
                     //查询出粉丝贡献的订单收入
                     Integer fans = oderService.countPddOderForIdList(userinfos);
                     if (fans == null) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        agentMoney += ((lowAgentMoney * agentScore) / 100);
                         continue;
                     }
 
-                    agentMoney += ((lowAgentMoney + fans) * myScore) / 100;
+                    agentMoney += ((lowAgentMoney + fans) * agentScore) / 100;
 
 
                 }
@@ -552,6 +559,8 @@ public class MemberServiceImpl implements MemberService {
         }
         return null;
     }
+
+
 //
 //    public JSONObject queryMemberDetail(@NonNull Long userId,@NonNull Integer type) {
 //        if (type==2){
@@ -574,87 +583,6 @@ public class MemberServiceImpl implements MemberService {
 //        return null;
 //    }
 
-//
-//    @Override
-//    public JSONObject getMyTeam(Long uid) {
-//        //团队成员数量
-//        Integer teamSum=0;
-//        Integer agentSum=0;
-//        Test t1=new Test();
-//        t1.setAgentId(uid.intValue());
-//        //
-//
-//        //直推会员Id列表
-//        List uidList=new ArrayList();
-//        List<TeamList> teamLists=new ArrayList();
-//        JSONObject jsonObject = new JSONObject();
-//        JSONArray json = new JSONArray();
-//        JSONArray json1 = new JSONArray();
-//        List<Test> test = pddDao.selectRchid(t1);
-//        if (test!=null){
-//            for (Test tt:test){
-//                uidList.add(tt.getUserId());
-//            }
-//            List<Role> roles = pddDao.selectRchidlist(uidList);
-//            //会员下级Id
-//            List<Integer> uidLiLatp=new ArrayList();
-//
-//            for (Role tt:roles){
-//                Long tId = tt.getUserId();
-//                TeamList t=new TeamList();
-//                t.setUserId(tt.getUserId());
-//                t.setScore(tt.getScore());
-//                if (tt.getScore()==0)
-//                {
-//                    t.setMember(0);
-//                    t.setDaili(false);
-//                }
-//                if (tt.getScore()<100&&tt.getScore()!=0)
-//                {
-//                    t.setDaili(true);
-//                    uidLiLatp.add(tId.intValue());
-//                    Integer agSum = pddDao.countAgentId(tId.intValue());
-//                    t.setMember(agSum);
-//                }
-//                teamLists.add(t);
-//            }
-//            List lowList=new ArrayList();
-//            List<Test> vipNolist = pddDao.selectTchidlist(uidLiLatp);
-//            for (Test tt:vipNolist){
-//                lowList.add(tt.getUserId());
-//            }
-//            List<Role> roleList = pddDao.selectRchidlist(lowList);
-//            teamSum=lowList.size()+teamLists.size();
-//            agentSum=uidLiLatp.size();
-//            for (TeamList a:teamLists)
-//            {
-//                    JSONObject jo = new JSONObject();
-//                    jo.put("id", a.getUserId());
-//                    jo.put("daili", a.getDaili());
-//                    jo.put("member", a.getMember());
-//                    jo.put("score", a.getScore());
-//                    json.add(jo);
-//            }
-//            for (Role a:roleList)
-//            {
-//                JSONObject jo = new JSONObject();
-//                jo.put("id", a.getUserId());
-//                jo.put("score", a.getScore());
-//                json1.add(jo);
-//            }
-//            jsonObject.put("zhishu", json);
-//            jsonObject.put("xiaji", json1);
-//            jsonObject.put("agentSum", agentSum);
-//            jsonObject.put("teamSum", teamSum);
-//            return jsonObject;
-//
-//        }
-//        jsonObject.put("zhishu", null);
-//        jsonObject.put("xiaji", null);
-//        jsonObject.put("agentSum", 0);
-//        jsonObject.put("teamSum", 0);
-//        return jsonObject;
-//    }
 
 
 }
