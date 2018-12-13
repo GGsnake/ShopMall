@@ -61,7 +61,19 @@
                 #{item}
             </foreach>
         </if>
-        and order_status in ('1','2')
+        and order_status in ('1','2','3')
+    </select>
+    <select id="selectPidInFinish" resultType="java.lang.Integer">
+        select
+        SUM(promotion_amount)
+        from oder
+        <if test="list!= null">
+            WHERE p_id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and order_status=5
     </select>
     <select id="selectPidInOderTime" resultMap="oderMapa">
         select

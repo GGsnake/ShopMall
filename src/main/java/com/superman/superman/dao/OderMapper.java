@@ -58,12 +58,26 @@ public interface OderMapper {
      * @param pid
      * @return
      */
-    @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status in ('1','2')")
+    @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status in ('1','2','3')")
     Integer selectPid(String pid);
+ /**
+     * 单个PID统计已结算订单收入
+     * @param pid
+     * @return
+     */
+    @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status=5")
+    Integer selectPidForFinish(String pid);
 
 
 
     Integer selectPidIn(@Param("list") List list);
+
+    /**
+     * 根据pid类别统计已结算订单的总收入
+     * @param list
+     * @return
+     */
+    Integer selectPidInFinish(@Param("list") List list);
 
 
 

@@ -6,6 +6,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
+import com.superman.superman.service.MoneyService;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
@@ -32,12 +33,13 @@ public class MemberController {
     MemberService memberService;
     @Autowired
     UserApiService userApiService;
+    @Autowired
+    MoneyService moneyService;
 
     @GetMapping("/myTeam")
     public WeikeResponse getTeam() {
         PageParam pageParam = new PageParam();
-        JSONObject myTeam = memberService.getMyTeam(1l,pageParam);
-
+        JSONObject myTeam = memberService.getMyTeam(6l,pageParam);
         return WeikeResponseUtil.success(myTeam);
 
     }
@@ -61,11 +63,24 @@ public class MemberController {
 
     @LoginRequired
     @PostMapping("/momeny")
-    public WeikeResponse getmomeny(HttpServletRequest request)  {
+    public WeikeResponse getMomeny(HttpServletRequest request)  {
 //        String uid = (String) request.getAttribute("uid");
 
         JSONObject myMoney = memberService.getMyMoneyOf(6l);
         return WeikeResponseUtil.success(myMoney);
+    }
+    @PostMapping("/cash")
+    public WeikeResponse getCash(HttpServletRequest request,Long uid)  {
+//        String uid = (String) request.getAttribute("uid");
+//        Long uid = 6l;
+        JSONObject data=new JSONObject();
+        Long waitMoney = moneyService.queryWaitMoney(uid);
+        Long finishMoney = moneyService.queryFinishMoney(uid);
+        Long cash =0l;
+        data.put("waitMoney",waitMoney);
+        data.put("finishMoney",finishMoney);
+        data.put("cash",cash);
+        return WeikeResponseUtil.success(data);
     }
 
 }

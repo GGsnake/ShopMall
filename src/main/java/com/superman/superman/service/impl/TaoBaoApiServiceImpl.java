@@ -12,8 +12,11 @@ import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.NTbkItem;
+import com.taobao.api.request.TbkDgItemCouponGetRequest;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.response.TbkDgItemCouponGetResponse;
+import com.taobao.api.response.TbkDgMaterialOptionalResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,101 +33,169 @@ import java.util.*;
 @Service("taoBaoApiService")
 public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     final String URL = "http://tkapi.apptimes.cn/";
-    final String TAOBAOURL = "http://tkapi.apptimes.cn/";
-    final String APPKEY = "25338125";
-    final String SECRET = "c4d36be247e477a9d88704f022e1c514";
+    final String TAOBAOURL = "http://gw.api.taobao.com/router/rest";
+    final String APPKEY = "25377219";
+    final String SECRET = "4c3e6b9e6484ce2982bca63d524564c1";
     @Autowired
     RestTemplate restTemplate;
     @Autowired
     UserinfoMapper userinfoMapper;
 
     @Override
-    public JSONObject serachGoods(Long uid, String Keywords, String cat, Boolean isTmall, Long page_no, Long page_size, String sort, String itemloc) {
-//        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
-//        if (ufo == null) {
-//            return null;
-//        }
-//        String taobaoSercahUrl = url + "good/list?";
-//        Map<String, String> urlSign = new HashMap<>();
-//        urlSign.put("q", "裤子");
-//        urlSign.put("page_size", "15");
-//        urlSign.put("page_no", "1");
-//        urlSign.put("has_coupon", "true");
-//        urlSign.put("sort", "tk_rate_des");
-//        JSONObject data = new JSONObject();
-//
-//        String linkStringByGet = null;
-//        try {
-//            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
-//        JSONArray good_list = JSONObject.parseObject(res).getJSONObject("data").getJSONArray("good_list");
-//        Integer count = JSONObject.parseObject(res).getJSONObject("data").getInteger("count");
-//        JSONArray dataArray = new JSONArray();
-//
-//        if (ufo.getRoleId() == 1) {
-//            for (int i = 0; i < good_list.size(); i++) {
-//
-//                JSONObject dataObj = (JSONObject) good_list.get(i);
-//                JSONObject dataJson = new JSONObject();
-//                String coupon_info1 = dataObj.getString("coupon_info");
-//                //查找指定字符第一次出现的位置
-//                int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
-//
-//                String coupon_info = dataObj.getString("coupon_info").substring(star+1,coupon_info1.length()-1);
-//
-//                dataJson.put("zk_price", Double.valueOf(dataObj.getString("zk_final_price")).intValue());
-//                dataJson.put("price", Double.valueOf(dataObj.getString("reserve_price")).intValue());
-//                dataJson.put("volume", dataObj.getInteger("volume").toString());
-//                dataJson.put("goodId", dataObj.getInteger("num_iid"));
-//                dataJson.put("imgUrl", dataObj.getString("pict_url"));
-//                dataJson.put("goodName", dataObj.getString("title"));
-//                dataJson.put("istmall", false);
-//                dataJson.put("zk_money", Integer.parseInt(coupon_info));
-//                dataJson.put("agent", 111l);
-//                dataArray.add(dataJson);
-//            }
-//
-//            data.put("data", dataArray);
-//
-//            data.put("count", count);
-//        }
-//
-        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+    public JSONObject serachGoods(Long uid, String Keywords, String cat, Boolean isTmall, Boolean HasCoupon, Long page_no, Long page_size, String sort, String itemloc) {
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
-        req.setStartDsr(10L);
-        req.setPageSize(20L);
-        req.setPageNo(1L);
-        req.setPlatform(1L);
-        req.setEndTkRate(1234L);
-        req.setStartTkRate(1234L);
-        req.setEndPrice(10L);
-        req.setStartPrice(10L);
-        req.setIsOverseas(false);
-        req.setIsTmall(false);
-        req.setSort("tk_rate_des");
-        req.setItemloc("杭州");
-        req.setCat("16,18");
-        req.setQ("女装");
-        req.setMaterialId(2836L);
-        req.setHasCoupon(false);
-        req.setIp("13.2.33.4");
-        req.setAdzoneId(123L);
-        req.setNeedFreeShipment(true);
-        req.setNeedPrepay(true);
-        req.setIncludePayRate30(true);
-        req.setIncludeGoodRate(true);
-        req.setIncludeRfdRate(true);
-        req.setNpxLevel(2L);
-        req.setEndKaTkRate(1234L);
-        req.setStartKaTkRate(1234L);
-        req.setDeviceEncrypt("MD5");
-        req.setDeviceValue("xxx");
-        req.setDeviceType("IMEI");
-        TbkDgMaterialOptionalResponse rsp = client.execute(req);
-        System.out.println(rsp.getBody());
+
+        req.setPageSize(page_size);
+        req.setPageNo(page_no);
+        req.setIsTmall(isTmall);
+        req.setHasCoupon(HasCoupon);
+        req.setSort(sort);
+        req.setAdzoneId(71784050073l);
+        req.setQ(Keywords);
+        JSONObject data = new JSONObject();
+        TbkDgMaterialOptionalResponse rsp = null;
+        try {
+            rsp = client.execute(req);
+            JSONArray dataArray = new JSONArray();
+            List<TbkDgMaterialOptionalResponse.MapData> resultList = rsp.getResultList();
+            if (resultList == null || resultList.size() == 0) {
+                return data;
+            }
+            Long count = rsp.getTotalResults();
+            if (ufo.getRoleId() == 1) {
+                for (int i = 0; i < resultList.size(); i++) {
+                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                    JSONObject dataJson = new JSONObject();
+                    String coupon_info1 = dataObj.getCouponInfo();
+                    //查找指定字符第一次出现的位置
+                    int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                    String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                    String commissionRate = dataObj.getCommissionRate();
+                    dataJson.put("zk_price", dataObj.getZkFinalPrice());
+                    dataJson.put("price", dataObj.getReservePrice());
+                    dataJson.put("volume", dataObj.getVolume());
+                    dataJson.put("goodId", dataObj.getNumIid());
+                    dataJson.put("imgUrl", dataObj.getPictUrl());
+                    dataJson.put("goodName", dataObj.getTitle());
+                    dataJson.put("istmall", isTmall.toString());
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                    dataJson.put("agent", 111l);
+                    dataArray.add(dataJson);
+                }
+                data.put("data", dataArray);
+
+                data.put("count", count);
+            }
+            if (ufo.getRoleId() == 2) {
+                for (int i = 0; i < resultList.size(); i++) {
+                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                    JSONObject dataJson = new JSONObject();
+                    String coupon_info1 = dataObj.getCouponInfo();
+                    //查找指定字符第一次出现的位置
+                    int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                    String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                    String commissionRate = dataObj.getCommissionRate();
+                    dataJson.put("zk_price", dataObj.getZkFinalPrice());
+                    dataJson.put("price", dataObj.getReservePrice());
+                    dataJson.put("volume", dataObj.getVolume());
+                    dataJson.put("goodId", dataObj.getNumIid());
+                    dataJson.put("imgUrl", dataObj.getPictUrl());
+                    dataJson.put("goodName", dataObj.getTitle());
+                    dataJson.put("istmall", isTmall.toString());
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                    dataJson.put("agent", 111l);
+                    dataArray.add(dataJson);
+                }
+                data.put("data", dataArray);
+
+                data.put("count", count);
+            }
+            for (int i = 0; i < resultList.size(); i++) {
+                TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                JSONObject dataJson = new JSONObject();
+                String coupon_info1 = dataObj.getCouponInfo();
+                //查找指定字符第一次出现的位置
+                int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                String commissionRate = dataObj.getCommissionRate();
+                dataJson.put("zk_price", dataObj.getZkFinalPrice());
+                dataJson.put("price", dataObj.getReservePrice());
+                dataJson.put("volume", dataObj.getVolume());
+                dataJson.put("goodId", dataObj.getNumIid());
+                dataJson.put("imgUrl", dataObj.getPictUrl());
+                dataJson.put("goodName", dataObj.getTitle());
+                dataJson.put("istmall", isTmall.toString());
+                dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                dataJson.put("agent", 0l);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+
+            data.put("count", count);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public JSONObject indexGoodList(Integer type,Long page_no,Long page_size) {
+        JSONObject data=new JSONObject();
+        JSONArray dataArray = new JSONArray();
+        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+        TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
+        req.setAdzoneId(71784050073L);
+        if (type==1){
+            req.setQ("9.9元包邮");
+        }
+        if (type==2){
+            req.setQ("9.9元包邮");
+        }
+        if (type==3){
+            req.setQ("9.9元包邮");
+        }if (type==4){
+            req.setQ("9.9元包邮");
+        }
+
+
+        req.setPageNo(page_no);
+        req.setPageSize(page_size);
+        try {
+            TbkDgMaterialOptionalResponse response = client.execute(req);
+            List<TbkDgMaterialOptionalResponse.MapData> results = response.getResultList();
+
+            Long totalResults = response.getTotalResults();
+            for (int i = 0; i < results.size(); i++) {
+                TbkDgMaterialOptionalResponse.MapData dataObj = results.get(i);
+                JSONObject dataJson = new JSONObject();
+                String coupon_info1 = dataObj.getCouponInfo();
+                //查找指定字符第一次出现的位置
+                int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                String commissionRate = dataObj.getCommissionRate();
+                dataJson.put("zk_price", dataObj.getZkFinalPrice());
+                dataJson.put("price", dataObj.getReservePrice());
+                dataJson.put("volume", dataObj.getVolume());
+                dataJson.put("goodId", dataObj.getNumIid());
+                dataJson.put("imgUrl", dataObj.getPictUrl());
+                dataJson.put("goodName", dataObj.getTitle());
+                dataJson.put("istmall", null);
+                dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                dataJson.put("agent", 0l);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+
+            data.put("count", totalResults);
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
         return data;
     }
 }

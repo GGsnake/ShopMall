@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Size;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,6 +63,7 @@ public class ScoreController  {
     @LoginRequired
     @PostMapping("/dede")
     public WeikeResponse dede(HttpServletRequest request) {
+
         var  uid=request.getAttribute(Constants.CURRENT_USER_ID);
 //        ScoreBean query = jdApiService.queryJdOder(id);
         return WeikeResponseUtil.success(uid);

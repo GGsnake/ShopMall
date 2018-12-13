@@ -70,7 +70,7 @@ public class ShopGoodController {
     })
     @PostMapping("/Search")
     public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false) String tbsort
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false,defaultValue = "tk_rate_des") String tbsort
 
     ) {
 
@@ -79,7 +79,8 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(pddGoodList);
         }
         if (type == 1) {
-            JSONObject jsonObject = taoBaoApiService.serachGoods(6l,keyword, null, true, page.longValue(), pagesize.longValue(), tbsort, null);
+
+            JSONObject jsonObject = taoBaoApiService.serachGoods(6l,keyword, null, true,true, page.longValue(), pagesize.longValue(), tbsort, null);
             return WeikeResponseUtil.success(jsonObject);
 //
 //            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();

@@ -44,6 +44,8 @@ public class Supermaests {
     @Autowired
     UserinfoMapper userinfoMapper;
     @Autowired
+    MoneyService moneyService;
+    @Autowired
     MemberService memberService;
     @Autowired
     LogService logService;
@@ -109,9 +111,9 @@ public class Supermaests {
     }
     @Test
     public void pddoder(){
-        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
-
-        log.warning(jsonObject.toJSONString());
+//        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
+//
+//        log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
 //        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
 //        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
@@ -141,8 +143,8 @@ public class Supermaests {
     public void sum(){
 //        JSONObject jsonObject = memberService.getMyMoney(5l);
 //        log.warning(jsonObject.toJSONString());
-        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,null, null, null, null, null, null, null);
-        log.warning(jsonObject.toJSONString());
+//        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"蛇皮", null, null, 1l, 20l, "tk_rate_des", null);
+//        log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
 //        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
 //        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
@@ -167,6 +169,11 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333",-1);
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
+    }
+    @Test
+    public void simm(){
+        Long aLong = moneyService.queryFinishMoney(11l);
+        log.warning(String.valueOf(aLong));
     }
 
 
