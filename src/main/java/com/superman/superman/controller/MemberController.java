@@ -73,19 +73,18 @@ public class MemberController {
     /**
      * 个人佣金提现接口
      * @param request
-     * @param uid
      * @return
      */
+    @LoginRequired
     @PostMapping("/cash")
-    public WeikeResponse getCash(HttpServletRequest request,@RequestParam(value = "uid",required = false) Long uid)  {
-//        String uid = (String) request.getAttribute("uid");
-//        Long uid = 6l;
+    public WeikeResponse getCash(HttpServletRequest request)  {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid==null){
-            uid=11l;
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         JSONObject data=new JSONObject();
-        Long waitMoney = moneyService.queryWaitMoney(uid);
-        Long finishMoney = moneyService.queryFinishMoney(uid);
+        Long waitMoney = moneyService.queryWaitMoney(Long.valueOf(uid));
+        Long finishMoney = moneyService.queryFinishMoney(Long.valueOf(uid));
         Long cash =0l;
         data.put("waitMoney",waitMoney);
         data.put("finishMoney",finishMoney);

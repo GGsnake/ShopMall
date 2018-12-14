@@ -180,7 +180,6 @@ public class MemberServiceImpl implements MemberService {
                     return myJson;
 
                 }
-                // TODO
                 Integer all = meIncome  +(fans*agentScore)/100;
                 myJson.put("myMoney", all);
                 myJson.put("myTeamMoney", (all - meIncome));
@@ -188,7 +187,12 @@ public class MemberServiceImpl implements MemberService {
                 return myJson;
             //粉丝
             case 3:
-                break;
+                myJson.put("myAgentCount", 0);
+                myJson.put("myTeamCount", 1);
+                myJson.put("myTeamMoney", 0);
+                myJson.put("myMoney", 0);
+                myJson.put("myTeamMoney",0);
+                return myJson;
             default:
                 logger.warn("switch穿透" + System.currentTimeMillis());
                 break;
