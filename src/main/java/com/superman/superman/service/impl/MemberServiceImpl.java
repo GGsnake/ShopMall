@@ -11,6 +11,7 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.service.UserApiService;
+import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.PageParam;
 import lombok.NonNull;
@@ -56,12 +57,16 @@ public class MemberServiceImpl implements MemberService {
         String username = user.getUsername();
         JSONObject myJson = new JSONObject();
         myJson.put("roleId", roleId);
-        myJson.put("image", userphoto == null ? null : userphoto);
-        myJson.put("name", username == null ? null : username);
+        myJson.put("image", userphoto == null ? Constants.IMG_DEFAUT : userphoto);
+        myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
         switch (roleId) {
             case 1:
                 //总代自己的收入
-                Long myMoney = Long.valueOf(oderService.countPddOderForId(pddPid));
+                Long myMoney=0l;
+                //总代自己的收入
+                //拼多多平台订单
+                Integer tempMy = oderService.countPddOderForId(pddPid);
+                myMoney= Long.valueOf(tempMy==null?0:tempMy);
                 myJson.put("myMoney", myMoney);
                 myJson.put("myAgentCount", 0);
                 myJson.put("myTeamCount", 1);
@@ -91,7 +96,9 @@ public class MemberServiceImpl implements MemberService {
 
 
                 //查询所有粉丝的收入
-                Integer fansMoney = oderService.countPddOderForIdList(fansIdList);
+                Long fansMoney =0l;
+                Integer fansTemp = oderService.countPddOderForIdList(fansIdList);
+                fansMoney=fansTemp==null?0l:fansTemp;
                 //我的代理的所有收入
                 Long agentMoney = 0l;
                 Long agentSum = 0l;
@@ -108,32 +115,33 @@ public class MemberServiceImpl implements MemberService {
                     String agentPddId = userio.getPddpid();
                     //根据每个代理的不同佣金比率计算我的收入
                     Long myScore = 100l - userio.getScore();
-
-                    Integer lowAgentMoney = oderService.countPddOderForId(agentPddId);
-
-
+                    Long lowAgentMoney =0l;
+                    Integer temp = oderService.countPddOderForId(agentPddId);
+                    lowAgentMoney=temp==null?0l:temp*myScore/100;
                     //查询我的下级粉丝
                     var uidList = agentDao.queryForAgentId(agentId.intValue());
 
                     if (uidList == null || uidList.size() == 0) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        agentMoney +=lowAgentMoney;
                         continue;
                     }
                     agentSum += uidList.size();
                     //查询出粉丝的PID集合
                     List<String> userinfos = userinfoMapper.selectIn(uidList);
                     if (userinfos == null || userinfos.size() == 0) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                        agentMoney +=lowAgentMoney;
+
                         continue;
                     }
                     //查询出粉丝贡献的订单收入
                     Integer fans = oderService.countPddOderForIdList(userinfos);
-                    if (fans == null) {
-                        agentMoney += ((lowAgentMoney * myScore) / 100);
+                    if (fans == null||fans==0) {
+                        agentMoney +=lowAgentMoney;
+
                         continue;
                     }
-
-                    agentMoney += ((lowAgentMoney + fans) * myScore) / 100;
+                    Long fansM= (fans * myScore)/ 100;
+                    agentMoney +=(lowAgentMoney +fansM) ;
 
 
                 }
@@ -150,8 +158,8 @@ public class MemberServiceImpl implements MemberService {
                 //查询我的订单收入
                 var agentScore=user.getScore();
                 var temp = oderService.countPddOderForId(pddPid);
-                var meIncome = temp == null ? 0 : temp;
-                myJson.put("myMoney", (meIncome*agentScore)/100);
+                var meIncome = temp == null ||temp==0? 0 : (temp*agentScore)/100;
+                myJson.put("myMoney", meIncome);
                 myJson.put("myTeamCount", 1);
                 myJson.put("myTeamMoney", 0);
                 //查询我的下级粉丝
@@ -159,24 +167,23 @@ public class MemberServiceImpl implements MemberService {
                 if (uidList == null || uidList.size() == 0) {
                     return myJson;
                 }
+                myJson.put("myTeamCount", uidList.size() + 1);
                 //查询出粉丝的PID集合
                 List<String> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
-                if (userinfos == null || uidList.size() == 0) {
-                    myJson.put("myTeamCount", uidList.size() + 1);
+                if (userinfos == null || userinfos.size() == 0) {
                     return myJson;
                 }
-                myJson.put("myTeamCount", uidList.size() + 1);
                 //查询出粉丝贡献的订单收入
                 var fans = oderService.countPddOderForIdList(userinfos);
-                if (fans == null) {
+                if (fans == null||fans==0) {
                     return myJson;
 
                 }
                 // TODO
-                Integer all = ((meIncome + fans)*agentScore)/100;
+                Integer all = meIncome  +(fans*agentScore)/100;
                 myJson.put("myMoney", all);
-                myJson.put("myTeamMoney", (all - (meIncome*agentScore))/100);
+                myJson.put("myTeamMoney", (all - meIncome));
 
                 return myJson;
             //粉丝
@@ -217,10 +224,14 @@ public class MemberServiceImpl implements MemberService {
             data.put("pageCount", sum);
             JSONArray jsonArray = new JSONArray();
             for (Userinfo us : userList) {
+                String username = us.getUsername();
+                username=username == null ? Constants.USERNAME_DEFAUT : username;
+                String image = us.getUserphoto();
+                image=image == null ? Constants.IMG_DEFAUT : image;
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("roleId", us.getRoleId());
-                jsonObject.put("username", us.getUsername());
-                jsonObject.put("image", us.getUserphoto());
+                jsonObject.put("username", username);
+                jsonObject.put("image", image);
                 jsonObject.put("id", us.getId());
                 jsonObject.put("chidSum", 0);
                 if (us.getRoleId() == 2) {
@@ -244,9 +255,13 @@ public class MemberServiceImpl implements MemberService {
         data.put("pageCount", sum);
         JSONArray jsonArray = new JSONArray();
         for (Userinfo us : userList) {
+            String username = us.getUsername();
+            username=username == null ? Constants.USERNAME_DEFAUT : username;
+            String image = us.getUserphoto();
+            image=image == null ? Constants.IMG_DEFAUT : image;
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("username", us.getUsername());
-            jsonObject.put("image", us.getUserphoto());
+            jsonObject.put("username",username);
+            jsonObject.put("image", image);
             jsonObject.put("id", us.getId());
             jsonObject.put("joinTime", us.getCreatetime());
             jsonArray.add(jsonObject);
@@ -538,7 +553,7 @@ public class MemberServiceImpl implements MemberService {
                 //查询出粉丝的PID集合
                 List<String> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
-                if (userinfos == null || uidList.size() == 0) {
+                if (userinfos == null || userinfos.size() == 0) {
                     return myJson;
                 }
                 //查询出粉丝贡献的订单收入

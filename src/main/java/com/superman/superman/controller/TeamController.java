@@ -39,10 +39,10 @@ public class TeamController {
     })
     @LoginRequired
     @PostMapping("/myTeam")
-    public WeikeResponse getMyTeam(HttpServletRequest request, @RequestBody PageParam pageParam) {
+    public WeikeResponse getMyTeam(HttpServletRequest request,PageParam pageParam) {
         PageParam pageParam1=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
-        Long uid = (Long) request.getAttribute(Constants.CURRENT_USER_ID);
-        JSONObject query = memberService.getMyTeam(7l,pageParam1);
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        JSONObject query = memberService.getMyTeam(Long.valueOf(uid),pageParam1);
 
         return WeikeResponseUtil.success(query);
     }

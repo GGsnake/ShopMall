@@ -14,10 +14,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,9 +53,12 @@ public class MemberController {
     @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request)  {
-        String uid = (String) request.getAttribute("uid");
-        JSONObject myMoney = memberService.getMyMoney(Long.valueOf(uid));
-        return WeikeResponseUtil.success(myMoney);
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid==null){
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
+        return WeikeResponseUtil.success(data);
     }
 
     @LoginRequired
@@ -69,10 +69,20 @@ public class MemberController {
         JSONObject myMoney = memberService.getMyMoneyOf(6l);
         return WeikeResponseUtil.success(myMoney);
     }
+
+    /**
+     * 个人佣金提现接口
+     * @param request
+     * @param uid
+     * @return
+     */
     @PostMapping("/cash")
-    public WeikeResponse getCash(HttpServletRequest request,Long uid)  {
+    public WeikeResponse getCash(HttpServletRequest request,@RequestParam(value = "uid",required = false) Long uid)  {
 //        String uid = (String) request.getAttribute("uid");
 //        Long uid = 6l;
+        if (uid==null){
+            uid=11l;
+        }
         JSONObject data=new JSONObject();
         Long waitMoney = moneyService.queryWaitMoney(uid);
         Long finishMoney = moneyService.queryFinishMoney(uid);

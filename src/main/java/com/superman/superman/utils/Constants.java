@@ -36,5 +36,15 @@ public class Constants {
      */
     public static final String SECRET="6def530ef7070da04102520b5bfe1a27";
 
+    /**
+     * 默认头像
+     */
+    public static final String IMG_DEFAUT="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1544755797&di=f6cf802a4c65f73167a94f52f07c1b21&src=http://b-ssl.duitang.com/uploads/item/201705/07/20170507160711_uU3Zy.jpeg";
+
+
+    /**
+     * 默认昵称
+     */
+    public static final String USERNAME_DEFAUT="匿名用户";
 
 }

@@ -130,12 +130,12 @@ public class MoneyServiceImpl implements MoneyService {
                 //查询出粉丝的PID集合
                 List<String> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
-                if (userinfos == null || uidList.size() == 0) {
+                if (userinfos == null || userinfos.size() == 0) {
                     return meIncome;
                 }
                 //查询出粉丝贡献的订单收入
                 Integer fans = oderService.countPddOderForIdList(userinfos);
-                if (fans == null) {
+                if (fans == null||fans==0) {
                     return meIncome;
                 }
                 Long fansM = fans*agentScore/100;
@@ -248,7 +248,7 @@ public class MoneyServiceImpl implements MoneyService {
                 //查询出粉丝的PID集合
                 List<String> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
-                if (userinfos == null || uidList.size() == 0) {
+                if (userinfos == null || userinfos.size() == 0) {
                     return meIncome;
                 }
                 //查询出粉丝贡献的订单收入
