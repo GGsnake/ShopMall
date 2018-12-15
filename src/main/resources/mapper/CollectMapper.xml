@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.superman.superman.dao.CollectDao">
+    <sql id="Base_Column_List" >
+        id, userId,goodId,title,src, price, coupon_price, image,promotion_rate,coupon,createTime,volume
+    </sql>
     <select id="query" resultType="com.superman.superman.model.CollectBean">
-		select * from collect where  userId= #{id}
+		select  <include refid="Base_Column_List" /> from collect where  userId= #{id} order by createTime limit #{star},#{end}
 	</select>
 
     <!--<update id="updateUser">-->
@@ -17,12 +20,38 @@
     <delete id="delete">
         delete  from  collect where id = #{id}
     </delete>
+
     <insert id="addCollect" parameterType="com.superman.superman.model.CollectBean">
         insert into collect
-           (userId,goodId,title,src, price, coupon_price, image,promotion_rate,coupon,createTime)
-       values (
-            #{col.userId},#{col.goodId},#{col.title},#{col.src},
-            #{col.price},#{col.coupon_price},#{col.image},#{col.promotion_rate},#{col.coupon},
-           now())
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            userId,goodId,createTime,image,title,src,price,
+            <if test="col.volume != null">
+                volume,
+            </if>
+            <if test="col.coupon_price != null">
+                coupon_price,
+            </if>
+            <if test="col.promotion_rate != null">
+                promotion_rate,
+            </if>
+            <if test="col.coupon != null">
+                coupon
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{col.userId},#{col.goodId},now(), #{col.image},#{col.title},#{col.src}, #{col.price},
+            <if test="col.volume != null">
+            #{col.volume} ,
+            </if>
+            <if test="col.coupon_price != null">
+                #{col.coupon_price},
+            </if>
+            <if test="col.promotion_rate != null">
+                #{col.promotion_rate},
+            </if>
+            <if test="col.coupon != null">
+                #{col.coupon},
+            </if>
+        </trim>
     </insert>
 </mapper>

@@ -18,6 +18,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/team/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/member/**");
+        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/collect/**");
     }
     @Bean
     public  AuthenticationInterceptor authenticationInterceptor(){

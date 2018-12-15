@@ -1,8 +1,8 @@
 package com.superman.superman.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.superman.superman.model.CollectBean;
-
-import java.util.List;
+import com.superman.superman.utils.PageParam;
 
 /**
  * Created by liujupeng on 2018/11/20.
@@ -13,7 +13,7 @@ public interface CollectService  {
      * @param uid
      * @return
      */
-    List<CollectBean> queryCollect(Long uid);
+    JSONArray queryCollect(Long uid, PageParam pageParam);
 
     /**
      *
@@ -21,6 +21,12 @@ public interface CollectService  {
      * @return
      */
     Boolean deleteCollect(Integer colId,Long uid);
+    /**
+     *
+     * @param uid
+     * @return
+     */
+    Integer countCollect(Long uid);
 
     /**
      *

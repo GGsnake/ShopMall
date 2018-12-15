@@ -19,6 +19,7 @@ public class CollectBean  {
     private String  title;
     private String  image;
     private Integer src;
+    private Integer volume;
     private Long price;
     private Long coupon_price;
     private Long promotion_rate;
