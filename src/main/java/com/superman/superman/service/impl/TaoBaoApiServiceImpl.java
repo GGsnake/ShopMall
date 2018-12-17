@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
@@ -18,6 +19,7 @@ import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.response.TbkDgItemCouponGetResponse;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
 import com.taobao.api.response.TbkItemGetResponse;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ import java.util.*;
  */
 @Service("taoBaoApiService")
 public class TaoBaoApiServiceImpl implements TaoBaoApiService {
+    private static final String QQAPPKEY = "8k8lhumd";
+    private static final String APID = "mm_261060037_253650051_";
     final String URL = "http://tkapi.apptimes.cn/";
     final String TAOBAOURL = "http://gw.api.taobao.com/router/rest";
     final String APPKEY = "25377219";
@@ -40,6 +44,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     RestTemplate restTemplate;
     @Autowired
     UserinfoMapper userinfoMapper;
+    @Autowired
+    TboderMapper tboderMapper;
 
     @Override
     public JSONObject serachGoods(Long uid, String Keywords, String cat, Boolean isTmall, Boolean HasCoupon, Long page_no, Long page_size, String sort, String itemloc) {
@@ -143,21 +149,22 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         return data;
     }
 
-    public JSONObject indexGoodList(Integer type,Long page_no,Long page_size) {
-        JSONObject data=new JSONObject();
+    public JSONObject indexGoodList(Integer type, Long page_no, Long page_size) {
+        JSONObject data = new JSONObject();
         JSONArray dataArray = new JSONArray();
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
         req.setAdzoneId(71784050073L);
-        if (type==1){
+        if (type == 1) {
             req.setQ("9.9元包邮");
         }
-        if (type==2){
+        if (type == 2) {
             req.setQ("9.9元包邮");
         }
-        if (type==3){
+        if (type == 3) {
             req.setQ("9.9元包邮");
-        }if (type==4){
+        }
+        if (type == 4) {
             req.setQ("9.9元包邮");
         }
 
@@ -197,5 +204,36 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
 
         return data;
+    }
+
+    @Override
+    public JSONObject convertTaobao(@NonNull Long pid,@NonNull Long good_id) {
+
+        String taobaoSercahUrl = URL + "convert/id-to-token?";
+        JSONObject temp = new JSONObject();
+        Map<String, String> urlSign = new HashMap<>();
+        urlSign.put("pid", APID+pid);
+        urlSign.put("good_id", String.valueOf(good_id));
+        urlSign.put("appkey", QQAPPKEY);
+
+        String linkStringByGet = null;
+        try {
+            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
+        String uland_url = JSON.parseObject(res).getJSONObject("data").getString("uland_url");
+        String token = JSON.parseObject(res).getJSONObject("data").getString("token");
+        temp.put("uland_url",uland_url);
+        temp.put("tkLink",token);
+        temp.put("url",null);
+        return  temp;
+    }
+
+    @Override
+    public Integer countWaitTb(@NonNull List list) {
+        Integer count = tboderMapper.selectPidIn(list);
+        return count;
     }
 }

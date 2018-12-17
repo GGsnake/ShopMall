@@ -25,11 +25,11 @@ public interface PddApiService {
 
     /**
      *生成推广链接
+     * @param goodId  需要推广的商品id列表
      * @param pid 推广位ID
-     * @param goodIdList  需要推广的商品id列表
      * @return
      */
-    String newPromotion(String pid,Long[] goodIdList);
+    JSONObject convertPdd(String pid, Long goodId);
 
     /** 拼多多商品详情
      * 商品ID

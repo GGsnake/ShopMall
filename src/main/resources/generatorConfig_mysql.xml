@@ -1,43 +1,43 @@
-<!--<?xml version="1.0" encoding="UTF-8" ?>-->
-<!--<!DOCTYPE generatorConfiguration PUBLIC-->
-        <!--"-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"-->
-        <!--"http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >-->
-<!--<generatorConfiguration>-->
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
 
-    <!--&lt;!&ndash; 本地数据库驱动程序jar包的全路径 &ndash;&gt;-->
-    <!--<classPathEntry location="D:\Mysup\superman\src\main\resources\mysql-connector-java-5.0.8.jar"/>-->
+    <!-- 本地数据库驱动程序jar包的全路径 -->
+    <classPathEntry location="D:\Mysup\superman\src\main\resources\mysql-connector-java-5.0.8.jar"/>
 
-    <!--<context id="context" targetRuntime="MyBatis3">-->
-        <!--<commentGenerator>-->
-            <!--<property name="suppressAllComments" value="false"/>-->
-            <!--<property name="suppressDate" value="true"/>-->
-        <!--</commentGenerator>-->
+    <context id="context" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressAllComments" value="false"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
 
-        <!--&lt;!&ndash; 数据库的相关配置 &ndash;&gt;-->
-        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost/yetdwell" userId="root" password="root"/>-->
+        <!-- 数据库的相关配置 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://120.79.62.89:3306/yetdwell" userId="root" password="gg5201314"/>
 
-        <!--<javaTypeResolver>-->
-            <!--<property name="forceBigDecimals" value="false"/>-->
-        <!--</javaTypeResolver>-->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
 
-        <!--&lt;!&ndash; 实体类生成的位置 &ndash;&gt;-->
-        <!--<javaModelGenerator targetPackage="com.superman.superman.model" targetProject="D:\Mysup\superman\src\main\java">-->
-            <!--<property name="enableSubPackages" value="false"/>-->
-            <!--<property name="trimStrings" value="true"/>-->
-        <!--</javaModelGenerator>-->
+        <!-- 实体类生成的位置 -->
+        <javaModelGenerator targetPackage="com.superman.superman.model" targetProject="D:\Mysup\superman\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
 
-        <!--&lt;!&ndash; *Mapper.xml 文件的位置 &ndash;&gt;-->
-        <!--<sqlMapGenerator targetPackage="com.superman.superman.config" targetProject="D:\Mysup\superman\src\main\java">-->
-            <!--<property name="enableSubPackages" value="false"/>-->
-        <!--</sqlMapGenerator>-->
+        <!-- *Mapper.xml 文件的位置 -->
+        <sqlMapGenerator targetPackage="com.superman.superman.config" targetProject="D:\Mysup\superman\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
 
-        <!--&lt;!&ndash; Mapper 接口文件的位置 &ndash;&gt;-->
-        <!--<javaClientGenerator targetPackage="com.superman.superman.dao" targetProject="D:\Mysup\superman\src\main\java" type="XMLMAPPER">-->
-            <!--<property name="enableSubPackages" value="false"/>-->
-        <!--</javaClientGenerator>-->
+        <!-- Mapper 接口文件的位置 -->
+        <javaClientGenerator targetPackage="com.superman.superman.dao" targetProject="D:\Mysup\superman\src\main\java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
 
-        <!--&lt;!&ndash; 相关表的配置 &ndash;&gt;-->
-        <!--<table tableName="userInfo" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"-->
-               <!--enableUpdateByExample="false"/>-->
-    <!--</context>-->
-<!--</generatorConfiguration>-->
+        <!-- 相关表的配置 -->
+        <table tableName="tboder" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+    </context>
+</generatorConfiguration>

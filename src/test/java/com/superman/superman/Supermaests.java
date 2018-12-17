@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,9 +172,25 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
     @Test
-    public void simm(){
+    public void queryFinishMoney(){
         Long aLong = moneyService.queryFinishMoney(11l);
         log.warning(String.valueOf(aLong));
+    }
+    @Test
+    public void conver(){
+        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l,583856228119l);
+        log.warning(String.valueOf(aLong));
+    }
+    @Test
+    public void count(){
+        String s="3.02";
+        Double aDouble = Double.valueOf(s);
+        log.warning(Double.valueOf(s).toString());
+
+//        List a=new ArrayList();
+//
+//        JSONObject aLong = taoBaoApiService.countWaitTb();
+//        log.warning(String.valueOf(aLong));
     }
 
 
