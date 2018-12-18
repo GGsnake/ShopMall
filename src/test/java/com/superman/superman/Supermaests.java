@@ -8,7 +8,9 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
+import com.superman.superman.utils.HttpDeal;
 import com.superman.superman.utils.PageParam;
+import com.superman.superman.utils.PathUtils;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -25,8 +27,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ClassUtils;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +65,8 @@ public class Supermaests {
     OderService oderService;
     @Autowired
     TaoBaoApiService taoBaoApiService;
+    @Autowired
+    OtherService otherService;
     @Autowired
     OderMapper oderMapper;
 //    @Autowired
@@ -182,15 +195,19 @@ public class Supermaests {
         log.warning(String.valueOf(aLong));
     }
     @Test
-    public void count(){
-        String s="3.02";
-        Double aDouble = Double.valueOf(s);
-        log.warning(Double.valueOf(s).toString());
-
+    public void count() throws IOException, URISyntaxException {
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
+//        BufferedImage img = otherService.crateQRCode("http://www.baidu.com");
+//        File writeName = new File(path+"/img/21321.jpg");
+//        FileImageOutputStream fileImageOutputStream=new FileImageOutputStream(writeName);
+//        ImageIO.write(img, "JPEG",fileImageOutputStream);
+//        ByteArrayOutputStream s = otherService.crateQRCode("http://www.baidu.com");
+//        ByteArrayOutputStream
+//        HttpDeal.saveImageToDisk(QRCODEURL + "app=qr.get&data=www.baidu.com",232l);
+//        log.warning(s.toString());
 //        List a=new ArrayList();
 //
 //        JSONObject aLong = taoBaoApiService.countWaitTb();
-//        log.warning(String.valueOf(aLong));
     }
 
 

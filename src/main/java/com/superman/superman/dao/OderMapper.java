@@ -60,8 +60,10 @@ public interface OderMapper {
      */
     @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status in ('1','2','3')")
     Integer selectPid(String pid);
- /**
+
+    /**
      * 单个PID统计已结算订单收入
+     *
      * @param pid
      * @return
      */
@@ -78,6 +80,15 @@ public interface OderMapper {
      * @return
      */
     Integer selectPidInFinish(@Param("list") List list);
+
+    @Select("select IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*100,0) as count from userinfo us " +
+            "left join oder pdd on pdd.p_id=us.pddPid and  pdd.order_status in(1,2,3)" +
+            "left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status=12  WHERE us.id=#{uid}")
+    Long superQueryWaitMoneyForUserSimple(Integer uid);
+
+
+
+    Long superQueryForListToWait(List<Long> list);
 
 
 

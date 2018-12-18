@@ -43,7 +43,7 @@ public interface UserinfoMapper {
     @Select("select SUM(promotion_amount) from oder where  p_id in (select pddPid from userinfo where  id in (select userId from agent where agentId=#{uid}))")
     Integer queryAllPidForAgentId(Integer uid);
 
-    List<String>selectIn(@Param("list") List userlist);
+    List<Userinfo>selectIn(@Param("list") List userlist);
 
     List<Userinfo>selectInFans(@Param("list") List userlist);
 

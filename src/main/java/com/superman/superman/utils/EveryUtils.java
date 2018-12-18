@@ -1,13 +1,24 @@
 package com.superman.superman.utils;
 
+import com.google.gson.Gson;
+import com.qiniu.common.QiniuException;
+import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
+import com.qiniu.storage.BucketManager;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by liujupeng on 2018/11/9.
@@ -113,4 +124,72 @@ public class EveryUtils {
         ca.set(Calendar.SECOND, 0);
         return ca.getTimeInMillis()/1000;
     }
+
+
+    /**
+     * 上传图片或视频
+     * @param file
+     * @param prefix
+     * @param suffix
+     * @return
+     * @throws IOException
+     */
+    public static String upload(byte[] file, String prefix, String suffix) throws IOException {
+        //构造一个带指定Zone对象的配置类
+        Configuration cfg = new Configuration(Zone.zone2());
+        //...其他参数参考类注释
+        UploadManager uploadManager = new UploadManager(cfg);
+        //...生成上传凭证，然后准备上传
+        String accessKey = "Pj9hJWekBfxCfUgu4MuKlLvx6WQPX7HRbUcyDIXu";
+        String secretKey = "dxoV_UMvQ_bOPLHnd_DEt1U4XfvX9Z7ELa1ke2wx";
+        String bucket = "quanhuang";
+
+        //默认不指定key的情况下，以文件内容的hash值作为文件名
+        String key = prefix + String.valueOf(new Date().getTime()) + suffix;
+
+
+        ByteArrayInputStream byteInputStream = new ByteArrayInputStream(file);
+        Auth auth = Auth.create(accessKey, secretKey);
+        String upToken = auth.uploadToken(bucket);
+
+        Response response = uploadManager.put(byteInputStream, key, upToken, null, null);
+
+        if (response.statusCode != 200){
+            return "1";
+        }
+        //解析上传成功的结果
+        DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+        byteInputStream.close();
+//        System.out.println(putRet.key);
+        return putRet.key;
+    }
+
+
+
+
+
+    /**
+     * 删除空间文件
+     * @return
+     */
+    public static void delFile(String key) {
+        //构造一个带指定Zone对象的配置类
+        Configuration cfg = new Configuration(Zone.zone2());
+        //...其他参数参考类注释
+        String accessKey = "Pj9hJWekBfxCfUgu4MuKlLvx6WQPX7HRbUcyDIXu";
+        String secretKey = "dxoV_UMvQ_bOPLHnd_DEt1U4XfvX9Z7ELa1ke2wx";
+        String bucket = "quanhuang";
+        Auth auth = Auth.create(accessKey, secretKey);
+        BucketManager bucketManager = new BucketManager(auth, cfg);
+        try {
+            bucketManager.delete(bucket, key);
+        } catch (QiniuException ex) {
+            //如果遇到异常，说明删除失败
+//    	    System.err.println("code===="+ex.code());
+//    	    System.err.println("response==="+ex.response.toString());
+        }
+    }
+
+
+
 }

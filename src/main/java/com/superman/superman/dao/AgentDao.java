@@ -51,6 +51,9 @@ public interface AgentDao {
 
     @Select("SELECT userId FROM agent WHERE agentId = #{id} and status=0")
     List<String> queryForAgentId(Integer id);
+
+    @Select("SELECT userId FROM agent WHERE agentId = #{id} and status=0")
+    List<Long> queryForAgentIdNew(Integer id);
     @Insert("INSERT INTO agent(agentId, userId,crateTime) VALUES(#{agentId}, #{userId},now()")
     int insert(Agent agent);
 }

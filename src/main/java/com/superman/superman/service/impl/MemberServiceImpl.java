@@ -83,7 +83,7 @@ public class MemberServiceImpl implements MemberService {
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(80);
                 //粉丝用户信息列表
-                ArrayList<Object> fansIdList = new ArrayList<>(80);
+                ArrayList<Userinfo> fansIdList = new ArrayList<>(80);
 
 
                 for (Userinfo useId : userinfosList) {
@@ -91,13 +91,13 @@ public class MemberServiceImpl implements MemberService {
                         agentIdList.add(useId);
                         continue;
                     }
-                    fansIdList.add(useId.getPddpid());
+                    fansIdList.add(useId);
                 }
 
 
                 //查询所有粉丝的收入
                 Long fansMoney =0l;
-                Integer fansTemp = oderService.countPddOderForIdList(fansIdList);
+                Integer fansTemp = oderService.countPddOderForIdList(fansIdList,0);
                 fansMoney=fansTemp==null?0l:fansTemp;
                 //我的代理的所有收入
                 Long agentMoney = 0l;
@@ -127,14 +127,14 @@ public class MemberServiceImpl implements MemberService {
                     }
                     agentSum += uidList.size();
                     //查询出粉丝的PID集合
-                    List<String> userinfos = userinfoMapper.selectIn(uidList);
+                    List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
                     if (userinfos == null || userinfos.size() == 0) {
                         agentMoney +=lowAgentMoney;
 
                         continue;
                     }
                     //查询出粉丝贡献的订单收入
-                    Integer fans = oderService.countPddOderForIdList(userinfos);
+                    Integer fans = oderService.countPddOderForIdList(userinfos,0);
                     if (fans == null||fans==0) {
                         agentMoney +=lowAgentMoney;
 
@@ -169,13 +169,13 @@ public class MemberServiceImpl implements MemberService {
                 }
                 myJson.put("myTeamCount", uidList.size() + 1);
                 //查询出粉丝的PID集合
-                List<String> userinfos = userinfoMapper.selectIn(uidList);
+                List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
                 //如果粉丝没有贡献
                 if (userinfos == null || userinfos.size() == 0) {
                     return myJson;
                 }
                 //查询出粉丝贡献的订单收入
-                var fans = oderService.countPddOderForIdList(userinfos);
+                var fans = oderService.countPddOderForIdList(userinfos,0);
                 if (fans == null||fans==0) {
                     return myJson;
 
@@ -378,7 +378,6 @@ public class MemberServiceImpl implements MemberService {
 
                 }
             }
-
             data.put("today",todayMoneyCount);
             data.put("todayOder",todayMoney.size());
             data.put("yesday",yesDayMoneyCount);
@@ -484,16 +483,16 @@ public class MemberServiceImpl implements MemberService {
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(80);
                 //粉丝用户信息列表
-                ArrayList<Object> fansIdList = new ArrayList<>(80);
+                ArrayList<Userinfo> fansIdList = new ArrayList<>(80);
                 for (Userinfo useId : userinfosList) {
                     if (useId.getRoleId() == 2) {
                         agentIdList.add(useId);
                         continue;
                     }
-                    fansIdList.add(useId.getPddpid());
+                    fansIdList.add(useId);
                 }
                 //查询所有粉丝的收入
-                Integer fansMoney = oderService.countPddOderForIdList(fansIdList);
+                Integer fansMoney = oderService.countPddOderForIdList(fansIdList,0);
                 //我的代理的所有收入
                 Long agentMoney = 0l;
                 Long agentSum = 0l;
@@ -522,13 +521,13 @@ public class MemberServiceImpl implements MemberService {
                     }
                     agentSum += uidList.size();
                     //查询出粉丝的PID集合
-                    List<String> userinfos = userinfoMapper.selectIn(uidList);
+                    List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
                     if (userinfos == null || userinfos.size() == 0) {
                         agentMoney += ((lowAgentMoney * agentScore) / 100);
                         continue;
                     }
                     //查询出粉丝贡献的订单收入
-                    Integer fans = oderService.countPddOderForIdList(userinfos);
+                    Integer fans = oderService.countPddOderForIdList(userinfos,0);
                     if (fans == null) {
                         agentMoney += ((lowAgentMoney * agentScore) / 100);
                         continue;
@@ -550,22 +549,22 @@ public class MemberServiceImpl implements MemberService {
                 var meIncome = temp == null ? 0 : temp;
                 myJson.put("myMoney", (meIncome*score)/100);
                 //查询我的下级粉丝
-                var uidList = agentDao.queryForAgentId(uid.intValue());
+                var uidList = agentDao.queryForAgentIdNew(uid.intValue());
                 if (uidList == null || uidList.size() == 0) {
                     return myJson;
                 }
-                //查询出粉丝的PID集合
-                List<String> userinfos = userinfoMapper.selectIn(uidList);
-                //如果粉丝没有贡献
-                if (userinfos == null || userinfos.size() == 0) {
-                    return myJson;
-                }
+//                //查询出粉丝的PID集合
+//                List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
+//                //如果粉丝没有贡献
+//                if (userinfos == null || userinfos.size() == 0) {
+//                    return myJson;
+//                }
                 //查询出粉丝贡献的订单收入
-                var fans = oderService.countPddOderForIdList(userinfos);
+                Long fans = oderService.superQueryOderForUidList(uidList,0);
                 if (fans == null) {
                     return myJson;
                 }
-                Integer all = meIncome + fans;
+                Long all = meIncome + fans;
                 myJson.put("myMoney", (all*score)/100);
 
                 return myJson;

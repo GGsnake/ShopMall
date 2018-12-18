@@ -24,5 +24,5 @@ public interface TaoBaoApiService {
 
      * @return
      */
-    Integer  countWaitTb(List list);
+    Long countWaitTb(List list);
 }

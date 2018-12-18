@@ -104,10 +104,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Object Login(HttpServletRequest request,@RequestBody Map<String, Object> reqMap) {
-        String userName = RequestUtil.getMapString(reqMap.get("user_name").toString());
-        String passWord = RequestUtil.getMapString(reqMap.get("pass_word").toString());
-        //判断用户名是否存在
+    public Object Login(HttpServletRequest request,@RequestBody String body) {
+        JSONObject data = JSONObject.parseObject(body);
+        String userName = data.getString("user_name");
+        String passWord = data.getString("pass_word");
         Userinfo user = userServiceApi.queryUserByPhone(userName);
         if (user == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);

@@ -7,25 +7,17 @@ import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
-import com.superman.superman.utils.HttpRequest;
 import com.superman.superman.utils.NetUtils;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.domain.NTbkItem;
-import com.taobao.api.request.TbkDgItemCouponGetRequest;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
-import com.taobao.api.request.TbkItemGetRequest;
-import com.taobao.api.response.TbkDgItemCouponGetResponse;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
-import com.taobao.api.response.TbkItemGetResponse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -232,8 +224,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     }
 
     @Override
-    public Integer countWaitTb(@NonNull List list) {
-        Integer count = tboderMapper.selectPidIn(list);
+    public Long countWaitTb(@NonNull List list) {
+        Long count = tboderMapper.selectPidInTb(list);
         return count;
     }
 }
