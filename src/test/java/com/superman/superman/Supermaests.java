@@ -27,6 +27,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -58,6 +59,24 @@ public class Supermaests {
 //    @Autowired
 //    AgentDao agentDao;
     public static void main(String[] args){
+        int[] str=new int[]{6,3,7,32,21,1,2,65,43,33};
+        for(int i=0;i<str.length-1;i++){
+            int min=str[i];
+            int low=0;
+            for(int j=i;j<str.length-1;j++){
+                if (min>str[j+1]){
+                    min=str[j+1];
+                    low=j+1;
+                }
+            }
+            if (low!=0){
+                str[low]=str[i];
+            }
+            str[i]=min;
+        }
+        System.out.print(Arrays.toString(str));
+
+    }
      System.out.println(String.valueOf(EveryUtils.getEnd()));
     }
     @Test
