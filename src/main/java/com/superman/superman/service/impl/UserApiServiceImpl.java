@@ -5,6 +5,7 @@ import com.superman.superman.dao.UserDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
 import com.superman.superman.service.UserApiService;
+import com.superman.superman.utils.Result;
 import lombok.NonNull;
 import lombok.var;
 import org.slf4j.Logger;
@@ -58,6 +59,19 @@ public class UserApiServiceImpl implements UserApiService {
         userinfo.setLoginpwd(loginPwd);
         int flag = userinfoMapper.insert(userinfo);
         return flag==0?false:true;
+    }
+
+    @Override
+    public Boolean createUserByPhone(Userinfo userinfo) {
+        Userinfo info = queryUserByPhone(userinfo.getUserphone());
+        if (info != null) {
+            return false;
+        }
+        Boolean oprear = createUser(userinfo);
+        if (oprear) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -121,6 +135,21 @@ public class UserApiServiceImpl implements UserApiService {
     public Userinfo queryByUid(@NonNull Long uid) {
         var userinfo = userinfoMapper.selectByPrimaryKey(uid);
         return userinfo;
+    }
+
+    @Override
+    public Integer createInvCode(Long uid) {
+        try {
+            Integer integer = userinfoMapper.insertCode(uid);
+            if (integer==null){
+                return 0;
+            }
+        }
+        catch (Exception e){
+            return 0;
+        }
+        Integer id = userinfoMapper.queryCodeId(uid);
+        return id;
     }
 
 }

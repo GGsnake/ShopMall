@@ -7,6 +7,7 @@ import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
+import com.superman.superman.utils.GoodUtils;
 import com.superman.superman.utils.NetUtils;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -47,10 +48,11 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
-
+        Integer score = ufo.getScore();
         req.setPageSize(page_size);
         req.setPageNo(page_no);
         req.setIsTmall(isTmall);
+        req.setCat(cat);
         req.setHasCoupon(HasCoupon);
         req.setSort(sort);
         req.setAdzoneId(71784050073l);
@@ -68,42 +70,29 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             if (ufo.getRoleId() == 1) {
                 for (int i = 0; i < resultList.size(); i++) {
                     TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
-                    JSONObject dataJson = new JSONObject();
                     String coupon_info1 = dataObj.getCouponInfo();
                     //查找指定字符第一次出现的位置
                     int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                     String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                     String commissionRate = dataObj.getCommissionRate();
-                    dataJson.put("zk_price", dataObj.getZkFinalPrice());
-                    dataJson.put("price", dataObj.getReservePrice());
-                    dataJson.put("volume", dataObj.getVolume());
-                    dataJson.put("goodId", dataObj.getNumIid());
-                    dataJson.put("imgUrl", dataObj.getPictUrl());
-                    dataJson.put("goodName", dataObj.getTitle());
+                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                     dataJson.put("istmall", isTmall.toString());
                     dataJson.put("zk_money", Integer.parseInt(coupon_info));
                     dataJson.put("agent", 111l);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
-
                 data.put("count", count);
             }
             if (ufo.getRoleId() == 2) {
                 for (int i = 0; i < resultList.size(); i++) {
                     TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
-                    JSONObject dataJson = new JSONObject();
                     String coupon_info1 = dataObj.getCouponInfo();
                     //查找指定字符第一次出现的位置
                     int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                     String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                     String commissionRate = dataObj.getCommissionRate();
-                    dataJson.put("zk_price", dataObj.getZkFinalPrice());
-                    dataJson.put("price", dataObj.getReservePrice());
-                    dataJson.put("volume", dataObj.getVolume());
-                    dataJson.put("goodId", dataObj.getNumIid());
-                    dataJson.put("imgUrl", dataObj.getPictUrl());
-                    dataJson.put("goodName", dataObj.getTitle());
+                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                     dataJson.put("istmall", isTmall.toString());
                     dataJson.put("zk_money", Integer.parseInt(coupon_info));
                     dataJson.put("agent", 111l);
@@ -115,20 +104,103 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             }
             for (int i = 0; i < resultList.size(); i++) {
                 TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
-                JSONObject dataJson = new JSONObject();
-                String coupon_info1 = dataObj.getCouponInfo();
+                String var1 = dataObj.getCouponInfo();
                 //查找指定字符第一次出现的位置
-                int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
-                String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                int star = var1.indexOf(20943);//参数为字符的ascii码
+                Integer coupon_info = Integer.valueOf(var1.substring(star + 1, var1.length() - 1));
                 String commissionRate = dataObj.getCommissionRate();
-                dataJson.put("zk_price", dataObj.getZkFinalPrice());
-                dataJson.put("price", dataObj.getReservePrice());
-                dataJson.put("volume", dataObj.getVolume());
-                dataJson.put("goodId", dataObj.getNumIid());
-                dataJson.put("imgUrl", dataObj.getPictUrl());
-                dataJson.put("goodName", dataObj.getTitle());
+                //TODO佣金
+                JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+                dataJson.put("zk_money", coupon_info);
+
                 dataJson.put("istmall", isTmall.toString());
-                dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                dataJson.put("agent", 0l);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+
+            data.put("count", count);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    @Override
+    public JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid) {
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        request.setAdzoneId(71784050073l);
+
+        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+        JSONObject data = new JSONObject();
+        TbkDgMaterialOptionalResponse rsp = null;
+        try {
+            rsp = client.execute(request);
+            JSONArray dataArray = new JSONArray();
+            List<TbkDgMaterialOptionalResponse.MapData> resultList = rsp.getResultList();
+            if (resultList == null || resultList.size() == 0) {
+                return data;
+            }
+            Boolean isTmall = request.getIsTmall();
+            Long count = rsp.getTotalResults();
+            if (ufo.getRoleId() == 1) {
+                for (int i = 0; i < resultList.size(); i++) {
+                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                    String coupon_info1 = dataObj.getCouponInfo();
+                    String coupon_info = null;
+                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+
+                    //查找指定字符第一次出现的位置
+                    if (coupon_info1 != null&& !coupon_info1.equals("")) {
+                        int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                        coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                        dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                    }
+                    else {
+                        dataJson.put("zk_money", 0);
+                    }
+                    String commissionRate = dataObj.getCommissionRate();
+                    dataJson.put("istmall", isTmall);
+                    dataJson.put("agent", 111l);
+                    dataArray.add(dataJson);
+                }
+                data.put("data", dataArray);
+                data.put("count", count);
+                return data;
+            }
+            if (ufo.getRoleId() == 2) {
+                for (int i = 0; i < resultList.size(); i++) {
+                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                    String coupon_info1 = dataObj.getCouponInfo();
+                    //查找指定字符第一次出现的位置
+                    int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                    String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                    String commissionRate = dataObj.getCommissionRate();
+                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+                    dataJson.put("istmall", isTmall.toString());
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                    dataJson.put("agent", 111l);
+                    dataArray.add(dataJson);
+                }
+                data.put("data", dataArray);
+
+                data.put("count", count);
+            }
+            for (int i = 0; i < resultList.size(); i++) {
+                TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                String var1 = dataObj.getCouponInfo();
+                //查找指定字符第一次出现的位置
+                int star = var1.indexOf(20943);//参数为字符的ascii码
+                Integer coupon_info = Integer.valueOf(var1.substring(star + 1, var1.length() - 1));
+                String commissionRate = dataObj.getCommissionRate();
+                //TODO佣金
+                JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+                dataJson.put("zk_money", coupon_info);
+
+                dataJson.put("istmall", isTmall.toString());
                 dataJson.put("agent", 0l);
                 dataArray.add(dataJson);
             }
@@ -170,20 +242,14 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             Long totalResults = response.getTotalResults();
             for (int i = 0; i < results.size(); i++) {
                 TbkDgMaterialOptionalResponse.MapData dataObj = results.get(i);
-                JSONObject dataJson = new JSONObject();
                 String coupon_info1 = dataObj.getCouponInfo();
                 //查找指定字符第一次出现的位置
                 int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
-                String coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                Integer coupon_info = Integer.valueOf(coupon_info1.substring(star + 1, coupon_info1.length() - 1));
                 String commissionRate = dataObj.getCommissionRate();
-                dataJson.put("zk_price", dataObj.getZkFinalPrice());
-                dataJson.put("price", dataObj.getReservePrice());
-                dataJson.put("volume", dataObj.getVolume());
-                dataJson.put("goodId", dataObj.getNumIid());
-                dataJson.put("imgUrl", dataObj.getPictUrl());
-                dataJson.put("goodName", dataObj.getTitle());
+                JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                 dataJson.put("istmall", null);
-                dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                dataJson.put("zk_money", coupon_info);
                 dataJson.put("agent", 0l);
                 dataArray.add(dataJson);
             }
@@ -199,12 +265,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     }
 
     @Override
-    public JSONObject convertTaobao(@NonNull Long pid,@NonNull Long good_id) {
+    public JSONObject convertTaobao(@NonNull Long pid, @NonNull Long good_id) {
 
         String taobaoSercahUrl = URL + "convert/id-to-token?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
-        urlSign.put("pid", APID+pid);
+        urlSign.put("pid", APID + pid);
         urlSign.put("good_id", String.valueOf(good_id));
         urlSign.put("appkey", QQAPPKEY);
 
@@ -217,10 +283,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
         String uland_url = JSON.parseObject(res).getJSONObject("data").getString("uland_url");
         String token = JSON.parseObject(res).getJSONObject("data").getString("token");
-        temp.put("uland_url",uland_url);
-        temp.put("tkLink",token);
-        temp.put("url",null);
-        return  temp;
+        temp.put("uland_url", uland_url);
+        temp.put("tkLink", token);
+        temp.put("url", null);
+        return temp;
     }
 
     @Override

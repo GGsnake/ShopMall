@@ -3,9 +3,12 @@ package com.superman.superman;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.AllDevOderMapper;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
+import com.superman.superman.req.InvCode;
+import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.HttpDeal;
@@ -55,6 +58,8 @@ public class Supermaests {
 //    CollectService collectService;
     @Autowired
     UserinfoMapper userinfoMapper;
+    @Autowired
+    AllDevOderMapper allDevOderMapper;
     @Autowired
     MoneyService moneyService;
     @Autowired
@@ -184,10 +189,11 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
+    @Autowired UserApiService userApiService;
     @Test
     public void queryFinishMoney(){
-        Long aLong = moneyService.queryFinishMoney(11l);
-        log.warning(String.valueOf(aLong));
+        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null,6l,0,10);
+        log.warning(integer.toString());
     }
     @Test
     public void conver(){

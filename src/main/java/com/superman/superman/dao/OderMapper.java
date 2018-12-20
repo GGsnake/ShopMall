@@ -87,8 +87,19 @@ public interface OderMapper {
     Long superQueryWaitMoneyForUserSimple(Integer uid);
 
 
-
+    /**
+     * 超级搜索已结算订单（只需要传入用户id 支持多用户id传入）
+     * @param list
+     * @return
+     */
     Long superQueryForListToWait(List<Long> list);
+
+    /**
+     * 超级搜索已结算订单（只需要传入用户id 支持多用户id传入）
+     * @param list
+     * @return
+     */
+    Long superQueryForListToFinsh(List<Long> list);
 
 
 

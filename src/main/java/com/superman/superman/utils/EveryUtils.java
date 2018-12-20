@@ -17,8 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by liujupeng on 2018/11/9.
@@ -27,8 +26,8 @@ public class EveryUtils {
 
     public static String HttpRestClient(String url, HttpMethod method, MultiValueMap<String, String> params) throws IOException {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(10*1000);
-        requestFactory.setReadTimeout(10*1000);
+        requestFactory.setConnectTimeout(10 * 1000);
+        requestFactory.setReadTimeout(10 * 1000);
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
@@ -105,8 +104,9 @@ public class EveryUtils {
         ca.set(Calendar.HOUR_OF_DAY, 0);
         ca.set(Calendar.MINUTE, 0);
         ca.set(Calendar.SECOND, 0);
-        return ca.getTimeInMillis()/1000;
+        return ca.getTimeInMillis() / 1000;
     } //获取当月最后一天的时间戳
+
     public static long getTopStar() {
         Calendar ca = Calendar.getInstance();
         ca.add(Calendar.MONTH, -1);
@@ -114,20 +114,22 @@ public class EveryUtils {
         ca.set(Calendar.HOUR_OF_DAY, 0);
         ca.set(Calendar.MINUTE, 0);
         ca.set(Calendar.SECOND, 0);
-        return ca.getTimeInMillis()/1000;
+        return ca.getTimeInMillis() / 1000;
     } //获取当月最后一天的时间戳
+
     public static long getEnd() {
         Calendar ca = Calendar.getInstance();
-        ca.set(Calendar.DAY_OF_MONTH,0);
+        ca.set(Calendar.DAY_OF_MONTH, 0);
         ca.set(Calendar.HOUR_OF_DAY, 0);
         ca.set(Calendar.MINUTE, 0);
         ca.set(Calendar.SECOND, 0);
-        return ca.getTimeInMillis()/1000;
+        return ca.getTimeInMillis() / 1000;
     }
 
 
     /**
      * 上传图片或视频
+     *
      * @param file
      * @param prefix
      * @param suffix
@@ -154,7 +156,7 @@ public class EveryUtils {
 
         Response response = uploadManager.put(byteInputStream, key, upToken, null, null);
 
-        if (response.statusCode != 200){
+        if (response.statusCode != 200) {
             return "1";
         }
         //解析上传成功的结果
@@ -165,11 +167,15 @@ public class EveryUtils {
     }
 
 
-
+    public static List setToList(Set set) {
+        List tempList = new ArrayList<>(set);
+        return tempList;
+    }
 
 
     /**
      * 删除空间文件
+     *
      * @return
      */
     public static void delFile(String key) {
@@ -189,7 +195,6 @@ public class EveryUtils {
 //    	    System.err.println("response==="+ex.response.toString());
         }
     }
-
 
 
 }

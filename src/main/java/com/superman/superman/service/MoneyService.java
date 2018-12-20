@@ -1,5 +1,7 @@
 package com.superman.superman.service;
 
+import com.superman.superman.model.Userinfo;
+
 import java.util.Map;
 
 /**
@@ -7,25 +9,14 @@ import java.util.Map;
  */
 public interface MoneyService {
     /**
-     * 查询未结算
+     * 查询订单金额
+     *
      * @param uid
+     * @param status 0未结算  1已结算
      * @return
      */
-     Long queryWaitMoney(Long uid);
-
-    /**
-     * 查询已结算
-     * @param uid
-     * @return
-     */
-    Long queryFinishMoney(Long uid);
+    Long queryCashMoney(Long uid, Integer status, Userinfo user);
 
 
-    /**
-     * 查询单个已结算未结算（所有平台）
-     * @return
-     */
-    Long queryAllFinishSimple(Map map,Integer flag);
 
-
-    }
+}

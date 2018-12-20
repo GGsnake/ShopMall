@@ -86,4 +86,18 @@ public class OtherServiceImpl implements OtherService {
         }
         return codeImgUrl;
     }
+    @Override
+    public String addQrCodeUrlInv(String data, String uid) {
+        ByteArrayOutputStream stream = null;
+        String codeImgUrl = null;
+        try {
+            stream = crateQRCode(data);
+            codeImgUrl = EveryUtils.upload(stream.toByteArray(), "invcode/" + uid + "/", ".png");
+        }
+        catch (Exception e){
+            log.warning(e.getMessage());
+            return null;
+        }
+        return codeImgUrl;
+    }
 }

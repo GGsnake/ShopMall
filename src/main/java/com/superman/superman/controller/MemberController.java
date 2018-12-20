@@ -3,6 +3,7 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
@@ -24,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/member")
 public class MemberController {
+
+    @Autowired
+    private UserinfoMapper userinfoMapper;
 //    @Autowired
 //    PddApiService pddApiService;
     @Autowired
@@ -60,15 +64,15 @@ public class MemberController {
         JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
         return WeikeResponseUtil.success(data);
     }
-
-    @LoginRequired
-    @PostMapping("/momeny")
-    public WeikeResponse getMomeny(HttpServletRequest request)  {
-//        String uid = (String) request.getAttribute("uid");
-
-        JSONObject myMoney = memberService.getMyMoneyOf(6l);
-        return WeikeResponseUtil.success(myMoney);
-    }
+//
+//    @LoginRequired
+//    @PostMapping("/momeny")
+//    public WeikeResponse getMomeny(HttpServletRequest request)  {
+////        String uid = (String) request.getAttribute("uid");
+//
+//        JSONObject myMoney = memberService.getMyMoneyOf(6l);
+//        return WeikeResponseUtil.success(myMoney);
+//    }
 
     /**
      * 个人佣金提现接口
@@ -83,8 +87,9 @@ public class MemberController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         JSONObject data=new JSONObject();
-        Long waitMoney = moneyService.queryWaitMoney(Long.valueOf(uid));
-        Long finishMoney = moneyService.queryFinishMoney(Long.valueOf(uid));
+        Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        Long waitMoney = moneyService.queryCashMoney(Long.valueOf(uid),0,user);
+        Long finishMoney = moneyService.queryCashMoney(Long.valueOf(uid),1,user);
         Long cash =0l;
         data.put("waitMoney",waitMoney);
         data.put("finishMoney",finishMoney);

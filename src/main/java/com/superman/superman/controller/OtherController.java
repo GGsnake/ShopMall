@@ -2,16 +2,20 @@ package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Agent;
+import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
+import io.swagger.models.Model;
+import io.swagger.models.properties.Property;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
@@ -23,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/12/17.
@@ -32,15 +37,21 @@ import java.net.URISyntaxException;
 @RequestMapping("other")
 public class OtherController {
     private static final String QINIUURL = "http://pjx55zb0m.bkt.clouddn.com/";
+    private static final String QINIUURLLAST = "http://pjx55zb0m.bkt.clouddn.com";
     @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     private OtherService otherService;
     @Autowired
+    private AgentDao agentDao;
+    @Autowired
     private PddApiService pddApiService;
-
+    @Value("${domain.url}")
+    private String DOMAINURL;
     @Autowired
     private JdApiService jdApiService;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
 
     @Autowired
     private UserApiService userApiService;
@@ -64,7 +75,7 @@ public class OtherController {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
-            if (uland_url==null){
+            if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
@@ -77,7 +88,7 @@ public class OtherController {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
-            if (uland_url==null){
+            if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
@@ -92,15 +103,45 @@ public class OtherController {
     }
 
     @GetMapping("/qrcode")
-    public void qrcode(HttpServletResponse response, HttpServletRequest request) throws IOException {
-//        String realPath = request.getServletContext().getRealPath("/static/img");
-//        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
+    public WeikeResponse qrcode(HttpServletResponse response, HttpServletRequest request) throws IOException {
         ByteArrayOutputStream img = otherService.crateQRCode("http://www.baidu.com");
-//        File writeName = new File(realPath+"/21321.jpg");
-//        FileImageOutputStream fileImageOutputStream=new FileImageOutputStream(writeName);
-//        ImageIO.write(img, "JPEG",fileImageOutputStream);
         String upload = EveryUtils.upload(img.toByteArray(), "qrcode/", ".png");
         log.warning(upload);
+        return null;
 
     }
+
+    @LoginRequired
+    @GetMapping("/createCode")
+    public WeikeResponse createCode(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null)
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
+        String imgUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + "?code=" + code, uid);
+        return WeikeResponseUtil.success(QINIUURL + imgUrl);
+    }
+
+    //    @LoginRequired
+    @PostMapping("/queryCode")
+    public void queryCode(HttpServletResponse response, HttpServletRequest request, User user, Integer code) throws IOException {
+//        return WeikeResponseUtil.success(QINIUURL+agentId);
+        String userPhone = user.getUserPhone();
+        String loginPwd = user.getLoginPwd();
+        Userinfo userinfo=new Userinfo();
+        userinfo.setUserphone(userPhone);
+        userinfo.setLoginpwd(loginPwd);
+        Boolean userByPhone = userApiService.createUserByPhone(userinfo);
+        if (userByPhone){
+            Userinfo data = userinfoMapper.selectByPhone(userPhone);
+            Integer agentId = userinfoMapper.queryUserCode(code.longValue());
+            Agent agent=new Agent();
+            agent.setUserId(data.getId().intValue());
+            agent.setAgentId(agentId);
+            agentDao.insert(agent);
+        }
+
+    }
+//    @LoginRequired
+
 }

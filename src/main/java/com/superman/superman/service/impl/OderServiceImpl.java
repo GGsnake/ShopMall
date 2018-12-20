@@ -1,12 +1,15 @@
 package com.superman.superman.service.impl;
 
-import com.superman.superman.dao.OderMapper;
-import com.superman.superman.dao.TboderMapper;
+import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.dao.*;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.OderService;
+import com.superman.superman.utils.PageParam;
 import lombok.NonNull;
 import lombok.var;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +27,91 @@ public class OderServiceImpl implements OderService {
     @Autowired
     private TboderMapper tboderMapper;
 
-    @Override
-    public void queryAllOder(String id) {
+    @Autowired
+    private AgentDao agentDao;
 
+    @Autowired
+    private UserinfoMapper userinfoMapper;
+
+    @Autowired
+    private AllDevOderMapper allDevOderMapper;
+
+//
+//    @Override
+//    public JSONObject queryPddOder(@NonNull Long uid, @NonNull Integer dev, @NonNull List status, PageParam pageParam) {
+//
+//        if (dev == 0) {
+//            int count = allDevOderMapper.queryPddPageSizeCount(status, pdd);
+////            data.put("list", list);
+//            data.put("count", count);
+//            return data;
+//        }
+//        if (dev == 1) {
+//            List tb = new ArrayList();
+//            for (Userinfo var3 : userinfos) {
+//                tb.add(var3.getTbpid());
+//            }
+////            allDevOderMapper.queryPddPageSize(status, tb, pageParam.getStartRow(), pageParam.getPageSize());
+//        }
+//        if (dev == 2) {
+//            List jd = new ArrayList();
+//            for (Userinfo var3 : userinfos) {
+//                jd.add(var3.getJdpid());
+//            }
+////            allDevOderMapper.queryPddPageSize(status, jd, pageParam.getStartRow(), pageParam.getPageSize());
+//        }
+//        return null;
+//    }
+
+
+    @Override
+    public JSONObject queryPddOder(Long uid, List status, PageParam pageParam) {
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
+        Integer roleId = userinfo.getRoleId();
+        var data=new JSONObject();
+
+        switch (roleId) {
+            case 1:
+                List<OderPdd> list = allDevOderMapper.queryPddPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+                Integer count= allDevOderMapper.queryPddPageSizeCount(status, uid);
+                data.put("data",list);
+                data.put("count",count);
+                return data;
+            case 2:
+                Integer score = userinfo.getScore();
+                List<OderPdd> list1 = allDevOderMapper.queryPddPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+                Integer count2= allDevOderMapper.queryPddPageSizeCount(status, uid);
+                if (count2!=0){
+                    List<OderPdd> var2 = new ArrayList<>();
+                    for (OderPdd oder : list1) {
+                        OderPdd var1 = new OderPdd();
+                        BeanUtils.copyProperties(list1, var2);
+                        Long promotionAmount = oder.getPromotion_amount();
+                        Long money = promotionAmount * score / 100;
+                        var1.setPromotion_amount(money);
+                        var2.add(var1);
+                    }
+                    data.put("data",var2);
+                    data.put("count",count2);
+                    return data;
+                }
+                data.put("data",null);
+                data.put("count",0);
+                return data;
+            case 3:
+                break;
+        }
+        return null;
+    }
+
+    @Override
+    public JSONObject queryJdOder(Long uid, List status, PageParam pageParam) {
+        return null;
+    }
+
+    @Override
+    public JSONObject queryTbOder(Long uid, List status, PageParam pageParam) {
+        return null;
     }
 
     @Override
@@ -125,11 +210,14 @@ public class OderServiceImpl implements OderService {
 
     @Override
     public Long superQueryOderForUidList(List<Long> uidList, Integer status) {
-        Long money=0l;
-        if (status==0){
-            money=oderMapper.superQueryForListToWait(uidList);
-
+        Long money = 0l;
+        if (status == 0) {
+            money = oderMapper.superQueryForListToWait(uidList);
+        }
+        if (status == 1) {
+            money = oderMapper.superQueryForListToFinsh(uidList);
         }
         return money;
     }
+
 }

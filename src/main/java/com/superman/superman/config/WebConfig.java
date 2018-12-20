@@ -20,6 +20,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/member/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/collect/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/other/**");
+        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/oder/**");
+        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/taobao/**");
     }
     @Bean
     public  AuthenticationInterceptor authenticationInterceptor(){

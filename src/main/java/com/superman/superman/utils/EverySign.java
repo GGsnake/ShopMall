@@ -25,4 +25,6 @@ public class EverySign {
         String hex = DigestUtils.md5DigestAsHex(stringBuilder.toString().getBytes());
         return hex.toUpperCase();
     }
+
+
 }

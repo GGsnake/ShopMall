@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  */
 public interface TaoBaoApiService {
     JSONObject serachGoods(Long uid,String Keywords, String cat, Boolean isTmall,  Boolean HasCoupon, Long page_no, Long page_size, String sort, String itemloc);
+    JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request,Long uid);
     JSONObject indexGoodList(Integer type,Long page_no,Long page_size);
 
     /**

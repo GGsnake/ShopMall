@@ -12,8 +12,10 @@ public interface UserApiService {
     void query();
     String userLogin(User user);
     Boolean createUser(Userinfo userinfo);
+    Boolean createUserByPhone(Userinfo userinfo);
      Userinfo queryUserByPhone(String userPhone);
     Test queryT(Test user);
     Role queryR(Role user);
     Userinfo  queryByUid(Long uid);
+    Integer  createInvCode(Long uid);
 }

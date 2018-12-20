@@ -1,9 +1,9 @@
 package com.superman.superman.dao;
 
+import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.superman.superman.req.InvCode;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 @Mapper
@@ -65,4 +65,13 @@ public interface UserinfoMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Userinfo record);
+
+    @Insert("insert into invcode(userId,createTime) values (#{id},now())")
+    Integer insertCode(Long id);
+    @Select("select ifnull(id,0) from invcode where userId=#{id}")
+    Integer queryCodeId(Long id);
+    @Select("select userId from invcode where id=#{id}")
+    Integer queryUserCode(Long id);
+
+
 }

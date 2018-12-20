@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    window.onload = function() {
+        document.getElementById("code").value =GetQueryString("page");
+        function GetQueryString(name) {
+
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
+
+            var r = window.location.search.substr(1).match(reg);
+
+            if (r!=null) return (r[2]); return null;
+
+        }
+
+    };
+
+</script>
+<body>
+
+<span id="bar">
+<!-- 放置你想获取的数据，一般为空即可 -->
+</span>
+
+<body>
+<form action="/other/queryCode" method="post">
+    电话号码:<input type="text" id="userphone" name="userphone"/><br>
+    密码:<input type="text" id="loginpwd" name="loginpwd"/><br>
+    <input type="text"  style="display:none" id="code" name="code" /><br>
+    <input type="submit" value="注册"/>
+</form>
+</body>
+
+</body>
+</html>

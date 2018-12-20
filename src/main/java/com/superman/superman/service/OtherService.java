@@ -10,4 +10,5 @@ public interface OtherService {
 
         ByteArrayOutputStream crateQRCode(String content);
         String addQrCodeUrl(String data,String uid) throws IOException;
+        String addQrCodeUrlInv(String data,String uid) throws IOException;
 }

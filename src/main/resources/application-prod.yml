@@ -1,5 +1,9 @@
 spring:
   profiles: prod
+  mvc:
+    view:
+      prefix: /user/
+      suffix: .html
   datasource:
     name: mysql_test
     type: com.alibaba.druid.pool.DruidDataSource
@@ -49,7 +53,7 @@ spring:
 
 logging:
   level:
-    com.superman.superman: INFO
+    com.superman.superman: debug
   file: ./logs/core.log
   root: INFO
 

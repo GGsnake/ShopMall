@@ -91,15 +91,10 @@ public class UserController {
         user.setUserphone(mobile);
         user.setLoginpwd(pwd);
 //        user.set(code);
-        Userinfo info = userServiceApi.queryUserByPhone(user.getUserphone());
-        if (info != null) {
-            return Result.error("手机号已注册");
-        }
-        Boolean oprear = userServiceApi.createUser(user);
-        if (oprear) {
-            return Result.ok("注册成功");
-        }
+        Boolean flag = userServiceApi.createUserByPhone(user);
+
 //        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
+
         return Result.error("验证码错误");
     }
 

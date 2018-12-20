@@ -7,3 +7,7 @@ pdd_pro:
 spring:
   profiles:
     active: prod
+
+
+domain:
+  url: "http://120.79.62.89/"
