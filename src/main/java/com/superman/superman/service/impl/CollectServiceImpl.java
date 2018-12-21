@@ -3,7 +3,9 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.CollectDao;
+import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.CollectBean;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.CollectService;
 import com.superman.superman.utils.PageParam;
 import lombok.extern.java.Log;
@@ -23,10 +25,17 @@ public class CollectServiceImpl implements CollectService {
 
     @Autowired
     private CollectDao collectDao;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
 
 
     @Override
     public JSONArray queryCollect(@NonNull Long uid, @NonNull PageParam pageParam) {
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
+        if (userinfo==null){
+            return null;
+        }
+        Integer score = userinfo.getScore();
         List<CollectBean> query = collectDao.query(uid,pageParam.getStartRow(),pageParam.getPageSize());
         if (query==null||query.size()==0){
             return null;
@@ -36,6 +45,7 @@ public class CollectServiceImpl implements CollectService {
 
             JSONObject temp=new JSONObject();
             Long promotion_rate = collectBean.getPromotion_rate();
+
             temp.put("goodId",collectBean.getGoodId());
             temp.put("title",collectBean.getTitle());
             temp.put("image",collectBean.getImage());
@@ -45,7 +55,7 @@ public class CollectServiceImpl implements CollectService {
             temp.put("volume",collectBean.getVolume());
             temp.put("coupon",collectBean.getCoupon());
             // TODO
-            temp.put("agent",100l);
+            temp.put("agent",promotion_rate);
             temp.put("coupon_price",collectBean.getCoupon_price());
             data.add(temp);
         }

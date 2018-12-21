@@ -37,18 +37,7 @@ public class MemberController {
     @Autowired
     MoneyService moneyService;
 
-    @GetMapping("/myTeam")
-    public WeikeResponse getTeam() {
-        PageParam pageParam = new PageParam();
-        JSONObject myTeam = memberService.getMyTeam(6l,pageParam);
-        return WeikeResponseUtil.success(myTeam);
 
-    }
-//
-//    @GetMapping("/qu")
-//    public String jsons()  {
-////        return myMoney.toString();
-//    }
 
     @ApiOperation(value = "我的个人页面")
     @ApiImplicitParams({

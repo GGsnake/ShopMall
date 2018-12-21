@@ -23,7 +23,7 @@ public interface AgentDao {
     List<Agent> queryForUserIdAgentLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
 
-    @Select("SELECT count(userId) FROM agent WHERE agentId= #{id} and status=0")
+    @Select("SELECT ifnull(count(userId),0) FROM agent WHERE agentId= #{id} and status=0")
     Integer queryForUserIdCount(@Param("id") Long id);
 
 
@@ -63,6 +63,6 @@ public interface AgentDao {
     Integer queryUserScore(String id);
 
 
-    @Insert("INSERT INTO agent(agentId, userId,crateTime) VALUES(#{agentId}, #{userId},now()")
+    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insert(Agent agent);
 }

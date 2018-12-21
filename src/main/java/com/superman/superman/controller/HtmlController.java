@@ -1,6 +1,8 @@
 package com.superman.superman.controller;
 
+import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +16,13 @@ import java.io.IOException;
  */
 @Controller
 public class HtmlController {
+    /**
+     * 二维码处理识别
+     * @return
+     */
     @RequestMapping("/queryCodeUrl")
-    public String queryUserUrl(HttpServletResponse response, HttpServletRequest request, Integer code) throws IOException {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-//        if (uid == null)
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-//        Integer agentId = userinfoMapper.queryUserCode(code.longValue());
-//        modelAttribute
-        return "ind";
+    public String queryUserUrl() {
+        return "register";
     }
+
 }

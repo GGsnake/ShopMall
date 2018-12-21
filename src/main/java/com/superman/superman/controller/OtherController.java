@@ -37,7 +37,6 @@ import java.util.Map;
 @RequestMapping("other")
 public class OtherController {
     private static final String QINIUURL = "http://pjx55zb0m.bkt.clouddn.com/";
-    private static final String QINIUURLLAST = "http://pjx55zb0m.bkt.clouddn.com";
     @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
@@ -48,6 +47,10 @@ public class OtherController {
     private PddApiService pddApiService;
     @Value("${domain.url}")
     private String DOMAINURL;
+    @Value("${domain.codeurl}")
+    private String QINIUURLLAST;
+    @Value("${server.port}")
+    private Integer port;
     @Autowired
     private JdApiService jdApiService;
     @Autowired
@@ -102,6 +105,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
+
     @GetMapping("/qrcode")
     public WeikeResponse qrcode(HttpServletResponse response, HttpServletRequest request) throws IOException {
         ByteArrayOutputStream img = otherService.crateQRCode("http://www.baidu.com");
@@ -111,35 +115,63 @@ public class OtherController {
 
     }
 
+    /**
+     * 生成邀请二维码
+     *
+     * @param request
+     * @return
+     */
     @LoginRequired
     @GetMapping("/createCode")
-    public WeikeResponse createCode(HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public WeikeResponse createCode(HttpServletRequest request) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (userinfo == null || userinfo.getRoleId() == 3) {
+            return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
+        }
         Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
-        String imgUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + "?code=" + code, uid);
-        return WeikeResponseUtil.success(QINIUURL + imgUrl);
+
+        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/queryCodeUrl?code=" + code, uid);
+        return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
 
-    //    @LoginRequired
+    /**
+     * 处理二维码
+     * @param user
+     * @param code
+     * @return
+     */
     @PostMapping("/queryCode")
-    public void queryCode(HttpServletResponse response, HttpServletRequest request, User user, Integer code) throws IOException {
-//        return WeikeResponseUtil.success(QINIUURL+agentId);
+    public String queryCode(User user, Integer code) {
         String userPhone = user.getUserPhone();
+
         String loginPwd = user.getLoginPwd();
-        Userinfo userinfo=new Userinfo();
+        if (loginPwd == null || userPhone == null) {
+            return "addUserError";
+        }
+        Map phone = EverySign.isPhone(userPhone);
+        Boolean flag = (Boolean) phone.get("flag");
+        if (!flag) {
+            return "addUserError";
+        }
+        Userinfo userinfo = new Userinfo();
         userinfo.setUserphone(userPhone);
         userinfo.setLoginpwd(loginPwd);
         Boolean userByPhone = userApiService.createUserByPhone(userinfo);
-        if (userByPhone){
-            Userinfo data = userinfoMapper.selectByPhone(userPhone);
-            Integer agentId = userinfoMapper.queryUserCode(code.longValue());
-            Agent agent=new Agent();
-            agent.setUserId(data.getId().intValue());
-            agent.setAgentId(agentId);
-            agentDao.insert(agent);
+        if (userByPhone == false) {
+            return "addUserError";
         }
+        //获取用户Id
+        Userinfo data = userinfoMapper.selectByPhone(userPhone);
+        //根据邀请码查询代理的Id
+        Integer agentId = userinfoMapper.queryUserCode(code.longValue());
+        Agent agent = new Agent();
+        agent.setUserId(data.getId().intValue());
+        agent.setAgentId(agentId);
+        agentDao.insert(agent);
+        return "addUserSuccess";
 
     }
 //    @LoginRequired

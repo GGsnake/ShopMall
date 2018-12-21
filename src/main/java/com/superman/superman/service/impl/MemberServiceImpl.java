@@ -135,20 +135,19 @@ public class MemberServiceImpl implements MemberService {
         if (pageParam == null) {
             return null;
         }
-        List<Long> agents = new ArrayList<>(40);
+        List<Long> agents = null;
         JSONObject data = new JSONObject();
-        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-        if (userinfo.getRoleId() == 1) {
-            Integer sum = agentDao.queryForUserIdCount(userId);
+        Userinfo var1 = userinfoMapper.selectByPrimaryKey(userId);
+        Integer roleId = var1.getRoleId();
+        Integer sum = agentDao.queryForUserIdCount(userId);
+        if (roleId == 1) {
             //查询一级代理和直属粉丝
-            agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
-            if (agents == null || agents.size() == 0) {
-                data.put("pageCount", 0);
+            List<Userinfo> userList = userinfoMapper.selectInUserInfoForAgentId(userId, pageParam.getStartRow(), pageParam.getPageSize());
+            data.put("pageCount", sum);
+            if (userList == null || userList.size() == 0) {
                 data.put("pageData", new JSONArray());
                 return data;
             }
-            List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
-            data.put("pageCount", sum);
             JSONArray jsonArray = new JSONArray();
             for (Userinfo us : userList) {
                 String username = us.getUsername();
@@ -170,31 +169,32 @@ public class MemberServiceImpl implements MemberService {
             data.put("pageData", jsonArray);
             return data;
         }
-        Integer sum = agentDao.queryForUserIdCount(userId);
-        //查询粉丝
-        agents = agentDao.queryForUserIdLimt(userId, pageParam.getStartRow(), pageParam.getPageSize());
-        if (agents == null || agents.size() == 0) {
-            data.put("pageCount", 0);
-            data.put("pageData", new JSONArray());
+        if (roleId==2){
+
+            List<Userinfo> userList = userinfoMapper.selectInUserInfoForAgentId(userId, pageParam.getStartRow(), pageParam.getPageSize());
+            data.put("pageCount", sum);
+            if (userList == null || userList.size() == 0) {
+                data.put("pageData", new JSONArray());
+                return data;
+            }
+            JSONArray var2 = new JSONArray();
+            for (Userinfo us : userList) {
+                String username = us.getUsername();
+                username = username == null ? Constants.USERNAME_DEFAUT : username;
+                String image = us.getUserphoto();
+                image = image == null ? Constants.IMG_DEFAUT : image;
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("username", username);
+                jsonObject.put("image", image);
+                jsonObject.put("id", us.getId());
+                jsonObject.put("joinTime", us.getCreatetime());
+                var2.add(jsonObject);
+            }
+            data.put("pageData", var2);
             return data;
+
         }
-        List<Userinfo> userList = userinfoMapper.selectInUserInfo(agents);
-        data.put("pageCount", sum);
-        JSONArray jsonArray = new JSONArray();
-        for (Userinfo us : userList) {
-            String username = us.getUsername();
-            username = username == null ? Constants.USERNAME_DEFAUT : username;
-            String image = us.getUserphoto();
-            image = image == null ? Constants.IMG_DEFAUT : image;
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("username", username);
-            jsonObject.put("image", image);
-            jsonObject.put("id", us.getId());
-            jsonObject.put("joinTime", us.getCreatetime());
-            jsonArray.add(jsonObject);
-        }
-        data.put("pageData", jsonArray);
-        return data;
+        return null;
 
     }
 

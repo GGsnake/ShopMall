@@ -28,35 +28,34 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/team")
 public class TeamController {
     @Autowired
-    private  MemberService memberService;
+    private MemberService memberService;
 
 
-
-    @ApiOperation(value = "查看我的直推会员",notes = "分页加载")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "dsadasdasdsadsadsad", required = true, dataType = "String"),
-
-    })
+    /**
+     * 查看我的直推会员
+     * @param request
+     * @param pageParam
+     * @return
+     */
     @LoginRequired
     @PostMapping("/myTeam")
-    public WeikeResponse getMyTeam(HttpServletRequest request,PageParam pageParam) {
-        PageParam pageParam1=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+    public WeikeResponse getMyTeam(HttpServletRequest request, PageParam pageParam) {
+        PageParam var1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        JSONObject query = memberService.getMyTeam(Long.valueOf(uid),pageParam1);
-
-        return WeikeResponseUtil.success(query);
+        JSONObject data = memberService.getMyTeam(Long.valueOf(uid), var1);
+        return WeikeResponseUtil.success(data);
     }
 
-    @ApiOperation(value = "查看我会员下级",notes = "分页加载")
+    @ApiOperation(value = "查看我会员下级", notes = "分页加载")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "dsadasdasdsadsadsad", required = true, dataType = "String"),
     })
     @LoginRequired
     @PostMapping("/myFans")
     public WeikeResponse getMyFansNoMe(HttpServletRequest request, @RequestBody PageParam pageParam) {
-        PageParam pageParam1=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+        PageParam pageParam1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        JSONObject query = memberService.getMyNoFans(Long.valueOf(uid),pageParam1);
+        JSONObject query = memberService.getMyNoFans(Long.valueOf(uid), pageParam1);
         return WeikeResponseUtil.success(query);
     }
 //   @ApiOperation(value = "查看会员详情")

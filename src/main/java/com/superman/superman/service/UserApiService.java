@@ -1,5 +1,6 @@
 package com.superman.superman.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.Role;
 import com.superman.superman.model.Test;
 import com.superman.superman.model.User;
@@ -18,4 +19,5 @@ public interface UserApiService {
     Role queryR(Role user);
     Userinfo  queryByUid(Long uid);
     Integer  createInvCode(Long uid);
+    JSONObject createTbPid();
 }

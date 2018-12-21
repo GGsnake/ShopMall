@@ -1,11 +1,12 @@
 package com.superman.superman.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.dao.HotUserMapper;
 import com.superman.superman.dao.PddDao;
 import com.superman.superman.dao.UserDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
 import com.superman.superman.service.UserApiService;
-import com.superman.superman.utils.Result;
 import lombok.NonNull;
 import lombok.var;
 import org.slf4j.Logger;
@@ -15,15 +16,20 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by liujupeng on 2018/11/6.
  */
 @Service("userServiceApi")
 public class UserApiServiceImpl implements UserApiService {
-    private String REDIS_PRIFEX="token:";
-    private Long EXPRESS_TIME=36000l;
+    private String REDIS_PRIFEX = "token:";
+    private Long EXPRESS_TIME = 36000l;
     @Autowired
     private PddDao pddDao;
+    @Autowired
+    private HotUserMapper hotUserMapper;
     @Autowired
     private UserDao userDao;
     @Autowired
@@ -41,7 +47,7 @@ public class UserApiServiceImpl implements UserApiService {
         logger.info(userPdd.getUserPid());
         logger.info(String.valueOf(userPdd.getUserId()));
 
-        String s=null;
+        String s = null;
     }
 
     @Override
@@ -51,14 +57,20 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public Boolean createUser(Userinfo userinfo) {
-        var ha=redisTemplate.opsForValue();
+        var ha = redisTemplate.opsForValue();
 //        var code =ha.get("SMS:"+userinfo.getUserphone());
 //        if (code==null||!user.getLoginSecret().equals(code)){
 //            return false;
-        String loginPwd= DigestUtils.md5DigestAsHex(userinfo.getLoginpwd().getBytes());
+        String loginPwd = DigestUtils.md5DigestAsHex(userinfo.getLoginpwd().getBytes());
         userinfo.setLoginpwd(loginPwd);
+        JSONObject tbPid = createTbPid();
+        if (tbPid == null||tbPid.size()==0) {
+            return false;
+        }
+        userinfo.setTbpid(tbPid.getLong("tb"));
+        userinfo.setPddpid(tbPid.getString("pdd"));
         int flag = userinfoMapper.insert(userinfo);
-        return flag==0?false:true;
+        return flag == 0 ? false : true;
     }
 
     @Override
@@ -67,6 +79,8 @@ public class UserApiServiceImpl implements UserApiService {
         if (info != null) {
             return false;
         }
+        userinfo.setRoleId(3);
+        userinfo.setScore(0);
         Boolean oprear = createUser(userinfo);
         if (oprear) {
             return true;
@@ -117,7 +131,7 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public Userinfo queryUserByPhone(@NonNull String userPhone) {
-        Userinfo info= userinfoMapper.selectByPhone(userPhone);
+        Userinfo info = userinfoMapper.selectByPhone(userPhone);
         return info;
     }
 
@@ -141,15 +155,33 @@ public class UserApiServiceImpl implements UserApiService {
     public Integer createInvCode(Long uid) {
         try {
             Integer integer = userinfoMapper.insertCode(uid);
-            if (integer==null){
+            if (integer == null) {
                 return 0;
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         Integer id = userinfoMapper.queryCodeId(uid);
         return id;
+    }
+
+    /**
+     * 从pid池里取出pid
+     * @return
+     */
+    @Override
+    public synchronized JSONObject createTbPid() {
+        Long tbpid = hotUserMapper.createTbPid();
+        String pddpid = hotUserMapper.createPddPid();
+        if (tbpid == null||pddpid==null) {
+            return null;
+        }
+        hotUserMapper.deleteTbPid(tbpid);
+        hotUserMapper.deletePddPid(pddpid);
+        JSONObject temp=new JSONObject();
+        temp.put("tb",tbpid);
+        temp.put("pdd",pddpid);
+        return temp;
     }
 
 }
