@@ -53,7 +53,7 @@ public interface UserinfoMapper {
     //TODO sql待优化
     List<Userinfo> selectInUserInfo(@Param("list") List userlist);
 
-    @Select("select id,userName,createTime,userPhone from userinfo where id in (SELECT userId FROM agent WHERE agentId= #{agentId} and status=0) and status=0 ORDER by roleId asc  limit #{star},#{end}")
+    @Select("select id,userName,createTime,userPhone,roleId from userinfo where id in (SELECT userId FROM agent WHERE agentId= #{agentId} and status=0) and status=0 ORDER by roleId asc  limit #{star},#{end}")
     List<Userinfo> selectInUserInfoForAgentId(@Param("agentId") Long agentId, @Param("star") Integer star, @Param("end") Integer end);
 
     /**

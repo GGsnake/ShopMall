@@ -13,7 +13,9 @@ import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
+import com.taobao.api.request.TbkDgOptimusMaterialRequest;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
+import com.taobao.api.response.TbkDgOptimusMaterialResponse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by liujupeng on 2018/12/4.
@@ -176,7 +179,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     BigDecimal bigDecimal = agent.setScale(2, BigDecimal.ROUND_DOWN);
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent",bigDecimal.toString());
+                    dataJson.put("agent", bigDecimal.toString());
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -237,6 +240,111 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             e.printStackTrace();
         }
         return data;
+    }
+
+    @Override
+    public JSONObject indexSearch(Long uid, TbkDgOptimusMaterialRequest req) {
+//        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
+//        if (userinfo==null){
+//            return null;
+//        }
+//        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+//        req.setAdzoneId(71784050073l);
+//        JSONObject data=new JSONObject();
+//        try {
+//            TbkDgOptimusMaterialResponse rsp = client.execute(req);
+//            JSONArray dataArray = new JSONArray();
+//            List<TbkDgOptimusMaterialResponse.MapData> resultList = rsp.getResultList();
+//            if (resultList == null || resultList.size() == 0) {
+//                return data;
+//            }
+//            Boolean isTmall = request.getIsTmall();
+//            Long count = rsp.getTotalResults();
+//            if (ufo.getRoleId() == 1) {
+//                for (int i = 0;i < resultList.size(); i++) {
+//                    TbkDgOptimusMaterialResponse.MapData dataObj = resultList.get(i);
+//                    String coupon_info1 = dataObj.ge();
+//                    String coupon_info = null;
+//                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+//
+//                    //查找指定字符第一次出现的位置
+//                    if (coupon_info1 != null && !coupon_info1.equals("")) {
+//                        int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+//                        coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+//                        dataJson.put("zk_money", Integer.parseInt(coupon_info));
+//                    } else {
+//                        dataJson.put("zk_money", 0);
+//                    }
+//                    Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
+//                    dataJson.put("commissionRate", commissionRate);
+////                    BigDecimal zk = new BigDecimal(dataObj.getZkFinalPrice());
+////                    BigDecimal var1 = new BigDecimal(dataObj.getCommissionRate()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UNNECESSARY);
+////                    BigDecimal var2 = var1.divide(zk, 2, BigDecimal.ROUND_UNNECESSARY);
+//                    BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+//                    BigDecimal bigDecimal = agent.setScale(2, BigDecimal.ROUND_DOWN);
+//                    dataJson.put("istmall", isTmall);
+//                    dataJson.put("agent", bigDecimal.toString());
+//                    dataArray.add(dataJson);
+//                }
+//                data.put("data", dataArray);
+//                data.put("count", count);
+//                return data;
+//            }
+//            Semaphore
+//            if (ufo.getRoleId() == 2) {
+//                for (int i = 0; i < resultList.size(); i++) {
+//                    TbkDgOptimusMaterialResponse.MapData dataObj = resultList.get(i);
+//                    String coupon_info1 = dataObj.getCouponInfo();
+//                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+//                    String coupon_info = null;
+//                    //查找指定字符第一次出现的位置
+//                    if (coupon_info1 != null && !coupon_info1.equals("")) {
+//                        int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+//                        coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+//                        dataJson.put("zk_money", Integer.parseInt(coupon_info));
+//                    } else {
+//                        dataJson.put("zk_money", 0);
+//                    }
+//                    Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
+////                    BigDecimal zk = new BigDecimal(dataObj.getZkFinalPrice());
+////                    BigDecimal var1 = new BigDecimal(dataObj.getCommissionRate()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UNNECESSARY);
+////                    BigDecimal var2 = var1.divide(zk, 2, BigDecimal.ROUND_UNNECESSARY);
+//                    Double var3 = score / 100;
+//                    BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+//                    BigDecimal agent = var4.multiply(new BigDecimal(var3));
+//                    BigDecimal temp = agent.setScale(2, BigDecimal.ROUND_DOWN);
+//                    dataJson.put("istmall", isTmall);
+//                    dataJson.put("agent", temp.toString());
+//                    dataJson.put("commissionRate", commissionRate);
+//                    dataArray.add(dataJson);
+//                }
+//                data.put("data", dataArray);
+//
+//                data.put("count", count);
+//                return data;
+//            }
+//            for (int i = 0; i < resultList.size(); i++) {
+//                TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+//                String var1 = dataObj.getCouponInfo();
+//                //查找指定字符第一次出现的位置
+//                int star = var1.indexOf(20943);//参数为字符的ascii码
+//                Integer coupon_info = Integer.valueOf(var1.substring(star + 1, var1.length() - 1));
+//                String commissionRate = dataObj.getCommissionRate();
+//                //TODO佣金
+//                JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+//                dataJson.put("zk_money", coupon_info);
+//
+//                dataJson.put("istmall", isTmall.toString());
+//                dataJson.put("agent", 0l);
+//                dataArray.add(dataJson);
+//            }
+//            data.put("data", dataArray);
+//
+//            data.put("count", count);
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+        return null;
     }
 
     public JSONObject indexGoodList(Integer type, Long page_no, Long page_size) {
