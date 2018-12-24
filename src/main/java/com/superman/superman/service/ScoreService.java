@@ -33,7 +33,7 @@ public interface ScoreService {
      * @param goodId
      * @return
      */
-    String recordBrowse(Long uid,Long goodId);
+    String recordBrowse(String uid,Long goodId);
 
     /**
      * 增加积分

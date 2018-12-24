@@ -14,8 +14,10 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
+import com.taobao.api.request.TbkItemInfoGetRequest;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
 import com.taobao.api.response.TbkDgOptimusMaterialResponse;
+import com.taobao.api.response.TbkItemInfoGetResponse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -222,14 +224,22 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
                 String var1 = dataObj.getCouponInfo();
                 //查找指定字符第一次出现的位置
-                int star = var1.indexOf(20943);//参数为字符的ascii码
-                Integer coupon_info = Integer.valueOf(var1.substring(star + 1, var1.length() - 1));
-                String commissionRate = dataObj.getCommissionRate();
-                //TODO佣金
                 JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+
+                String coupon_info1 = dataObj.getCouponInfo();
+                String coupon_info = null;
+                String commissionRate = dataObj.getCommissionRate();
+                if (coupon_info1 != null && !coupon_info1.equals("")) {
+                    int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                    coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                } else {
+                    dataJson.put("zk_money", 0);
+                }
+                //TODO佣金
                 dataJson.put("zk_money", coupon_info);
 
-                dataJson.put("istmall", isTmall.toString());
+                dataJson.put("istmall", isTmall);
                 dataJson.put("agent", 0l);
                 dataArray.add(dataJson);
             }
@@ -367,8 +377,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
 
 
-        req.setPageNo(page_no);
-        req.setPageSize(page_size);
         try {
             TbkDgMaterialOptionalResponse response = client.execute(req);
             List<TbkDgMaterialOptionalResponse.MapData> results = response.getResultList();
@@ -427,5 +435,28 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     public Long countWaitTb(@NonNull List list) {
         Long count = tboderMapper.selectPidInTb(list);
         return count;
+    }
+
+    @Override
+    public JSONObject deatil(Long goodId, Long o) {
+        JSONObject var=new JSONObject();
+        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+        TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
+        req.setNumIids(String.valueOf(goodId));
+        req.setPlatform(2L);
+        TbkItemInfoGetResponse rsp = null;
+        try {
+            rsp = client.execute(req);
+            TbkItemInfoGetResponse.NTbkItem results = rsp.getResults().get(0);
+            if (results==null){
+                return var;
+            }
+            var.put("data",results);
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
+        return var;
     }
 }

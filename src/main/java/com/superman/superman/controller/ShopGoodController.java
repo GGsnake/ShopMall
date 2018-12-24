@@ -3,13 +3,11 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
-import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.Result;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,7 +69,7 @@ public class ShopGoodController {
     })
     @PostMapping("/Search")
     public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false,defaultValue = "tk_rate_des") String tbsort
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort
 
     ) {
 
@@ -80,7 +79,7 @@ public class ShopGoodController {
         }
         if (type == 1) {
 
-            JSONObject jsonObject = taoBaoApiService.serachGoods(6l,keyword, null, true,true, page.longValue(), pagesize.longValue(), tbsort, null);
+            JSONObject jsonObject = taoBaoApiService.serachGoods(6l, keyword, null, true, true, page.longValue(), pagesize.longValue(), tbsort, null);
             return WeikeResponseUtil.success(jsonObject);
 //
 //            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
@@ -148,11 +147,30 @@ public class ShopGoodController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "goodId", value = "商品Id", required = true, dataType = "Integer")
     })
+    @LoginRequired
     @PostMapping("/Detail")
-    public WeikeResponse Detail(@RequestParam(value = "goodId", required = true) Integer goodId
-    ) {
-        JSONObject jsonObject = pddApiService.pddDetail(goodId.longValue(), "7");
-        return WeikeResponseUtil.success(jsonObject);
+    public WeikeResponse Detail(HttpServletRequest request,Long  goodId, Integer devId) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject var =new JSONObject();
+
+        if (devId==0){
+            var=taoBaoApiService.deatil(goodId, Long.valueOf(uid));
+        }
+        if (devId==1){
+            var=pddApiService.pddDetail(goodId,uid);
+
+        }
+        if (devId==2){
+//            var=pddApiService.pddDetail(goodId, Long.valueOf(uid));
+
+        }
+        if (devId==3){
+
+        }
+        return WeikeResponseUtil.success(var);
     }
 
 

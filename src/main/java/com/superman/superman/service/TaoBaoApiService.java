@@ -28,4 +28,6 @@ public interface TaoBaoApiService {
      * @return
      */
     Long countWaitTb(List list);
+
+    JSONObject deatil(Long goodId, Long o);
 }

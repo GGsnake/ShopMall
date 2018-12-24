@@ -55,7 +55,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     @Override
-    public String recordBrowse(Long uid,Long goodId) {
+    public String recordBrowse(String uid,Long goodId) {
         String kv="score:" + uid.toString();
         if (redisTemplate.hasKey(kv)){
             redisTemplate.opsForSet().add(kv,goodId.toString());
