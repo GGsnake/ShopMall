@@ -19,6 +19,8 @@ public interface AllDevOderMapper {
 
     List<OderPdd> queryPddPageSize(@Param("status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
+    List<OderPdd> queryTbPageSize(@Param("tk_status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
+
     Integer queryPddPageSizeCount(@Param("status") List status,  @Param("id") Long id);
 
     List<Oder> queryPddPageSizeSupreMe(@Param("status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);

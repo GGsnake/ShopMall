@@ -41,6 +41,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     final String TAOBAOURL = "http://gw.api.taobao.com/router/rest";
     final String APPKEY = "25377219";
     final String SECRET = "4c3e6b9e6484ce2982bca63d524564c1";
+
     @Autowired
     RestTemplate restTemplate;
     @Autowired

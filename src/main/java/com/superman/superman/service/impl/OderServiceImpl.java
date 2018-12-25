@@ -111,6 +111,40 @@ public class OderServiceImpl implements OderService {
 
     @Override
     public JSONObject queryTbOder(Long uid, List status, PageParam pageParam) {
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
+        Integer roleId = userinfo.getRoleId();
+        var data=new JSONObject();
+        switch (roleId) {
+            case 1:
+                List<OderPdd> list = allDevOderMapper.queryPddPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+                Integer count= allDevOderMapper.queryPddPageSizeCount(status, uid);
+                data.put("data",list);
+                data.put("count",count);
+                return data;
+            case 2:
+                Integer score = userinfo.getScore();
+                List<OderPdd> list1 = allDevOderMapper.queryPddPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+                Integer count2= allDevOderMapper.queryPddPageSizeCount(status, uid);
+                if (count2!=0){
+                    List<OderPdd> var2 = new ArrayList<>();
+                    for (OderPdd oder : list1) {
+                        OderPdd var1 = new OderPdd();
+                        BeanUtils.copyProperties(list1, var2);
+                        Long promotionAmount = oder.getPromotion_amount();
+                        Long money = promotionAmount * score / 100;
+                        var1.setPromotion_amount(money);
+                        var2.add(var1);
+                    }
+                    data.put("data",var2);
+                    data.put("count",count2);
+                    return data;
+                }
+                data.put("data",null);
+                data.put("count",0);
+                return data;
+            case 3:
+                break;
+        }
         return null;
     }
 

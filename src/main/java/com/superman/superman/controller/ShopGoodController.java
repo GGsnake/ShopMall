@@ -4,8 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Userinfo;
+import com.superman.superman.req.JdSerachReq;
+import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.TaoBaoApiService;
+import com.superman.superman.service.UserApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
 import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,13 +35,17 @@ public class ShopGoodController {
     @Autowired
     private PddApiServiceImpl pddApiService;
     @Autowired
+    private JdApiService jdApiService;
+    @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     private MemberService memberService;
-    static final String SERVER_URL = "https://api.jd.com/routerjson";
-    static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
-    static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
-    static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
+    @Autowired
+    private UserApiService userApiService;
+    //    static final String SERVER_URL = "https://api.jd.com/routerjson";
+//    static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
+//    static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
+//    static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
     //    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
     private final static Logger logger = LoggerFactory.getLogger(ShopGoodController.class);
 
@@ -67,12 +76,18 @@ public class ShopGoodController {
             @ApiImplicitParam(name = "keyword", value = "关键词", required = false, dataType = "Integer"),
             @ApiImplicitParam(name = "sort", value = "排序方式 ", required = false, dataType = "Integer")
     })
+    @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
                                 @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort
 
     ) {
-
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+//        Userinfo userinfo = userApiService.queryByUid(Long.valueOf(uid));
+//        userinfo
         if (type == 0) {
             JSONObject pddGoodList = pddApiService.getPddGoodList(6l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
             return WeikeResponseUtil.success(pddGoodList);
@@ -96,8 +111,11 @@ public class ShopGoodController {
 
         }
         if (type == 2) {
-            JSONObject re = pddApiService.pddDetail(3846603883l, String.valueOf(1));
-
+            JdSerachReq var1 = new JdSerachReq();
+            var1.setKeyword(keyword);
+            var1.setPage(page);
+            var1.setPagesize(pagesize);
+            JSONObject re = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
             return WeikeResponseUtil.success(re);
         }
 //        if (type == 3) {
@@ -149,25 +167,25 @@ public class ShopGoodController {
     })
     @LoginRequired
     @PostMapping("/Detail")
-    public WeikeResponse Detail(HttpServletRequest request,Long  goodId, Integer devId) {
+    public WeikeResponse Detail(HttpServletRequest request, Long goodId, Integer devId) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        JSONObject var =new JSONObject();
+        JSONObject var = new JSONObject();
 
-        if (devId==0){
-            var=taoBaoApiService.deatil(goodId, Long.valueOf(uid));
+        if (devId == 0) {
+            var = taoBaoApiService.deatil(goodId, Long.valueOf(uid));
         }
-        if (devId==1){
-            var=pddApiService.pddDetail(goodId,uid);
+        if (devId == 1) {
+            var = pddApiService.pddDetail(goodId, uid);
 
         }
-        if (devId==2){
+        if (devId == 2) {
 //            var=pddApiService.pddDetail(goodId, Long.valueOf(uid));
 
         }
-        if (devId==3){
+        if (devId == 3) {
 
         }
         return WeikeResponseUtil.success(var);
