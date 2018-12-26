@@ -48,7 +48,7 @@ import java.util.List;
 @SpringBootTest
 public class Supermaests {
 
-//    @Autowired
+    //    @Autowired
 //    ScoreService scoreService;
 //    @Autowired
 //    CollectService collectService;
@@ -72,11 +72,13 @@ public class Supermaests {
     OderMapper oderMapper;
     @Autowired
     UserDao userDao;
-//    @Autowired
+
+    //    @Autowired
 //    AgentDao agentDao;
-    public static void main(String[] args){
-     System.out.println(String.valueOf(EveryUtils.getEnd()));
+    public static void main(String[] args) {
+        System.out.println(String.valueOf(EveryUtils.getEnd()));
     }
+
     @Test
     public void test() throws Exception {
         final String url = "http://gw.api.taobao.com/router/rest";
@@ -126,8 +128,9 @@ public class Supermaests {
 //        jdApiService.queryJdOder(scoreBean1);
 
     }
+
     @Test
-    public void pddoder(){
+    public void pddoder() {
 //        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
 //
 //        log.warning(jsonObject.toJSONString());
@@ -156,8 +159,9 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
+
     @Test
-    public void sum(){
+    public void sum() {
 //        JSONObject jsonObject = memberService.getMyMoney(5l);
 //        log.warning(jsonObject.toJSONString());
 //        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"蛇皮", null, null, 1l, 20l, "tk_rate_des", null);
@@ -187,23 +191,33 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
-    @Autowired UserApiService userApiService;
+
+    @Autowired
+    UserApiService userApiService;
+
     @Test
-    public void queryFinishMoney(){
-        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null,6l,0,10);
+    public void queryFinishMoney() {
+        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null, 6l, 0, 10);
         log.warning(integer.toString());
     }
+
     @Test
-    public void conver(){
-        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l,583856228119l);
+    public void conver() {
+        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l, 583856228119l);
         log.warning(String.valueOf(aLong));
     }
+
     @Test
-    public void netthread(){
-        for (int i=243;i<1000;i++){
-            userDao.sqltest(String.valueOf(i));
-        }
+    public void netthread() {
+//        List a = new ArrayList();
+//        a.add(537142696012l);
+//        a.add(570588089087l);
+//        a.add(577550833111l);
+//        a.add(578164687657l);
+//        List<String> strings = taoBaoApiService.deatilGoodList(a);
+//        log.warning(strings.toString());
     }
+
     @Test
     public void count() throws IOException, URISyntaxException {
 //        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
@@ -219,7 +233,6 @@ public class Supermaests {
 //
 //        JSONObject aLong = taoBaoApiService.countWaitTb();
     }
-
 
 
 }

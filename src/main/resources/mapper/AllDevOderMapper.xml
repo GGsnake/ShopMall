@@ -46,15 +46,27 @@
             </foreach>
         </if>
     </select>
-    <select id="queryTbPageSize" resultType="com.superman.superman.model.Tboder">
-        SELECT
-        odercreate_time,num_iid,commission,item_title,trade_id,adzone_id
+    <select id="queryTbPageSizeCount" resultType="java.lang.Integer">
+        SELECT IFNULL(count(id),0)
         FROM tboder
         WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
         and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
         <if test="tk_status!= null">
             and tk_status in
-            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryTbPageSize" resultType="com.superman.superman.model.Tboder">
+        SELECT
+        odercreate_time as odercreateTime,num_iid as numIid ,commission,item_title as itemTitle,trade_id as tradeId,adzone_id as adzoneId
+        FROM tboder
+        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and tk_status in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>

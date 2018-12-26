@@ -14,6 +14,7 @@ public interface TaoBaoApiService {
     JSONObject serachGoods(Long uid,String Keywords, String cat, Boolean isTmall,  Boolean HasCoupon, Long page_no, Long page_size, String sort, String itemloc);
     JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request,Long uid);
     JSONObject indexSearch(Long uid, TbkDgOptimusMaterialRequest req);
+    String deatilGoodList(Long l);
 
     /**
      * 生成淘口令推广链接

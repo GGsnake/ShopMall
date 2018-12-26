@@ -3,8 +3,10 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.qiniu.util.StringUtils;
 import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Tboder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.GoodUtils;
@@ -16,7 +18,6 @@ import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
 import com.taobao.api.request.TbkItemInfoGetRequest;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
-import com.taobao.api.response.TbkDgOptimusMaterialResponse;
 import com.taobao.api.response.TbkItemInfoGetResponse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 /**
  * Created by liujupeng on 2018/12/4.
@@ -440,7 +439,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 
     @Override
     public JSONObject deatil(Long goodId, Long o) {
-        JSONObject var=new JSONObject();
+        JSONObject var = new JSONObject();
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
         req.setNumIids(String.valueOf(goodId));
@@ -449,15 +448,36 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         try {
             rsp = client.execute(req);
             TbkItemInfoGetResponse.NTbkItem results = rsp.getResults().get(0);
-            if (results==null){
+            if (results == null) {
                 return var;
             }
-            var.put("data",results);
+            var.put("data", results);
 
         } catch (ApiException e) {
             e.printStackTrace();
         }
 
         return var;
+    }
+
+    public String deatilGoodList(Long l) {
+        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+        TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
+        req.setNumIids(l.toString());
+        req.setPlatform(2L);
+        TbkItemInfoGetResponse rsp = null;
+        try {
+            rsp = client.execute(req);
+            List<TbkItemInfoGetResponse.NTbkItem> results = rsp.getResults();
+            if (results == null) {
+                return null;
+            }
+
+            return results.get(0).getPictUrl();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

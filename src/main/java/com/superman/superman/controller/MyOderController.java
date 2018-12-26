@@ -43,12 +43,18 @@ public class MyOderController {
     @PostMapping("/myOder")
     public WeikeResponse queryAllOder(HttpServletRequest request, PageParam pageParam, Integer devId, Integer status) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null||status==null||status>=3||status<0) {
+        if (uid == null || status == null || status >= 3 || status < 0) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        var param=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+        var param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List statusList = ConvertUtils.getStatus(devId, status);
-        JSONObject allOder = oderManager.getAllOder(Long.valueOf(uid), statusList, param);
+        JSONObject allOder = new JSONObject();
+        if (devId == 0) {
+            allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
+        }
+        if (devId == 1) {
+            allOder = oderManager.getAllOder(Long.valueOf(uid), statusList, param);
+        }
         return WeikeResponseUtil.success(allOder);
     }
 }

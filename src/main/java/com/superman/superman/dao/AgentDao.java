@@ -62,6 +62,9 @@ public interface AgentDao {
     @Select("SELECT score FROM userinfo WHERE pddPid=#{id}")
     Integer queryUserScore(String id);
 
+    @Select("SELECT score FROM userinfo WHERE tbPid=#{id}")
+    Integer queryUserScoreTb(Long id);
+
 
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insert(Agent agent);
