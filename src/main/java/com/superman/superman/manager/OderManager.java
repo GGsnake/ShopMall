@@ -15,8 +15,10 @@ import lombok.NonNull;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +35,16 @@ public class OderManager {
     private UserinfoMapper userinfoMapper;
     @Autowired
     private AgentDao agentDao;
-    @Autowired
-    private AgentDao agentDao;
+
+    @Value("${juanhuang.range}")
+    private Integer range;
 
     public JSONObject getAllOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
+        if (roleId==3){
+            return null;
+        }
         if (roleId==2){
             JSONObject temp = oderService.queryPddOder(uid, status, pageParam);
             return temp;
@@ -68,34 +74,34 @@ public class OderManager {
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
+
+        if (roleId==3){
+            return null;
+        }
+        JSONObject var =new JSONObject();
         if (roleId==2){
-            JSONObject var = oderService.queryTbOder(uid, status, pageParam);
+            var= oderService.queryTbOder(uid, status, pageParam);
             return var;
         }
-        JSONObject var = oderService.queryTbOder(uid, status, pageParam);
-        JSONArray data = var.getJSONArray("data");
-        if (data==null){
-            JSONObject var1=new JSONObject();
-            var1.put("data", null);
-            var1.put("count", 0);
-            return var1;
+        var = oderService.queryTbOder(uid, status, pageParam);
+        JSONArray json = var.getJSONArray("data");
+        JSONArray dataArray =new JSONArray();
+        if (json==null){
+            return var;
         }
-        for (int i = 0; i < data.size(); i++) {
-            JSONObject var32= (JSONObject) data.get(i);
-            Integer score = agentDao.queryUserScoreTb(var32.getLong("pid"));
+        for (int i = 0; i < json.size(); i++) {
+            JSONObject chid= (JSONObject) json.get(i);
+            Integer score = agentDao.queryUserScoreTb(chid.getLong("pid"));
             Long sc = 100l - score;
-            Double promotionAmount = var32.getDouble("comssion")*100d;
-            Double money = promotionAmount *ra sc / 100d;
+            //获得原始佣金
+            Double promotionAmount = chid.getDouble("comssion")*100d;
+            //平台抽成后的运营商佣金
+            Double money = (promotionAmount *range/100)*sc / 100d;
+            chid.put("comssion",new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+            dataArray.add(chid);
         }
-        for (Tboder oder : data) {
-            Tboder var1 = new Tboder();
-            BeanUtils.copyProperties(oder, var1);
-
-            var1.setCommission(money);
-            var2.add(var1);
-        }
-        temp.put("data", var2);
-        return temp;
+        var.put("data", dataArray);
+        return var;
     }
     public JSONObject getJdOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);

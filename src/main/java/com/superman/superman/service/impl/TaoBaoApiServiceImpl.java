@@ -143,7 +143,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (ufo == null) {
             return null;
         }
-
         request.setAdzoneId(71784050073l);
         Double score = Double.valueOf(ufo.getScore());
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
@@ -164,7 +163,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     String coupon_info1 = dataObj.getCouponInfo();
                     String coupon_info = null;
                     JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
-
                     //查找指定字符第一次出现的位置
                     if (coupon_info1 != null && !coupon_info1.equals("")) {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
@@ -179,9 +177,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 //                    BigDecimal var1 = new BigDecimal(dataObj.getCommissionRate()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UNNECESSARY);
 //                    BigDecimal var2 = var1.divide(zk, 2, BigDecimal.ROUND_UNNECESSARY);
                     BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
-                    BigDecimal bigDecimal = agent.setScale(2, BigDecimal.ROUND_DOWN);
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", bigDecimal.toString());
+                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -209,23 +206,19 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     Double var3 = score / 100;
                     BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
-                    BigDecimal temp = agent.setScale(2, BigDecimal.ROUND_DOWN);
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", temp.toString());
+                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataJson.put("commissionRate", commissionRate);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
-
                 data.put("count", count);
                 return data;
             }
             for (int i = 0; i < resultList.size(); i++) {
                 TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
-                String var1 = dataObj.getCouponInfo();
                 //查找指定字符第一次出现的位置
                 JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
-
                 String coupon_info1 = dataObj.getCouponInfo();
                 String coupon_info = null;
                 String commissionRate = dataObj.getCommissionRate();
@@ -236,15 +229,13 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 } else {
                     dataJson.put("zk_money", 0);
                 }
-                //TODO佣金
                 dataJson.put("zk_money", coupon_info);
-
                 dataJson.put("istmall", isTmall);
                 dataJson.put("agent", 0l);
+                dataJson.put("commissionRate", commissionRate);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
-
             data.put("count", count);
         } catch (ApiException e) {
             e.printStackTrace();

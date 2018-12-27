@@ -29,9 +29,6 @@ public class MyOderController {
     private OderService oderService;
     @Autowired
     private OderManager oderManager;
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
 
     @ApiOperation(value = "我的订单", notes = "灵活搜索")
     @ApiImplicitParams({

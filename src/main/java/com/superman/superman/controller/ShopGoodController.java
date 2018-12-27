@@ -13,6 +13,7 @@ import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
 import com.superman.superman.utils.*;
+import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * Created by liujupeng on 2018/11/8.
@@ -72,88 +74,54 @@ public class ShopGoodController {
      */
     @ApiOperation(value = "全局搜索", notes = "全局搜索")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "平台类型 0拼多多 1淘宝 2京东 3 唯品会", required = false, dataType = "Integer", paramType = "/Search"),
+            @ApiImplicitParam(name = "type", value = "平台类型 0拼多多 1淘宝 2京东 3天猫", required = false, dataType = "Integer", paramType = "/Search"),
             @ApiImplicitParam(name = "keyword", value = "关键词", required = false, dataType = "Integer"),
             @ApiImplicitParam(name = "sort", value = "排序方式 ", required = false, dataType = "Integer")
     })
     @LoginRequired
     @PostMapping("/Search")
     public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
 
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-//        Userinfo userinfo = userApiService.queryByUid(Long.valueOf(uid));
-//        userinfo
+        JSONObject data;
         if (type == 0) {
-            JSONObject pddGoodList = pddApiService.getPddGoodList(6l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
-            return WeikeResponseUtil.success(pddGoodList);
+            data = pddApiService.getPddGoodList(Long.valueOf(uid), pagesize, page, sort, with_coupon == 0 ? true : false, keyword, opt, 1);
+            return WeikeResponseUtil.success(data);
         }
         if (type == 1) {
-
-            JSONObject jsonObject = taoBaoApiService.serachGoods(6l, keyword, null, true, true, page.longValue(), pagesize.longValue(), tbsort, null);
-            return WeikeResponseUtil.success(jsonObject);
-//
-//            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
-//            UnionThemeGoodsServiceQueryCouponGoodsResponse response;
-//            request.setFrom(1);
-//            request.setPageSize(10);
-//            try {
-//                response = client.execute(request);
-//                logger.info(response.getQueryCouponGoodsResult());
-//            } catch (JdException e) {
-//                e.printStackTrace();
-//            }
-//
-
+//            data = taoBaoApiService.serachGoods(Long.valueOf(uid), keyword, null, true, true, page.longValue(), pagesize.longValue(), tbsort, null);
+            TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
+            req.setPageNo(Long.valueOf(page));
+            req.setPageSize(Long.valueOf(pagesize));
+            req.setIsTmall(false);
+            if (tbcat != null) {
+                req.setCat(tbcat);
+            }
+            req.setQ(keyword);
+            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
         }
         if (type == 2) {
             JdSerachReq var1 = new JdSerachReq();
             var1.setKeyword(keyword);
             var1.setPage(page);
             var1.setPagesize(pagesize);
-            JSONObject re = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
-            return WeikeResponseUtil.success(re);
+            data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
         }
-//        if (type == 3) {
-//            UnionSearchGoodsParamQueryRequest request=new UnionSearchGoodsParamQueryRequest();
-//
-//            request.setPageIndex( 1 );
-//            request.setPageSize( 10 );
-//
-//            try {
-//
-//                UnionSearchGoodsParamQueryResponse response=client.execute(request);
-//                String queryResult = response.getQueryPromotionGoodsByParamResult();
-//
-//                JSONArray jsonObject = JSON.parseArray(queryResult);
-//                for (int i = 0; i < jsonObject.size(); i++) {
-//                    JSONObject o = (JSONObject) jsonObject.get(i);
-//                    //佣金比率 千分比
-//                    Long promotion_rate = o.getLong("promotion_rate");
-//                    //最低团购价 千分比
-//                    Long min_group_price = o.getLong("min_group_price");
-//                    //优惠卷金额 千分比
-//                    Long coupon_discount = o.getLong("coupon_discount");
-//                    //佣金计算
-//                    Float after = Float.valueOf(min_group_price - coupon_discount);
-//                    Float promoto = Float.valueOf(promotion_rate) / 1000;
-//                    Float comssion = Float.valueOf(after * promoto);
-//                    Integer rmb = (int) (comssion * rang);
-//                    Float bondList = (rmb * bonus);
-//                    o.put("bond",bondList);
-//                }
-//
-//                logger.info(response.getQueryPromotionGoodsByParamResult());
-//
-//            } catch (JdException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
+        if (type == 3) {
+            JdSerachReq var1 = new JdSerachReq();
+            var1.setKeyword(keyword);
+            var1.setPage(page);
+            var1.setPagesize(pagesize);
+            data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
+        }
         return null;
     }
 

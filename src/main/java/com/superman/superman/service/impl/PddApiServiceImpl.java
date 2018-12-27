@@ -99,7 +99,7 @@ public class PddApiServiceImpl implements PddApiService {
     @Override
     public JSONObject convertPdd(@NonNull String pid, @NonNull Long goodId) {
         String res = null;
-        JSONObject pddTemp=new JSONObject();
+        JSONObject pddTemp = new JSONObject();
 
         StringBuilder str = new StringBuilder();
         str.append("[").append(goodId).append("]");
@@ -121,14 +121,14 @@ public class PddApiServiceImpl implements PddApiService {
             log.warning(e.getMessage());
             return pddTemp;
         }
-        JSONArray temp= JSONObject.parseObject(res).getJSONObject("goods_promotion_url_generate_response").getJSONArray("goods_promotion_url_list");
-        if (temp==null||temp.size()==0){
+        JSONArray temp = JSONObject.parseObject(res).getJSONObject("goods_promotion_url_generate_response").getJSONArray("goods_promotion_url_list");
+        if (temp == null || temp.size() == 0) {
             return pddTemp;
         }
         JSONObject tempJson = (JSONObject) temp.get(0);
-        pddTemp.put("uland_url",tempJson.getString("mobile_short_url"));
-        pddTemp.put("url",tempJson.getString("url"));
-        pddTemp.put("tkLink",null);
+        pddTemp.put("uland_url", tempJson.getString("mobile_short_url"));
+        pddTemp.put("url", tempJson.getString("url"));
+        pddTemp.put("tkLink", null);
         return pddTemp;
     }
 
@@ -234,13 +234,13 @@ public class PddApiServiceImpl implements PddApiService {
         if (ufo == null) {
             return null;
         }
-        if (ufo.getRoleId() == 1) {
-            JSONArray dataArray = new JSONArray();
+        Integer roleId = ufo.getRoleId();
+        JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
+        Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
+        JSONArray dataArray = new JSONArray();
+        if (roleId == 1) {
             Float bonus = 1f;
-            JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
-            Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
             for (int i = 0; i < jsonArray.size(); i++) {
-
                 JSONObject o = (JSONObject) jsonArray.get(i);
                 //佣金比率 千分比
                 Long promotion_rate = o.getLong("promotion_rate");
@@ -270,42 +270,69 @@ public class PddApiServiceImpl implements PddApiService {
             data.put("count", total_count);
             return data;
         }
-        Float score = Float.valueOf(ufo.getScore()) / 100;
-        Float bonus = EveryUtils.getCommission(score);
-        JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
-        Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
-        JSONArray dataArray = new JSONArray();
+        if (roleId == 2) {
+            Float score = Float.valueOf(ufo.getScore()) / 100;
+            Float bonus = EveryUtils.getCommission(score);
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject o = (JSONObject) jsonArray.get(i);
+                //佣金比率 千分比
+                Long promotion_rate = o.getLong("promotion_rate");
+                //最低团购价 千分比
+                Long min_group_price = o.getLong("min_group_price");
+                //优惠卷金额 千分比
+                Long coupon_discount = o.getLong("coupon_discount");
+                //佣金计算
+                Float after = Float.valueOf(min_group_price - coupon_discount);
+                Float promoto = Float.valueOf(promotion_rate) / 1000;
+                Float comssion = Float.valueOf(after * promoto);
+                Integer rmb = (int) (comssion * rang);
+                Float bondList = (rmb * bonus);
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("imgUrl", o.getString("goods_image_url"));
+                dataJson.put("volume", o.getInteger("sold_quantity"));
+                dataJson.put("goodName", o.getString("goods_name"));
+                dataJson.put("zk_money", coupon_discount);
+                dataJson.put("price", min_group_price);
+                dataJson.put("zk_price", min_group_price - coupon_discount);
+                dataJson.put("goodId", o.getLong("goods_id"));
+                dataJson.put("istmall", "false");
+                dataJson.put("agent", bondList);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", total_count);
+            return data;
 
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject o = (JSONObject) jsonArray.get(i);
-            //佣金比率 千分比
-            Long promotion_rate = o.getLong("promotion_rate");
-            //最低团购价 千分比
-            Long min_group_price = o.getLong("min_group_price");
-            //优惠卷金额 千分比
-            Long coupon_discount = o.getLong("coupon_discount");
-            //佣金计算
-            Float after = Float.valueOf(min_group_price - coupon_discount);
-            Float promoto = Float.valueOf(promotion_rate) / 1000;
-            Float comssion = Float.valueOf(after * promoto);
-            Integer rmb = (int) (comssion * rang);
-            Float bondList = (rmb * bonus);
-            JSONObject dataJson = new JSONObject();
-            dataJson.put("imgUrl", o.getString("goods_image_url"));
-            dataJson.put("volume", o.getInteger("sold_quantity"));
-            dataJson.put("goodName", o.getString("goods_name"));
-            dataJson.put("zk_money", coupon_discount);
-            dataJson.put("price", min_group_price);
-            dataJson.put("zk_price", min_group_price - coupon_discount);
-            dataJson.put("goodId", o.getLong("goods_id"));
-            dataJson.put("istmall", "false");
-            dataJson.put("agent", bondList);
-            dataArray.add(dataJson);
         }
-        data.put("data", dataArray);
-        data.put("count", total_count);
+        if (roleId == 3) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject o = (JSONObject) jsonArray.get(i);
+                //佣金比率 千分比
+                Long promotion_rate = o.getLong("promotion_rate");
+                //最低团购价 千分比
+                Long min_group_price = o.getLong("min_group_price");
+                //优惠卷金额 千分比
+                Long coupon_discount = o.getLong("coupon_discount");
+                //佣金计算
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("imgUrl", o.getString("goods_image_url"));
+                dataJson.put("volume", o.getInteger("sold_quantity"));
+                dataJson.put("goodName", o.getString("goods_name"));
+                dataJson.put("zk_money", coupon_discount);
+                dataJson.put("price", min_group_price);
+                dataJson.put("zk_price", min_group_price - coupon_discount);
+                dataJson.put("goodId", o.getLong("goods_id"));
+                dataJson.put("istmall", "false");
+                dataJson.put("agent", 0);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", total_count);
 
-        return data;
+            return data;
+
+        }
+        return null;
 
     }
 

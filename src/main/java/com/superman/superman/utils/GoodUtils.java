@@ -22,6 +22,16 @@ public class GoodUtils {
         dataJson.put("goodName", dataObj.getTitle());
         return dataJson;
     }
+    public static JSONObject convertPdd(TbkDgMaterialOptionalResponse.MapData dataObj) {
+        JSONObject dataJson = new JSONObject();
+        dataJson.put("zk_price", dataObj.getZkFinalPrice());
+        dataJson.put("price", dataObj.getReservePrice());
+        dataJson.put("volume", dataObj.getVolume());
+        dataJson.put("goodId", dataObj.getNumIid());
+        dataJson.put("imgUrl", dataObj.getPictUrl());
+        dataJson.put("goodName", dataObj.getTitle());
+        return dataJson;
+    }
 
     public static BigDecimal commissonAritTaobao(String zk, String rate, Double range) {
         BigDecimal var0 = new BigDecimal(zk);
