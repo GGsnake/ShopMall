@@ -13,4 +13,11 @@ public interface JdApiService {
     JSONObject convertJd(Long jdpid,Long goodId);
     JSONObject serachGoodsAll(JdSerachReq jdSerachReq, Long uid);
 
+    /** 京东商品详情
+     * 商品ID
+     * @param goodId
+     * @return
+     */
+    JSONObject jdDetail(Long goodId);
+
 }

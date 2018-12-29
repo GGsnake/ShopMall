@@ -126,8 +126,15 @@ public class EveryUtils {
         ca.set(Calendar.SECOND, 0);
         return ca.getTimeInMillis() / 1000;
     }
-
-
+    //时间戳转日期
+    public static String timeStamp2Date(String seconds,String format) {
+        if(seconds == null || seconds.isEmpty() || seconds.equals("null")){
+            return "";
+        }
+        if(format == null || format.isEmpty()) format = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(new Date(Long.valueOf(seconds+"000")));
+    }
     /**
      * 上传图片或视频
      *

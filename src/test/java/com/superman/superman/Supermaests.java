@@ -2,6 +2,7 @@ package com.superman.superman;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.Dto.MemberDetail;
 import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
 import com.superman.superman.req.InvCode;
@@ -229,9 +230,20 @@ public class Supermaests {
 //        ByteArrayOutputStream
 //        HttpDeal.saveImageToDisk(QRCODEURL + "app=qr.get&data=www.baidu.com",232l);
 //        log.warning(s.toString());
-//        List a=new ArrayList();
+//        List a=new ArrayList();2018-12-17 11:04:23
 //
 //        JSONObject aLong = taoBaoApiService.countWaitTb();
+    }
+    @Test
+    public void counst() throws IOException, URISyntaxException {
+
+        var a=new ArrayList<>();
+        a.add(22);
+        a.add(6);
+        a.add(7);
+        a.add(5);
+//        MemberDetail memberDetail = oderMapper.sumAllDevOderByOderCreateTimeForAgent(a);
+//        log.warning(memberDetail.toString());
     }
 
 

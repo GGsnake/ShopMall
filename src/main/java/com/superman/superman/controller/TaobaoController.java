@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.req.TaoBaoSerachBean;
 import com.superman.superman.service.TaoBaoApiService;
-import com.superman.superman.utils.Constants;
-import com.superman.superman.utils.ResponseCode;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +38,7 @@ public class TaobaoController {
 
     @LoginRequired
     @GetMapping("/opt")
-    public WeikeResponse optIndex(HttpServletRequest request, Integer opt) {
+    public WeikeResponse optIndex(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -49,7 +46,6 @@ public class TaobaoController {
         TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
         if (opt == 1) {
             taoBaoSerachBean.setQ("淘抢购");
-
         }
         if (opt == 2) {
             taoBaoSerachBean.setQ("聚划算");
@@ -61,10 +57,12 @@ public class TaobaoController {
         }
         if (opt == 4) {
             taoBaoSerachBean.setQ("生活家居");
-
         }
+        taoBaoSerachBean.setPageSize(Long.valueOf(pageParam.getPageSize()));
+        taoBaoSerachBean.setPageNo(Long.valueOf(pageParam.getPageNo()));
+        taoBaoSerachBean.setSort(tbsort);
 //        JSONObject data = taoBaoApiServicel.se(Long.valueOf(uid), q, cat, is_tmall, has_coupon, page_no.longValue(), page_size.longValue(), sort, null);
-        JSONObject jsonObject = taoBaoApiServicel.serachGoodsAll(taoBaoSerachBean, Long.valueOf(uid));
+        JSONObject jsonObject = taoBaoApiServicel.indexSearch(taoBaoSerachBean, Long.valueOf(uid));
         return WeikeResponseUtil.success(jsonObject);
 
     }

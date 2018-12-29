@@ -1,5 +1,8 @@
 package com.superman.superman.utils;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +10,16 @@ import java.util.regex.Pattern;
  * Created by liujupeng on 2018/11/6.
  */
 public class StringUtil {
+    /**
+     * 获取现在时间
+     *
+     * @return返回长时间格式 yyyy-MM-dd HH:mm:ss
+     */
+    public static String datetoYYYMMMDDHHMMSS(Date currentTime) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(currentTime);
+        return dateString;
+    }
     //判断字符串是否为�?
     public static String isStrNull(String str){
         return (str == null ? "" : str.toString().trim());

@@ -31,6 +31,7 @@
         <result column="p_id" property="pId" jdbcType="VARCHAR"/>
         <result column="promotion_amount" property="promotionAmount" jdbcType="BIGINT"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         <!--
           WARNING - @mbggenerated
@@ -68,9 +69,8 @@
         Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*1000,0)) as count from
         userinfo us left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(1,2,3)
         left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14)
-
         <if test="list!= null">
-            WHERE  us.id in
+            WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -82,7 +82,7 @@
         userinfo us left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5
         left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3
         <if test="list!= null">
-            WHERE  us.id in
+            WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -117,6 +117,24 @@
         and order_status in ('1','2')
     </select>
 
+    <select id="sumAllDevOderByOderCreateTimeForAgent" resultType="com.superman.superman.Dto.MemberDetail">
+        select sum(s.money) as money, sum(s.counts) as sums FROM(SELECT IFNULL(SUM(tb.commission),0)*1000 as money,count(tb.id)
+        as counts FROM
+        tboder tb left join userinfo u on tb.adzone_id=u.tbPid
+        WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tb.odercreate_time between #{tbstartTime} and #{tbendTime}  and tb.tk_status in ('3','12','14')
+        UNION
+        SELECT IFNULL(SUM(tb.promotion_amount),0) as money ,count(tb.id) as counts FROM
+        oder tb left join userinfo u on tb.p_id=u.pddPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tb.order_create_time between #{pddstartTime} and #{pddendTime}   and tb.order_status in (0,1,2,3,5)) as s
+    </select>
+
 
     <select id="selectAll" resultMap="BaseResultMap" parameterType="com.superman.superman.model.Oder">
         <!--
@@ -137,15 +155,5 @@
     </select>
 
 
-    <!--<select id="queryCount" resultType="cn.bnsr.edu_yun.view.FileView">-->
-    <!--SELECT sum(download_times) as downloadNum ,sum(click_times) as browseNum-->
-    <!--FROM  file_property-->
-    <!--<if test="_parameter != null">-->
-    <!--WHERE id in-->
-    <!--<foreach item="item" index="index" collection="list" open="(" separator="," close=")">-->
-    <!--#{item}-->
-    <!--</foreach>-->
-    <!--</if>-->
-    <!--</select>-->
 
 </mapper>

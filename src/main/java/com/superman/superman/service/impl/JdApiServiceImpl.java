@@ -143,6 +143,12 @@ public class JdApiServiceImpl implements JdApiService {
         return temp;
     }
 
+    @Override
+    public JSONObject jdDetail(Long goodId) {
+
+        return null;
+    }
+
     //
 //    @CachePut(value = "concurrenmapcache")
 //    public long save() {

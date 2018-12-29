@@ -1,6 +1,5 @@
 package com.superman.superman.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.UserinfoMapper;
@@ -134,7 +133,7 @@ public class PddApiServiceImpl implements PddApiService {
 
     //查询拼多多商品详情
     @Override
-    public JSONObject pddDetail(Long goodIdList, String uid) {
+    public JSONObject pddDetail(Long goodIdList) {
         Double rang = RANGE / 100d;
         String res = null;
         StringBuilder str = new StringBuilder();
@@ -155,36 +154,21 @@ public class PddApiServiceImpl implements PddApiService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (res == null) {
-            return null;
+        JSONObject temp=new JSONObject();
+        JSONArray var1=new JSONArray();
+        if (JSONObject.parseObject(res).getJSONObject("error_response")!=null) {
+            temp.put("list",var1);
+            return temp;
         }
-        JSONObject jsonData = (JSONObject) JSON.parseObject(res).getJSONObject("goods_detail_response").getJSONArray("goods_details").get(0);
-        //佣金比率 千分比
-        Long promotion_rate = jsonData.getLong("promotion_rate");
-        //最低团购价 千分比
-        Long min_group_price = jsonData.getLong("min_group_price");
-        //优惠卷金额 千分比
-        Long coupon_discount = jsonData.getLong("coupon_discount");
-
-        Float comssion = (min_group_price - coupon_discount) * ((promotion_rate) / 1000f);
-        Integer rmb = (int) (comssion * rang);
-
-        Userinfo ufo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        if (ufo.getRoleId() == 1) {
-
-            Float bondList = (rmb * 1f);
-            jsonData.put("bond", bondList);
-            return jsonData;
+            temp = (JSONObject) JSONObject.parseObject(res).getJSONObject("goods_detail_response").getJSONArray("goods_details").get(0);
+        if (temp == null) {
+            temp.put("list",var1);
+            return temp;
         }
-        if (ufo.getRoleId() == 2) {
-            Float bonus = Float.valueOf(ufo.getScore());
-
-            Float bondList = (rmb * bonus) / 100;
-            jsonData.put("bond", bondList);
-            return jsonData;
-        }
-        jsonData.put("bond", 0);
-        return jsonData;
+        JSONArray goods_gallery_urls = temp.getJSONArray("goods_gallery_urls");
+        temp.clear();
+        temp.put("list",goods_gallery_urls);
+        return temp;
     }
 
     /**
@@ -215,7 +199,7 @@ public class PddApiServiceImpl implements PddApiService {
         if (keyword != null && !keyword.equals("")) {
             urlSign.put("keyword", keyword);
         }
-        if (opt_id != null && opt_id.equals(0)) {
+        if (opt_id != null&&!opt_id.equals(0)) {
             urlSign.put("opt_id", opt_id.toString());
         }
         urlSign.put("data_type", "JSON");

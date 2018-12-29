@@ -1,10 +1,7 @@
 package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.dao.HotUserMapper;
-import com.superman.superman.dao.PddDao;
-import com.superman.superman.dao.UserDao;
-import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
 import com.superman.superman.service.UserApiService;
 import lombok.NonNull;
@@ -16,9 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by liujupeng on 2018/11/6.
  */
@@ -27,7 +21,7 @@ public class UserApiServiceImpl implements UserApiService {
     private String REDIS_PRIFEX = "token:";
     private Long EXPRESS_TIME = 36000l;
     @Autowired
-    private PddDao pddDao;
+    private AgentDao agentDao;
     @Autowired
     private HotUserMapper hotUserMapper;
     @Autowired
@@ -43,11 +37,11 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public void query() {
-        UserPdd userPdd = pddDao.selectUsers(112l);
-        logger.info(userPdd.getUserPid());
-        logger.info(String.valueOf(userPdd.getUserId()));
-
-        String s = null;
+//        UserPdd userPdd = pddDao.selectUsers(112l);
+//        logger.info(userPdd.getUserPid());
+//        logger.info(String.valueOf(userPdd.getUserId()));
+//
+//        String s = null;
     }
 
     @Override
@@ -64,7 +58,7 @@ public class UserApiServiceImpl implements UserApiService {
         String loginPwd = DigestUtils.md5DigestAsHex(userinfo.getLoginpwd().getBytes());
         userinfo.setLoginpwd(loginPwd);
         JSONObject tbPid = createTbPid();
-        if (tbPid == null||tbPid.size()==0) {
+        if (tbPid == null || tbPid.size() == 0) {
             return false;
         }
         userinfo.setTbpid(tbPid.getLong("tb"));
@@ -137,13 +131,14 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public Test queryT(Test user) {
-        return pddDao.selectT(Long.valueOf(user.getUserId()));
+        return null;
     }
 
     @Override
     public Role queryR(Role user) {
-        return pddDao.selectR(Long.valueOf(user.getUserId()));
+        return null;
     }
+
 
     @Override
     public Userinfo queryByUid(@NonNull Long uid) {
@@ -167,21 +162,48 @@ public class UserApiServiceImpl implements UserApiService {
 
     /**
      * 从pid池里取出pid
+     *
      * @return
      */
     @Override
     public synchronized JSONObject createTbPid() {
         Long tbpid = hotUserMapper.createTbPid();
         String pddpid = hotUserMapper.createPddPid();
-        if (tbpid == null||pddpid==null) {
+        if (tbpid == null || pddpid == null) {
             return null;
         }
         hotUserMapper.deleteTbPid(tbpid);
         hotUserMapper.deletePddPid(pddpid);
-        JSONObject temp=new JSONObject();
-        temp.put("tb",tbpid);
-        temp.put("pdd",pddpid);
+        JSONObject temp = new JSONObject();
+        temp.put("tb", tbpid);
+        temp.put("pdd", pddpid);
         return temp;
+    }
+
+    @Override
+    public Boolean upAgent(Integer uid, Integer agentId, Integer score) {
+        Userinfo godUser = userinfoMapper.selectByPrimaryKey(Long.valueOf(agentId));
+        if (godUser.getRoleId() != 1) {
+            return false;
+        }
+        Userinfo agent = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (agent == null || agent.getRoleId() != 3) {
+            return false;
+        }
+        Agent temp = agentDao.queryForUserIdSimple(uid);
+        if (temp == null || temp.getAgentId() != agentId) {
+            return false;
+        }
+
+        Integer flag = agentDao.upAgent(score, uid);
+        Integer flag1 = agentDao.upAgentTime( uid);
+        if (flag1!=1){
+            logger.warn("代理"+uid+"升级的时候没有更新时间");
+        }
+        if (flag == 1) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -11,16 +11,31 @@ import java.util.List;
  * Created by liujupeng on 2018/11/14.
  */
 public interface OderService {
+    /**
+     * 分页查询拼多多的订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     JSONObject queryPddOder(Long uid, List status, PageParam pageParam);
+    /**
+     * 分页查询京东的订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     JSONObject queryJdOder(Long uid,List status, PageParam pageParam);
+    /**
+     * 分页查询淘宝的订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     JSONObject queryTbOder(Long uid,List status, PageParam pageParam);
-    void  saveOder(String id);
-    void  queryJdOder(String id);
-    List<Oder> queryPddOderListToId(String id,Integer status,Integer sort);
-    Integer countPddOderForId(String id);
-    Integer countPddOderForIdList(List<Userinfo> list,Integer flag);
-    void  queryTbOder(String id);
-    List<Oder> coutOderMoneyForTime(List<String> pid, Long star, Long end);
+
 
     Long superQueryOderForUidList(List<Long> uidList, Integer status);
 

@@ -20,4 +20,5 @@ public interface UserApiService {
     Userinfo  queryByUid(Long uid);
     Integer  createInvCode(Long uid);
     JSONObject createTbPid();
+    Boolean upAgent(Integer uid, Integer agentId,Integer score);
 }

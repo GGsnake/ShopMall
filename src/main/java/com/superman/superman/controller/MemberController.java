@@ -28,7 +28,7 @@ public class MemberController {
 
     @Autowired
     private UserinfoMapper userinfoMapper;
-//    @Autowired
+    //    @Autowired
 //    PddApiService pddApiService;
     @Autowired
     MemberService memberService;
@@ -38,52 +38,92 @@ public class MemberController {
     MoneyService moneyService;
 
 
-
     @ApiOperation(value = "我的个人页面")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
     })
     @LoginRequired
     @PostMapping("/me")
-    public WeikeResponse myIndex(HttpServletRequest request)  {
+    public WeikeResponse myIndex(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid==null){
+        if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
         return WeikeResponseUtil.success(data);
     }
-//
-//    @LoginRequired
-//    @PostMapping("/momeny")
-//    public WeikeResponse getMomeny(HttpServletRequest request)  {
-////        String uid = (String) request.getAttribute("uid");
-//
-//        JSONObject myMoney = memberService.getMyMoneyOf(6l);
-//        return WeikeResponseUtil.success(myMoney);
-//    }
 
     /**
      * 个人佣金提现接口
+     *
      * @param request
      * @return
      */
     @LoginRequired
     @PostMapping("/cash")
-    public WeikeResponse getCash(HttpServletRequest request)  {
+    public WeikeResponse getCash(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid==null){
+        if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
-        JSONObject data=new JSONObject();
+        JSONObject data = new JSONObject();
         Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        Long waitMoney = moneyService.queryCashMoney(Long.valueOf(uid),0,user);
-        Long finishMoney = moneyService.queryCashMoney(Long.valueOf(uid),1,user);
-        Long cash =0l;
-        data.put("waitMoney",waitMoney);
-        data.put("finishMoney",finishMoney);
-        data.put("cash",cash);
+        Long waitMoney = moneyService.queryCashMoney(Long.valueOf(uid), 0, user);
+        Long finishMoney = moneyService.queryCashMoney(Long.valueOf(uid), 1, user);
+        Long cash = 0l;
+        //TODO
+        data.put("waitMoney", waitMoney);
+        data.put("finishMoney", finishMoney);
+        data.put("cash", cash);
         return WeikeResponseUtil.success(data);
+    }
+
+    /**
+     * 查看会员详情
+     * @param request
+     * @param id
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/child")
+    public WeikeResponse getChild(HttpServletRequest request, Long id) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        Integer roleId = userinfo.getRoleId();
+
+        if (roleId == 3) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject var=new JSONObject();
+        var = memberService.queryMemberDetail(id,userinfo.getId().intValue());
+        return WeikeResponseUtil.success(var);
+    }   //
+
+    /**
+     * 升级代理接口
+     * @param request
+     * @param id  要升级的用户id
+     * @param score 佣金比率
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/upAgent")
+    public WeikeResponse upAgent(HttpServletRequest request, Integer id,Integer score) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        if (score < 0 || score > 100) {
+            return WeikeResponseUtil.fail(ResponseCode.INT_CUSY);
+        }
+        Boolean var = userApiService.upAgent(id, Integer.valueOf(uid),score);
+        if (var==false){
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
+        }
+        return WeikeResponseUtil.success(var);
     }
 
 }

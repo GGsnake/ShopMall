@@ -15,6 +15,8 @@ import java.util.List;
 public interface AgentDao {
     @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
     List<Agent> queryForUserId(Integer id);
+    @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
+    Agent queryForUserIdSimple(Integer id);
 
     @Select("SELECT userId FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
     List<Long> queryForUserIdLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
@@ -68,4 +70,10 @@ public interface AgentDao {
 
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insert(Agent agent);
+    @Insert("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
+    Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
+    @Insert("update agent set updateTime=now() where userId=#{uid}")
+    Integer upAgentTime(@Param("uid")Integer uid);
+    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
+    int insertAgLog(Agent agent);
 }

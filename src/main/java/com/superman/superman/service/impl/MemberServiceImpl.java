@@ -2,7 +2,9 @@ package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.Dto.MemberDetail;
 import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Agent;
 import com.superman.superman.model.Oder;
@@ -19,10 +21,12 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import lombok.var;
 
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -44,6 +48,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private UserApiService userApiService;
+    @Autowired
+    private OderMapper oderMapper;
+
+    @Value("${juanhuang.range}")
+    private Integer range;
 
     /**
      * 获取预估收入
@@ -53,30 +62,33 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
-        var user = userinfoMapper.selectByPrimaryKey(uid);
-        var roleId = user.getRoleId();
+        JSONObject myJson = new JSONObject();
+        Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
+        Integer roleId = user.getRoleId();
         String userphoto = user.getUserphoto();
         String username = user.getUsername();
-        JSONObject myJson = new JSONObject();
+        //存储用户集合
+        HashSet<Long> uidSet = new HashSet<>();
+        uidSet.add(uid);
+
         myJson.put("roleId", roleId);
         myJson.put("image", userphoto == null ? Constants.IMG_DEFAUT : userphoto);
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
-        HashSet<Long> uidSet = new HashSet<>();
-        uidSet.add(uid);
         switch (roleId) {
             case 1:
                 Long myMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
                 Long AllMoney = moneyService.queryCashMoney(uid, 0, user);
-                myJson.put("myMoney", AllMoney);
-                myJson.put("myTeamMoney", AllMoney - myMoney);
-
-
+                myJson.put("myMoney", (AllMoney +myMoney));
+                myJson.put("myTeamMoney",(AllMoney +myMoney)-myMoney);
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
                 //查询代理或者直属粉丝
                 List<Userinfo> userInfosList = agentDao.superQueryFansUserInfo(uid.intValue());
                 if (userInfosList != null || userInfosList.size() != 0) {
                     for (Userinfo var3 : userInfosList) {
+                        if (var3 == null) {
+                            continue;
+                        }
                         if (var3.getRoleId() == 2) {
                             agentIdList.add(var3);
                             uidSet.add(var3.getId());
@@ -85,11 +97,12 @@ public class MemberServiceImpl implements MemberService {
                         uidSet.add(var3.getId());
                     }
                 }
-
-                for (Userinfo userio : agentIdList) {
-                    List<Long> agentFansIdList = agentDao.queryForAgentIdNew(userio.getId().intValue());
-                    if (agentFansIdList != null || agentFansIdList.size() != 0) {
-                        uidSet.addAll(agentFansIdList);
+                if (agentIdList.size() != 0) {
+                    for (Userinfo userio : agentIdList) {
+                        List<Long> agentFansIdList = agentDao.queryForAgentIdNew(userio.getId().intValue());
+                        if (agentFansIdList != null || agentFansIdList.size() != 0) {
+                            uidSet.addAll(agentFansIdList);
+                        }
                     }
                 }
                 myJson.put("myAgentCount", agentIdList.size());
@@ -169,7 +182,7 @@ public class MemberServiceImpl implements MemberService {
             data.put("pageData", jsonArray);
             return data;
         }
-        if (roleId==2){
+        if (roleId == 2) {
 
             List<Userinfo> userList = userinfoMapper.selectInUserInfoForAgentId(userId, pageParam.getStartRow(), pageParam.getPageSize());
             data.put("pageCount", sum);
@@ -234,7 +247,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public JSONObject queryMemberDetail(Long userId) {
+    public JSONObject queryMemberDetail(Long userId, Integer myid) {
 
         JSONObject data = new JSONObject();
         Long todayTime = EveryUtils.getToday();
@@ -251,278 +264,151 @@ public class MemberServiceImpl implements MemberService {
         Long lastMonthTimeEnd = EveryUtils.getEnd();
 
         //今日贡献佣金
-        Long todayMoneyCount = 0l;
+        Double todayMoneyCount = 0d;
         //昨日贡献佣金
-        Long yesDayMoneyCount = 0l;
+        Double yesDayMoneyCount = 0d;
         //本月贡献佣金
-        Long yesMonthMoneyvarCount = 0l;
+        Double yesMonthMoneyvarCount = 0d;
         //上月贡献佣金
-        Long yesLastMonthMoneyCount = 0l;
+        Double yesLastMonthMoneyCount = 0d;
 
+        //今日订单数量
+        Integer todayCount = 0;
+        //昨日订单数量
+        Integer yesDayCount = 0;
         //本月订单数量
-        //本月订单数量
-        //本月订单数量
-        //本月订单数量
+        Integer yesMonthCount = 0;
+        //上月订单数量
+        Integer yesLastMonthCount = 0;
 
-        var pidList = new ArrayList<String>(30);
+
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
+        Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myid));
+        Integer myrole = my.getRoleId();
+        Integer mySc = my.getScore();
+
         //判断是粉丝
         if (userinfo.getRoleId() == 3) {
-            String pddpid = userinfo.getPddpid();
-            pidList.add(pddpid);
-            List<Oder> todayMoney = oderService.coutOderMoneyForTime(pidList, todayTime, todayEndTime);
-            if (todayMoney.size() != 0) {
-                for (int i = 0; i < todayMoney.size(); i++) {
-                    todayMoneyCount += todayMoney.get(i).getPromotionAmount();
-                }
+            String tbs = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
+            String tbe = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs, tbe, todayTime, todayEndTime);
+            if (myrole == 1) {
+                todayMoneyCount = (var1.getMoney() * range / 100d);
 
             }
-
-            List<Oder> yesDayMoney = oderService.coutOderMoneyForTime(pidList, yesDayTime, yesDayEndTime);
-            if (yesDayMoney.size() != 0) {
-                for (int i = 0; i < yesDayMoney.size(); i++) {
-                    yesDayMoneyCount += yesDayMoney.get(i).getPromotionAmount();
-
-                }
+            if (myrole == 2) {
+                todayMoneyCount = (var1.getMoney() * range / 100d) * (mySc / 100d);
             }
+            todayCount = var1.getSums();
 
-            List<Oder> yesMonthMoneyvar = oderService.coutOderMoneyForTime(pidList, timesMonthmorning, timesMonthmorningLast);
-            if (yesMonthMoneyvar.size() != 0) {
-                for (int i = 0; i < yesMonthMoneyvar.size(); i++) {
-                    yesMonthMoneyvarCount += yesMonthMoneyvar.get(i).getPromotionAmount();
+            String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayTime), null);
+            String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
+            MemberDetail var2 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs1, tbe1, yesDayTime, yesDayEndTime);
+            if (myrole == 1) {
+                yesDayMoneyCount = (var2.getMoney() * range / 100d);
 
-                }
             }
-
-            List<Oder> yesLastMonthMoney = oderService.coutOderMoneyForTime(pidList, lastMonthTime, lastMonthTimeEnd);
-            if (yesLastMonthMoney.size() != 0) {
-                for (int i = 0; i < yesLastMonthMoney.size(); i++) {
-                    yesLastMonthMoneyCount += yesLastMonthMoney.get(i).getPromotionAmount();
-
-                }
+            if (myrole == 2) {
+                yesDayMoneyCount = (var2.getMoney() * range / 100d) * (mySc / 100d);
             }
-            data.put("today", todayMoneyCount);
-            data.put("todayOder", todayMoney.size());
-            data.put("yesday", yesDayMoneyCount);
-            data.put("yesdayOder", yesDayMoney.size());
-            data.put("yesMonday", yesMonthMoneyvarCount);
-            data.put("yesMondayOder", yesMonthMoneyvar.size());
-            data.put("lastMonday", yesLastMonthMoneyCount);
-            data.put("lastMondayOder", yesLastMonthMoney.size());
-            data.put("agentSum", 0);
-            data.put("empMoney", 0);
-            data.put("agentDate", 0);
+            yesDayCount = var2.getSums();
+
+
+            String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorning), null);
+            String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
+            MemberDetail var3 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs2, tbe2, timesMonthmorning, timesMonthmorningLast);
+            if (myrole == 1) {
+                yesMonthMoneyvarCount = (var3.getMoney() * range / 100d);
+
+            }
+            if (myrole == 2) {
+                yesMonthMoneyvarCount = (var3.getMoney() * range / 100d) * (mySc / 100d);
+            }
+            yesMonthCount = var3.getSums();
+            String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTime), null);
+            String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTimeEnd), null);
+            MemberDetail var4 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs3, tbe3, lastMonthTime, lastMonthTimeEnd);
+            if (myrole == 1) {
+                yesLastMonthMoneyCount = (var4.getMoney() * range / 100d);
+
+            }
+            if (myrole == 2) {
+                yesLastMonthMoneyCount = (var4.getMoney() * range / 100d) * (mySc / 100d);
+            }
+            yesLastMonthCount = var4.getSums();
+            data.put("today", todayMoneyCount.intValue());
+            data.put("todayOder", todayCount);
+            data.put("yesday", yesDayMoneyCount.intValue());
+            data.put("yesdayOder", yesDayCount);
+            data.put("yesMonday", yesMonthMoneyvarCount.intValue());
+            data.put("yesMondayOder", yesMonthCount);
+            data.put("lastMonday", yesLastMonthMoneyCount.intValue());
+            data.put("lastMondayOder", yesLastMonthCount);
             return data;
         }
         //判断是代理
-        if (userinfo.getRoleId() == 2) {
+        if (userinfo.getRoleId() == 2 && myrole == 1) {
+            List<Agent> agentInfo = agentDao.queryForUserId(userId.intValue());
+            if (agentInfo == null) {
+                return null;
+            }
+            Long agentId = Long.valueOf(agentInfo.get(0).getAgentId());
+            if (agentId != my.getId()) {
+                return null;
+            }
+            Integer agentSc = 100 - userinfo.getScore();
             HashSet oderOpen = new HashSet();
             HashSet oderOpen1 = new HashSet();
             HashSet oderOpen2 = new HashSet();
             HashSet oderOpen3 = new HashSet();
-            List<Agent> agents = agentDao.queryForAgentList(userId.intValue());
-            String pddpid = userinfo.getPddpid();
-            pidList.add(pddpid);
-            List<Long> strings = agentDao.queryForAgentId(userId.intValue());
-            List<Userinfo> userinfos = userinfoMapper.selectInFans(strings);
-            for (Userinfo ufo : userinfos) {
-                pidList.add(ufo.getPddpid());
+            List<Long> uidlist = new ArrayList<>(10);
+            uidlist.add(userId);
+            List<Long> agents = agentDao.queryForAgentIdNew(userId.intValue());
+            if (agents != null && agents.size() != 0) {
+                uidlist.addAll(agents);
             }
-            List<Oder> todayMoney = oderService.coutOderMoneyForTime(pidList, todayTime, todayEndTime);
-            if (todayMoney.size() != 0) {
-                for (int i = 0; i < todayMoney.size(); i++) {
-                    todayMoneyCount += todayMoney.get(i).getPromotionAmount();
-                    oderOpen.add(todayMoney.get(i).getpId());
-                }
-            }
+            String tbs = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
+            String tbe = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs, tbe, todayTime, todayEndTime);
+            todayMoneyCount = (var1.getMoney() * range / 100d) * (agentSc / 100d);
+            todayCount = var1.getSums();
 
-            List<Oder> yesDayMoney = oderService.coutOderMoneyForTime(pidList, yesDayTime, yesDayEndTime);
-            if (yesDayMoney.size() != 0) {
-                for (int i = 0; i < yesDayMoney.size(); i++) {
-                    yesDayMoneyCount += yesDayMoney.get(i).getPromotionAmount();
-                    oderOpen1.add(yesDayMoney.get(i).getpId());
-                }
-            }
+            String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayTime), null);
+            String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
+            MemberDetail var2 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs1, tbe1, yesDayTime, yesDayEndTime);
+            yesDayMoneyCount = (var2.getMoney() * range / 100d) * (agentSc / 100d);
+            yesDayCount = var2.getSums();
 
-            List<Oder> yesMonthMoneyvar = oderService.coutOderMoneyForTime(pidList, timesMonthmorning, timesMonthmorningLast);
-            if (yesMonthMoneyvar.size() != 0) {
-                for (int i = 0; i < yesMonthMoneyvar.size(); i++) {
-                    yesMonthMoneyvarCount += yesMonthMoneyvar.get(i).getPromotionAmount();
-                    oderOpen2.add(yesMonthMoneyvar.get(i).getpId());
-                }
-            }
+            String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorning), null);
+            String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
+            MemberDetail var3 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast);
+            yesMonthMoneyvarCount = (var3.getMoney() * range / 100d) * (agentSc / 100d);
+            yesMonthCount = var3.getSums();
 
-            List<Oder> yesLastMonthMoney = oderService.coutOderMoneyForTime(pidList, lastMonthTime, lastMonthTimeEnd);
-            if (yesLastMonthMoney.size() != 0) {
-                for (int i = 0; i < yesLastMonthMoney.size(); i++) {
-                    yesLastMonthMoneyCount += yesLastMonthMoney.get(i).getPromotionAmount();
-                    oderOpen3.add(yesLastMonthMoney.get(i).getpId());
-                }
-            }
-
-            data.put("today", todayMoneyCount);
-            data.put("todayOder", todayMoney.size());
+            String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTime), null);
+            String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTimeEnd), null);
+            MemberDetail var4 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd);
+            yesLastMonthMoneyCount = (var4.getMoney() * range / 100d) * (agentSc / 100d);
+            yesLastMonthCount = var4.getSums();
+            data.put("today", todayMoneyCount.intValue());
+            data.put("todayOder", todayCount);
             data.put("todayOpen", oderOpen.size());
-            data.put("yesday", yesDayMoneyCount);
-            data.put("yesdayOder", yesDayMoney.size());
+            data.put("yesday", yesDayMoneyCount.intValue());
+            data.put("yesdayOder", yesDayCount);
             data.put("yesdayOpen", oderOpen1.size());
-            data.put("yesMonday", yesMonthMoneyvarCount);
-            data.put("yesMondayOder", yesMonthMoneyvar.size());
+            data.put("yesMonday", yesMonthMoneyvarCount.intValue());
+            data.put("yesMondayOder", yesMonthCount.intValue());
             data.put("yesMondayOpen", oderOpen2.size());
-            data.put("lastMonday", yesLastMonthMoneyCount);
-            data.put("lastMondayOder", yesLastMonthMoney.size());
+            data.put("lastMonday", yesLastMonthMoneyCount.intValue());
+            data.put("lastMondayOder", yesLastMonthCount);
             data.put("lastMondayOpen", oderOpen3.size());
-            data.put("agentSum", strings.size());
+            data.put("agentSum", uidlist.size());
             data.put("empMoney", userinfo.getScore());
-            data.put("agentDate", agents.get(0).getCreateTime());
+            data.put("agentDate", agentInfo.get(0).getUpdateTime());
             return data;
         }
         return null;
     }
-
-    @Override
-    public JSONObject getMyMoneyOf(Long uid) {
-        var user = userinfoMapper.selectByPrimaryKey(uid);
-        if (user == null) {
-            return null;
-        }
-        var roleId = user.getRoleId();
-        var pddPid = user.getPddpid();
-        JSONObject myJson = new JSONObject();
-        switch (roleId) {
-            case 1:
-                //计算总代的分成比例
-
-                //总代自己的收入
-                Long myMoney = Long.valueOf(oderService.countPddOderForId(pddPid));
-                //查询代理或者直属粉丝
-                List<Long> lowIdList = agentDao.queryForAgentId(uid.intValue());
-                if (lowIdList == null || lowIdList.size() == 0) {
-                    return myJson;
-                }
-                //查询运营商下所有用户的详情集合
-                List<Userinfo> userinfosList = userinfoMapper.selectInUserInfo(lowIdList);
-
-                //代理用户信息列表
-                ArrayList<Userinfo> agentIdList = new ArrayList<>(80);
-                //粉丝用户信息列表
-                ArrayList<Userinfo> fansIdList = new ArrayList<>(80);
-                for (Userinfo useId : userinfosList) {
-                    if (useId.getRoleId() == 2) {
-                        agentIdList.add(useId);
-                        continue;
-                    }
-                    fansIdList.add(useId);
-                }
-                //查询所有粉丝的收入
-                Integer fansMoney = oderService.countPddOderForIdList(fansIdList, 0);
-                //我的代理的所有收入
-                Long agentMoney = 0l;
-                Long agentSum = 0l;
-                if (agentIdList == null || agentIdList.size() == 0) {
-                    myJson.put("myMoney", fansMoney + myMoney);
-                    return myJson;
-                }
-                for (Userinfo userio : agentIdList) {
-
-                    Long agentId = userio.getId();
-                    Long agentScore = 100l - userio.getScore();
-
-                    String agentPddId = userio.getPddpid();
-                    //根据每个代理的不同佣金比率计算我的收入
-
-
-                    Integer lowAgentMoney = oderService.countPddOderForId(agentPddId);
-
-
-                    //查询我的下级粉丝
-                    var uidList = agentDao.queryForAgentId(agentId.intValue());
-
-                    if (uidList == null || uidList.size() == 0) {
-                        agentMoney += ((lowAgentMoney * agentScore) / 100);
-                        continue;
-                    }
-                    agentSum += uidList.size();
-                    //查询出粉丝的PID集合
-                    List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
-                    if (userinfos == null || userinfos.size() == 0) {
-                        agentMoney += ((lowAgentMoney * agentScore) / 100);
-                        continue;
-                    }
-                    //查询出粉丝贡献的订单收入
-                    Integer fans = oderService.countPddOderForIdList(userinfos, 0);
-                    if (fans == null) {
-                        agentMoney += ((lowAgentMoney * agentScore) / 100);
-                        continue;
-                    }
-
-                    agentMoney += ((lowAgentMoney + fans) * agentScore) / 100;
-
-
-                }
-                Long allMoney = myMoney + fansMoney + agentMoney;
-                myJson.put("myMoney", allMoney);
-                return myJson;
-
-            //代理
-            case 2:
-                //查询我的订单收入
-                Integer score = user.getScore();
-                var temp = oderService.countPddOderForId(pddPid);
-                var meIncome = temp == null ? 0 : temp;
-                myJson.put("myMoney", (meIncome * score) / 100);
-                //查询我的下级粉丝
-                var uidList = agentDao.queryForAgentIdNew(uid.intValue());
-                if (uidList == null || uidList.size() == 0) {
-                    return myJson;
-                }
-//                //查询出粉丝的PID集合
-//                List<Userinfo> userinfos = userinfoMapper.selectIn(uidList);
-//                //如果粉丝没有贡献
-//                if (userinfos == null || userinfos.size() == 0) {
-//                    return myJson;
-//                }
-                //查询出粉丝贡献的订单收入
-                Long fans = oderService.superQueryOderForUidList(uidList, 0);
-                if (fans == null) {
-                    return myJson;
-                }
-                Long all = meIncome + fans;
-                myJson.put("myMoney", (all * score) / 100);
-
-                return myJson;
-            //粉丝
-            case 3:
-                break;
-            default:
-                logger.warn("switch穿透" + System.currentTimeMillis());
-                break;
-        }
-        return null;
-    }
-
-
-//
-//    public JSONObject queryMemberDetail(@NonNull Long userId,@NonNull Integer type) {
-//        if (type==2){
-//
-//        }
-//        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-//        JSONObject data=new JSONObject();
-//        List<Agent> agents = agentDao.queryForUserId(userId.intValue());
-//        if (agents==null||agents.size()==0){
-//            return data;
-//        }
-//        Agent agent = agents.get(0);
-//        agent
-//        if (userinfo.getRoleId()==2){
-//            agentDao.
-//            data.put("username",userinfo.getUsername());
-//            data.put("username",userinfo.getUsername());
-//            data.put("username",userinfo.getUsername());
-//        }
-//        return null;
-//    }
 
 
 }

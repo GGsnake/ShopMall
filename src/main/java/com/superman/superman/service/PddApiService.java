@@ -36,7 +36,7 @@ public interface PddApiService {
      * @param goodIdList
      * @return
      */
-     JSONObject pddDetail(Long goodIdList, String uid);
+     JSONObject pddDetail(Long goodIdList);
 
     /**
      * 拼多多通用商品搜索

@@ -43,6 +43,7 @@ public class ResponseCode {
     public static final ResponseCode COMMON_USER_PASSWORD_ERROR = new ResponseCode("100028", "密码错误");
     public static final ResponseCode DELETE_ERROR = new ResponseCode("100033", "删除错误");
     public static final ResponseCode PERMISSIONS_ERROR = new ResponseCode("100053", "无权限");
+    public static final ResponseCode INT_CUSY = new ResponseCode("100054", "数值超出范围");
 
     private String errCode;
     private String errMsg;
