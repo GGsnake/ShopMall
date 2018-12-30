@@ -7,8 +7,6 @@ import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Agent;
-import com.superman.superman.model.Oder;
-import com.superman.superman.model.Test;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.MoneyService;
@@ -70,7 +68,6 @@ public class MemberServiceImpl implements MemberService {
         //存储用户集合
         HashSet<Long> uidSet = new HashSet<>();
         uidSet.add(uid);
-
         myJson.put("roleId", roleId);
         myJson.put("image", userphoto == null ? Constants.IMG_DEFAUT : userphoto);
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
@@ -78,8 +75,8 @@ public class MemberServiceImpl implements MemberService {
             case 1:
                 Long myMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
                 Long AllMoney = moneyService.queryCashMoney(uid, 0, user);
-                myJson.put("myMoney", (AllMoney +myMoney));
-                myJson.put("myTeamMoney",(AllMoney +myMoney)-myMoney);
+                myJson.put("myMoney", (AllMoney +myMoney)*range/100);
+                myJson.put("myTeamMoney",((AllMoney +myMoney)-myMoney)*range/100);
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
                 //查询代理或者直属粉丝
@@ -148,7 +145,6 @@ public class MemberServiceImpl implements MemberService {
         if (pageParam == null) {
             return null;
         }
-        List<Long> agents = null;
         JSONObject data = new JSONObject();
         Userinfo var1 = userinfoMapper.selectByPrimaryKey(userId);
         Integer roleId = var1.getRoleId();

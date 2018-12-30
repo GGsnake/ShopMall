@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 /**
@@ -129,15 +130,6 @@ public class UserApiServiceImpl implements UserApiService {
         return info;
     }
 
-    @Override
-    public Test queryT(Test user) {
-        return null;
-    }
-
-    @Override
-    public Role queryR(Role user) {
-        return null;
-    }
 
 
     @Override
@@ -181,6 +173,7 @@ public class UserApiServiceImpl implements UserApiService {
     }
 
     @Override
+    @Transactional
     public Boolean upAgent(Integer uid, Integer agentId, Integer score) {
         Userinfo godUser = userinfoMapper.selectByPrimaryKey(Long.valueOf(agentId));
         if (godUser.getRoleId() != 1) {
@@ -195,15 +188,19 @@ public class UserApiServiceImpl implements UserApiService {
             return false;
         }
 
-        Integer flag = agentDao.upAgent(score, uid);
-        Integer flag1 = agentDao.upAgentTime( uid);
-        if (flag1!=1){
-            logger.warn("代理"+uid+"升级的时候没有更新时间");
+        try {
+            Integer flag = agentDao.upAgent(score, uid);
+            Integer flag1 = agentDao.upAgentTime(uid);
+            if (flag == 1 && flag1 == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.warn("代理" + uid + "升级的时候没有更新时间");
+            throw new RuntimeException("升级代理失败");
         }
-        if (flag == 1) {
-            return true;
-        }
-        return false;
+        logger.warn("代理" + uid + "升级的时候没有更新时间");
+        throw new RuntimeException("升级代理失败");
+
     }
 
 }

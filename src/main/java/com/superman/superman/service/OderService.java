@@ -36,7 +36,12 @@ public interface OderService {
      */
     JSONObject queryTbOder(Long uid,List status, PageParam pageParam);
 
-
+    /**
+     * 统计已结算/未结算 订单
+     * @param uidList
+     * @param status 0 代表未结算 1 已结算
+     * @return
+     */
     Long superQueryOderForUidList(List<Long> uidList, Integer status);
 
 }

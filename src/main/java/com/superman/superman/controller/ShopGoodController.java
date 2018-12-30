@@ -7,6 +7,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.JdSerachReq;
+import com.superman.superman.req.PddSerachBean;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.TaoBaoApiService;
@@ -65,15 +66,15 @@ public class ShopGoodController {
     }
 
     /**
-     * @param type     平台 0 拼多多 1 淘宝 2京东 3天猫
+     * @param type    平台 0 拼多多 1 淘宝 2京东 3天猫
      * @param keyword
      * @param sort
      * @return
      */
     @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(HttpServletRequest request,PageParam pageParam,@RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,  @RequestParam(value = "cid", required = false) Integer cid , @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
+    public WeikeResponse Search(HttpServletRequest request, PageParam pageParam, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
 
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
@@ -84,7 +85,12 @@ public class ShopGoodController {
         Integer pageNo = pageParam.getPageNo();
         JSONObject data;
         if (type == 0) {
-            data = pddApiService.getPddGoodList(Long.valueOf(uid), pageSize,pageNo, sort, with_coupon == 0 ? true : false, keyword, opt, 1);
+            PddSerachBean pddSerachBean = new PddSerachBean();
+            pddSerachBean.setKeyword(keyword);
+            pddSerachBean.setWith_coupon(with_coupon == 0 ? true : false);
+            pddSerachBean.setOpt_id(opt);
+            pddSerachBean.setSort_type(sort);
+            data = pddApiService.getPddGoodList(Long.valueOf(uid), pageSize, pageNo, pddSerachBean);
             return WeikeResponseUtil.success(data);
         }
         if (type == 1) {
@@ -93,13 +99,12 @@ public class ShopGoodController {
             req.setPageNo(Long.valueOf(pageNo));
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(false);
-            if (tbcat != null&&Integer.valueOf(tbcat)!=0) {
+            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
                 req.setCat(tbcat);
             }
-            if (keyword.equals("")||keyword==null){
+            if (keyword.equals("") || keyword == null) {
                 req.setQ("");
-            }
-            else {
+            } else {
                 req.setQ(keyword);
             }
             data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
@@ -110,7 +115,7 @@ public class ShopGoodController {
             var1.setKeyword(keyword);
             var1.setPage(pageNo);
             var1.setPagesize(pageSize);
-            if (cid!=null){
+            if (cid != null) {
                 var1.setCid3(cid);
             }
             data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
@@ -122,7 +127,7 @@ public class ShopGoodController {
             req.setPageNo(Long.valueOf(pageNo));
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(true);
-            if (tbcat != null&&!tbcat.equals(0)) {
+            if (tbcat != null && !tbcat.equals(0)) {
                 req.setCat(tbcat);
             }
             req.setQ(keyword);

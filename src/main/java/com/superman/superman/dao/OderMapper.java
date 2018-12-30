@@ -58,17 +58,7 @@ public interface OderMapper {
     @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status in ('1','2','3')")
     Integer selectPid(String pid);
 
-    /**
-     * 单个PID统计已结算订单收入
-     *
-     * @param pid
-     * @return
-     */
-    @Select("select  SUM(promotion_amount)  from oder  where p_id = #{pid} and order_status=5")
-    Integer selectPidForFinish(String pid);
 
-
-    Integer selectPidIn(@Param("list") List list);
 
     /**
      * 根据pid类别统计已结算订单的总收入
@@ -85,7 +75,7 @@ public interface OderMapper {
 
 
     /**
-     * 超级搜 未结算订单（只需要传入用户id 支持多用户id传入）
+     * 超级统计所有 平台未结算订单（只需要传入用户id 支持多用户id传入）
      *
      * @param list
      * @return
@@ -93,15 +83,13 @@ public interface OderMapper {
     Long superQueryForListToWait(List<Long> list);
 
     /**
-     * 超级搜索已结算订单（只需要传入用户id 支持多用户id传入）
+     * 超级统计所有 平台已结算订单（只需要传入用户id 支持多用户id传入）
      *
      * @param list
      * @return
      */
     Long superQueryForListToFinsh(List<Long> list);
 
-
-    List<Oder> selectPidInOderTime(@Param("list") List list, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
 
     List<Oder> sumAllDevOderByOderCreateTime(@Param("list") List list, @Param("startTime") Long startTime, @Param("endTime") Long endTime);

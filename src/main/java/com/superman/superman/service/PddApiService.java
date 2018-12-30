@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.req.PddSerachBean;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -43,12 +44,9 @@ public interface PddApiService {
      * @param uid  用户id
      * @param pagesize
      * @param page
-     * @param sort_type
-     * @param with_coupon
-     * @param keyword
-     * @param opt_id
+
      * @return
      */
-    JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, Integer sort_type, Boolean with_coupon, String keyword, Long opt_id, Integer merchant_type);
+    JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, PddSerachBean pddSerachBean);
 
 }

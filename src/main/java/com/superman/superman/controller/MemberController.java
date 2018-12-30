@@ -80,6 +80,7 @@ public class MemberController {
 
     /**
      * 查看会员详情
+     *
      * @param request
      * @param id
      * @return
@@ -97,21 +98,22 @@ public class MemberController {
         if (roleId == 3) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        JSONObject var=new JSONObject();
-        var = memberService.queryMemberDetail(id,userinfo.getId().intValue());
+        JSONObject var = new JSONObject();
+        var = memberService.queryMemberDetail(id, userinfo.getId().intValue());
         return WeikeResponseUtil.success(var);
     }   //
 
     /**
      * 升级代理接口
+     *
      * @param request
-     * @param id  要升级的用户id
-     * @param score 佣金比率
+     * @param id      要升级的用户id
+     * @param score   佣金比率
      * @return
      */
     @LoginRequired
     @PostMapping("/upAgent")
-    public WeikeResponse upAgent(HttpServletRequest request, Integer id,Integer score) {
+    public WeikeResponse upAgent(HttpServletRequest request, Integer id, Integer score) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
@@ -119,8 +121,8 @@ public class MemberController {
         if (score < 0 || score > 100) {
             return WeikeResponseUtil.fail(ResponseCode.INT_CUSY);
         }
-        Boolean var = userApiService.upAgent(id, Integer.valueOf(uid),score);
-        if (var==false){
+        Boolean var = userApiService.upAgent(id, Integer.valueOf(uid), score);
+        if (var == false) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
         }
         return WeikeResponseUtil.success(var);
