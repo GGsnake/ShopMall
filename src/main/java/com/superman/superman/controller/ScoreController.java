@@ -43,7 +43,6 @@ public class ScoreController {
         if (uid != null) {
             scoreService.recordBrowse(uid, goodId);
         }
-
     }
 
     //积分查询
@@ -78,42 +77,45 @@ public class ScoreController {
         return WeikeResponseUtil.success(count);
     }
 
-    //每日浏览商品积分领取
-//    @PostMapping("/dayScore")
-//    public WeikeResponse dayScore(HttpServletRequest request) {
-//        //TODO token校验
-//
-//        String uid=request.getParameter("Constants.CURRENT_USER_ID");
-//        Long sum = scoreService.countLooks(uid);
-//        if (sum==10){
-//            ScoreBean scoreBean=new ScoreBean();
-//            scoreBean.setUserId(uid);
-//            scoreBean.setScore(10l);
-//            scoreBean.setScoreType(0);
-//            scoreBean.setDataSrc(2);
-//            if (scoreService.isExitSign(scoreBean)){
-//                return WeikeResponseUtil.fail("100042","今日已经签到");
-//            }
-//
-//            Boolean flag = scoreService.addScore(scoreBean);
-//            return WeikeResponseUtil.success(null);
-//        }
-//        return WeikeResponseUtil.fail("100041","浏览次数不足");
-//
-//
-//    }
+   // 每日浏览商品积分领取
+    @PostMapping("/dayScore")
+    public WeikeResponse dayScore(HttpServletRequest request) {
+        //TODO token校验
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null ) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Long sum = scoreService.countLooks(Long.valueOf(uid));
+        if (sum==10){
+            ScoreBean scoreBean=new ScoreBean();
+            scoreBean.setUserId(Long.valueOf(uid));
+            scoreBean.setScore(10l);
+            scoreBean.setScoreType(0);
+            scoreBean.setDataSrc(2);
+            if (scoreService.isExitSign(scoreBean)){
+                return WeikeResponseUtil.fail("100042","今日已经签到");
+            }
+
+            Boolean flag = scoreService.addScore(scoreBean);
+            return WeikeResponseUtil.success(null);
+        }
+        return WeikeResponseUtil.fail("100041","浏览次数不足");
+
+
+    }
     //每日分享积分领取
     @PostMapping("/shareScore")
-    public WeikeResponse shareScore() {
-        //TODO token校验
-        //TODO 校验
-        Long uid = 2l;
-        Boolean exit = scoreService.countShare(uid);
+    public WeikeResponse shareScore(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null ) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Boolean exit = scoreService.countShare(Long.valueOf(uid));
         if (!exit) {
             return WeikeResponseUtil.fail("100042", "今日未分享");
         }
         ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setUserId(uid);
+        scoreBean.setUserId(Long.valueOf(uid));
         scoreBean.setScore(5l);
         scoreBean.setScoreType(0);
         //签到分享
