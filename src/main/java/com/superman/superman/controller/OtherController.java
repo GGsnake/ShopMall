@@ -14,6 +14,7 @@ import io.swagger.models.properties.Property;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +57,8 @@ public class OtherController {
     @Autowired
     private UserinfoMapper userinfoMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Autowired
     private UserApiService userApiService;
 

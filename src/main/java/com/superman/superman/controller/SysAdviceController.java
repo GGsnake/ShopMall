@@ -40,7 +40,24 @@ public class SysAdviceController{
 		var1.put("page", pageUtil);
 		return WeikeResponseUtil.success(var1);
 	}
-	
+
+	/**
+	 * 列表
+	 */
+	@GetMapping("/adv")
+	public WeikeResponse advList(@RequestParam Map<String, Object> params){
+		//查询列表数据
+        Query query = new Query(params);
+		List<SysAdvice> adviceList = adviceService.queryList(query);
+		int total = adviceService.queryTotal(query);
+
+		PageUtils pageUtil = new PageUtils(adviceList, total, query.getLimit(), query.getPage());
+		JSONObject var1=new JSONObject();
+		var1.put("page", pageUtil);
+
+		return WeikeResponseUtil.success(var1);
+	}
+
 
 	
 

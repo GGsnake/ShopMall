@@ -114,12 +114,13 @@ public class ScoreController {
         if (!exit) {
             return WeikeResponseUtil.fail("100042", "今日未分享");
         }
+        //签到分享
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setUserId(Long.valueOf(uid));
         scoreBean.setScore(5l);
         scoreBean.setScoreType(0);
-        //签到分享
         scoreBean.setDataSrc(1);
+
         if (scoreService.isExitSign(scoreBean)) {
             return WeikeResponseUtil.fail("100042", "今日已经签到");
         }
