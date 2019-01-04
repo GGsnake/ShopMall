@@ -104,6 +104,7 @@ public class ScoreController {
 
     }
     //每日分享积分领取
+    @LoginRequired
     @PostMapping("/shareScore")
     public WeikeResponse shareScore(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
@@ -124,8 +125,11 @@ public class ScoreController {
         if (scoreService.isExitSign(scoreBean)) {
             return WeikeResponseUtil.fail("100042", "今日已经签到");
         }
-
         Boolean flag = scoreService.addScore(scoreBean);
-        return WeikeResponseUtil.success(null);
+        if (flag){
+            return WeikeResponseUtil.success();
+        }
+        return WeikeResponseUtil.fail("100089", "签到失败 请重试");
+
     }
 }

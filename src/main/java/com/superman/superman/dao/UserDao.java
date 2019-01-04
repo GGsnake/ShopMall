@@ -1,6 +1,7 @@
 package com.superman.superman.dao;
 
 import com.superman.superman.model.User;
+import com.superman.superman.model.Userinfo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,7 +17,7 @@ public interface UserDao {
     Integer createUser(@Param("user") User user);
     User selectByPhone(@Param("userPhone") String userPhone);
     Integer updateUser(@Param("user") User user);
-    Integer updateUserScore(@Param("user") User user);
+    Integer updateUserScore(Userinfo user);
     @Insert("insert into pidtb(pid)value(#{pid})")
     Integer sqltest(String pid);
 

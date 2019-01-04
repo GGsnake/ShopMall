@@ -28,6 +28,6 @@
 
 
 	<update id="updateUserScore">
-		update hot_user set userScore=userScore+ #{user.userScore}	where id=#{user.id}
+		update userinfo set userScore=userScore+ #{userScore}	where id=#{id}
 	</update>
 </mapper>

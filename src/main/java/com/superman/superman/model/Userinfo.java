@@ -63,7 +63,7 @@ public class Userinfo {
      *
      * @mbggenerated
      */
-    private Integer userscore;
+    private Integer userScore;
     private Integer roleId;
 
     private String userphoto;

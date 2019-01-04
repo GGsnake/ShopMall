@@ -46,5 +46,9 @@ public class Constants {
      * 默认昵称
      */
     public static final String USERNAME_DEFAUT="匿名用户";
+    /**
+     * 邀请记录
+     */
+    public static final String INV_LOG="inv_log";
 
 }
