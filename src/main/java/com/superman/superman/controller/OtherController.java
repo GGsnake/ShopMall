@@ -5,6 +5,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Agent;
+import com.superman.superman.model.SysDaygoods;
 import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.*;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,6 +58,9 @@ public class OtherController {
     private JdApiService jdApiService;
     @Autowired
     private UserinfoMapper userinfoMapper;
+
+    @Autowired
+    private SysDaygoodsService daygoodsService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -135,7 +140,7 @@ public class OtherController {
             return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
         }
         Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
-        Long add = redisTemplate.opsForSet().add(Constants.INV_LOG,Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
+        Long add = redisTemplate.opsForSet().add(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
         String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/queryCodeUrl?code=" + code, uid);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
@@ -178,6 +183,18 @@ public class OtherController {
         return "addUserSuccess";
 
     }
-//    @LoginRequired
+
+    //    @LoginRequired
+    @GetMapping("/dayGoods")
+    public WeikeResponse dayGoods(PageParam pageParam) {
+        //查询列表数据
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        List<SysDaygoods> daygoodsList = daygoodsService.queryList(param);
+        Integer total = daygoodsService.queryTotal();
+        JSONObject data = new JSONObject();
+        data.put("pageData", daygoodsList);
+        data.put("pageCount", total);
+        return WeikeResponseUtil.success(data);
+    }
 
 }

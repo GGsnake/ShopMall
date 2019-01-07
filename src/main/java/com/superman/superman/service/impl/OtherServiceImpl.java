@@ -46,11 +46,6 @@ public class OtherServiceImpl implements OtherService {
 
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ImageIO.write(bufferedImage, "png", os);
-                /**
-                 * 原生转码前面没有 data:image/png;base64 这些字段，返回给前端是无法被解析，可以让前端加，也可以在下面加上
-                 */
-//                resultImage = new String("data:image/png;base64," + Base64.encode(os.toByteArray()));
-
                 return os;
             } catch (Exception e) {
                 e.printStackTrace();

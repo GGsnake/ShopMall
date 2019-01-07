@@ -1,6 +1,8 @@
 package com.superman.superman.service;
 
 import com.superman.superman.model.SysDaygoods;
+import com.superman.superman.utils.PageParam;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +15,9 @@ public interface SysDaygoodsService {
 	
 	SysDaygoods queryObject(Integer id);
 	
-	List<SysDaygoods> queryList(Map<String, Object> map);
+	List<SysDaygoods> queryList(PageParam pageParam);
 	
-	int queryTotal(Map<String, Object> map);
+	int queryTotal();
 	
 	void save(SysDaygoods daygoods);
 	

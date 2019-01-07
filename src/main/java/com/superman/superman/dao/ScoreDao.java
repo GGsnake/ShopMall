@@ -48,7 +48,7 @@ public interface ScoreDao {
      * @param uid
      * @return
      */
-    @Select("select ifNULL(sum(score),0) from score where userId=#{uid} and status=0")
+    @Select("select ifNULL(sum(score),0) from score_user where userId=#{uid} and status=0")
     Integer countScore(Long uid);
 
 }

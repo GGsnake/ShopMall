@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.superman.superman.dao.SysDaygoodsDao;
 import com.superman.superman.model.SysDaygoods;
 import com.superman.superman.service.SysDaygoodsService;
+import com.superman.superman.utils.PageParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -20,13 +21,18 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 	}
 	
 	@Override
-	public List<SysDaygoods> queryList(Map<String, Object> map){
-		return daygoodsDao.queryList(map);
+	public List<SysDaygoods> queryList(PageParam pageParam){
+		List<SysDaygoods> sysDaygoods = daygoodsDao.queryListGod(pageParam.getStartRow(), pageParam.getPageSize());
+
+//		for (SysDaygoods sy:sysDaygoods){
+//			sy.get
+//		}
+		return null;
 	}
 	
 	@Override
-	public int queryTotal(Map<String, Object> map){
-		return daygoodsDao.queryTotal(map);
+	public int queryTotal(){
+		return daygoodsDao.queryTotal();
 	}
 	
 	@Override

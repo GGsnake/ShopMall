@@ -8,10 +8,7 @@ import com.superman.superman.model.SysAdvice;
 import com.superman.superman.model.SysDaygoods;
 import com.superman.superman.service.SysAdviceService;
 import com.superman.superman.service.SysDaygoodsService;
-import com.superman.superman.utils.PageUtils;
-import com.superman.superman.utils.Query;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +23,6 @@ public class SysAdviceController{
 
 	@Autowired
 	private SysAdviceService adviceService;
-	@Autowired
-	private SysDaygoodsService daygoodsService;
-	
 	/**
 	 * 列表
 	 */
@@ -62,17 +56,7 @@ public class SysAdviceController{
 		return WeikeResponseUtil.success(var1);
 	}
 
-	@GetMapping("/dayGoods")
-	public WeikeResponse dayGoods(@RequestParam Map<String, Object> params){
-		//查询列表数据
-		Query query = new Query(params);
 
-		List<SysDaygoods> daygoodsList = daygoodsService.queryList(query);
-		int total = daygoodsService.queryTotal(query);
-
-		return WeikeResponseUtil.success();
-	}
-	
 
 	
 }

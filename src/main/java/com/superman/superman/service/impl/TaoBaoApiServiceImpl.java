@@ -9,11 +9,13 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.GoodUtils;
 import com.superman.superman.utils.NetUtils;
+import com.superman.superman.utils.PageParam;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkItemInfoGetRequest;
+import com.taobao.api.request.TbkItemRecommendGetRequest;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
 import com.taobao.api.response.TbkItemInfoGetResponse;
 import lombok.NonNull;
@@ -312,7 +314,42 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             e.printStackTrace();
         }
 
+
         return var;
+    }
+
+    /**
+     * 查询淘宝的商品详情
+     *
+     * @return
+     */
+    @Override
+    public JSONObject recommend(Long goodId,Integer uid  ) {
+//        JSONObject var = new JSONObject();
+//        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
+//        TbkItemRecommendGetRequest req = new TbkItemRecommendGetRequest();
+//        req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url");
+//        req.setNumIid(123L);
+//        req.setCount(20L);
+//        req.setPlatform(1L);
+//        TbkItemRecommendGetResponse rsp = client.execute(req);
+//        System.out.println(rsp.getBody());
+//        try {
+//            JSONArray var1 = new JSONArray();
+//            rsp = client.execute(req);
+//            if (JSONObject.parseObject(rsp.getBody()).getJSONObject("error_response") != null) {
+//                var.put("list", var1);
+//                return var;
+//            }
+//            TbkItemInfoGetResponse.NTbkItem results = rsp.getResults().get(0);
+//            List<String> itemUrl = results.getSmallImages();
+//            var.put("list", itemUrl);
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+
+
+        return null;
     }
 
     /**

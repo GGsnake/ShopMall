@@ -1,5 +1,6 @@
 package com.superman.superman.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.ScoreBean;
 
 /**
@@ -12,6 +13,12 @@ public interface ScoreService {
      * @return
      */
     Boolean isExitSign(ScoreBean scoreBean);
+    /**
+     * 查询当天积分
+     * @param
+     * @return
+     */
+    JSONObject myScore(Integer  uid);
 
     /**
      * 查询浏览商品次数

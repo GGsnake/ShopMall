@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.utils.PageParam;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
 
@@ -42,6 +43,14 @@ public interface TaoBaoApiService {
      * @return
      */
     JSONObject convertTaobao(Long pid, Long good_id);
+
+    /**
+     * 为你推荐
+     *
+     * @param goodId
+     * @return
+     */
+    JSONObject recommend(Long goodId,Integer uid);
 
     /**
      * 查询淘宝的商品详情
