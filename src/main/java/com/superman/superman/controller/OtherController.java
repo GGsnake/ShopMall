@@ -1,5 +1,6 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.AgentDao;
@@ -189,7 +190,7 @@ public class OtherController {
     public WeikeResponse dayGoods(PageParam pageParam) {
         //查询列表数据
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        List<SysDaygoods> daygoodsList = daygoodsService.queryList(param);
+        JSONArray daygoodsList = daygoodsService.queryList(param);
         Integer total = daygoodsService.queryTotal();
         JSONObject data = new JSONObject();
         data.put("pageData", daygoodsList);

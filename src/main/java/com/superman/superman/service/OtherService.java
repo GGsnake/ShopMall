@@ -1,5 +1,8 @@
 package com.superman.superman.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.superman.superman.utils.PageParam;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -9,6 +12,7 @@ import java.io.IOException;
 public interface OtherService {
 
         ByteArrayOutputStream crateQRCode(String content);
+       JSONArray queryAdviceForDev(PageParam pageParam);
         String addQrCodeUrl(String data,String uid) throws IOException;
         String addQrCodeUrlInv(String data,String uid) throws IOException;
 }

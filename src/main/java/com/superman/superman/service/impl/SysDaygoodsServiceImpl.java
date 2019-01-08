@@ -1,13 +1,16 @@
 package com.superman.superman.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.SysDaygoodsDao;
 import com.superman.superman.model.SysDaygoods;
 import com.superman.superman.service.SysDaygoodsService;
 import com.superman.superman.utils.PageParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service("daygoodsService")
 public class SysDaygoodsServiceImpl implements SysDaygoodsService {
@@ -21,13 +24,24 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 	}
 	
 	@Override
-	public List<SysDaygoods> queryList(PageParam pageParam){
+	public JSONArray queryList(PageParam pageParam){
 		List<SysDaygoods> sysDaygoods = daygoodsDao.queryListGod(pageParam.getStartRow(), pageParam.getPageSize());
+		JSONArray data=new JSONArray();
 
-//		for (SysDaygoods sy:sysDaygoods){
-//			sy.get
-//		}
-		return null;
+		for (SysDaygoods sy:sysDaygoods){
+			JSONObject jp=new JSONObject();
+			List a=new ArrayList();
+			a.add("xxxxxxx.jpg");
+			a.add("xxxxxxx2222222.jpg");
+			a.add("xxxxxxx33333333.jpg");
+			jp.put("titile",sy.getTitile());
+			jp.put("content",sy.getTitile());
+			jp.put("image",sy.getTitile());
+			jp.put("content_Images",a);
+			jp.put("createtime",sy.getTitile());
+			data.add(jp);
+		}
+		return data;
 	}
 	
 	@Override

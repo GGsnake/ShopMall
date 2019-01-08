@@ -33,5 +33,4 @@ public class SysDaygoods implements Serializable {
 	private Date createtime;
 
 
-
 }
