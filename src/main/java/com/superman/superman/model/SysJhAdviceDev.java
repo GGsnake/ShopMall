@@ -27,5 +27,6 @@ public class SysJhAdviceDev {
     private Date createtime;
     //修改时间
 
+    
     private Date updatetime;
 }

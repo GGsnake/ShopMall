@@ -87,7 +87,7 @@ public class OtherServiceImpl implements OtherService {
         for (SysJhAdviceDev sy:sysJhAdviceDevs)
         {
             JSONObject var=new JSONObject();
-            var.put("titile",sy.getTitile());
+            var.put("title",sy.getTitile());
             var.put("content",sy.getContent());
             if (sy.getImage()==null){
                 var.put("image",logo);

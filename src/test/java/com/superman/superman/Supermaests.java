@@ -245,6 +245,12 @@ public class Supermaests {
 //        MemberDetail memberDetail = oderMapper.sumAllDevOderByOderCreateTimeForAgent(a);
 //        log.warning(memberDetail.toString());
     }
+    @Autowired
+    private JdApiService jdApiService;
+    @Test
+    public void jdDeatiTest() {
+        jdApiService.jdDetail(38412174396l);
+    }
 
 
 }

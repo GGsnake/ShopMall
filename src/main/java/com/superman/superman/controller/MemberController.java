@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.ApplyCash;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
@@ -15,6 +17,7 @@ import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.java.Log;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +34,7 @@ import java.util.*;
 /**
  * Created by liujupeng on 2018/11/9.
  */
+@Log
 @RestController
 @RequestMapping("/member")
 public class MemberController {
@@ -45,6 +49,8 @@ public class MemberController {
     UserApiService userApiService;
     @Autowired
     MoneyService moneyService;
+    @Autowired
+    SysAdviceDao sysAdviceDao;
     @Value("${domain.codeurl}")
     private String URL;
 
@@ -86,6 +92,58 @@ public class MemberController {
         data.put("finishMoney", finishMoney);
         data.put("cash", cash);
         return WeikeResponseUtil.success(data);
+    }
+
+   /**
+     * 个人佣金提现申请接口
+     *
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @GetMapping("/apply")
+    public WeikeResponse apply(HttpServletRequest request,Long money,String account,String name) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null||money==null||account==null||name==null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        if (money<0||money>99999){
+            return WeikeResponseUtil.fail(ResponseCode.MONEY_MAX);
+        }
+        Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (user==null){
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        ApplyCash applyCash=new ApplyCash();
+        applyCash.setUserid(user.getId().intValue());
+        applyCash.setMoney(money);
+        applyCash.setAccount(account);
+        applyCash.setName(name);
+        Integer temp = sysAdviceDao.applyCash(applyCash);
+        if (temp==1){
+            return WeikeResponseUtil.success();
+        }
+        log.warning("用户提现失败-UID="+uid);
+        return WeikeResponseUtil.fail("100063","申请提现失败请重试");
+
+    }
+
+   /**
+     * 个人佣金提现申请查询 分页
+     *
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @GetMapping("/queryApply")
+    public WeikeResponse queryApply(HttpServletRequest request,PageParam pageParam) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(Integer.valueOf(uid),param.getStartRow(),pageParam.getPageSize());
+        return WeikeResponseUtil.success(temp);
     }
 
     /**

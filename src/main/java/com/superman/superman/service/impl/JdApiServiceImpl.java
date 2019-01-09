@@ -8,6 +8,7 @@ import com.superman.superman.model.ScoreBean;
 import com.superman.superman.req.JdSerachReq;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.utils.NetUtils;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -144,8 +145,21 @@ public class JdApiServiceImpl implements JdApiService {
     }
 
     @Override
-    public JSONObject jdDetail(Long goodId) {
-
+    public JSONObject jdDetail(@NonNull Long goodId) {
+//        String jdurl = URL + "/iteminfo?";
+//        JSONObject temp = new JSONObject();
+//        Map<String, String> urlSign = new HashMap<>();
+//        urlSign.put("skuids",goodId.toString());
+//        String linkStringByGet = null;
+//        try {
+//            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
+//        JSONArray var1 = JSON.parseObject(res).getJSONArray("data");
+//        JSONObject data= (JSONObject) var1.get(0);
+//        data.ge
         return null;
     }
 

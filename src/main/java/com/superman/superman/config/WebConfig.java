@@ -22,7 +22,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/other/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/Shop/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/oder/**");
-//        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/taobao/**");
+        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/taobao/**");
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/score/**");
     }
     @Bean

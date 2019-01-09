@@ -139,6 +139,12 @@ public class UserApiServiceImpl implements UserApiService {
     }
 
     @Override
+    public Userinfo queryByWx(@NonNull String wx) {
+        Userinfo userinfo = userinfoMapper.queryUserWxOpenId(wx);
+        return userinfo;
+    }
+
+    @Override
     public Integer createInvCode(Long uid) {
         try {
             Integer integer = userinfoMapper.insertCode(uid);

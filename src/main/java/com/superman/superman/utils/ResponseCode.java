@@ -44,6 +44,7 @@ public class ResponseCode {
     public static final ResponseCode DELETE_ERROR = new ResponseCode("100033", "删除错误");
     public static final ResponseCode PERMISSIONS_ERROR = new ResponseCode("100053", "无权限");
     public static final ResponseCode INT_CUSY = new ResponseCode("100054", "数值超出范围");
+    public static final ResponseCode MONEY_MAX = new ResponseCode("100064", "提现金额太小或者太大");
 
     private String errCode;
     private String errMsg;

@@ -69,6 +69,11 @@ juanhuang:
   range: 90
   look: "score_look"
   logo: "http://120.79.62.89:8087/jhlogo.jpg"
+  wx: "BBBBBBBBBBBBssssss1"
+  wxurl: "http://img1.imgtn.bdimg.com/it/u=2478181297,1978765048&fm=200&gp=0.jpg"
+  wxname: "AAAAAAA"
+  wxcontacturl: "http://img1.imgtn.bdimg.com/it/u=2525052895,2022901810&fm=200&gp=0.jpg"
+
 domain:
   url: "http://120.79.62.89/"
   codeurl: "http://120.79.62.89:8080"

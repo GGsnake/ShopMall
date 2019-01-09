@@ -20,6 +20,9 @@ public interface UserApiService {
 
     Userinfo queryByUid(Long uid);
 
+
+    Userinfo queryByWx(String  uid);
+
     Integer createInvCode(Long uid);
 
     JSONObject createTbPid();

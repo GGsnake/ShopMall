@@ -1,5 +1,6 @@
 package com.superman.superman.dao;
 
+import com.superman.superman.Dto.UpdateWxOpenId;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.InvCode;
@@ -41,6 +42,14 @@ public interface UserinfoMapper {
      */
     Userinfo selectByPrimaryKey(Long id);
 
+
+    @Select("select * from userinfo where wxOpenId=#{id}")
+    Userinfo queryUserWxOpenId(String id);
+
+    @Update("update userInfo where wxOpenId=#{id},userName=#{name},userPhoto=#{photo}")
+    Integer updateUserWxOpenId(UpdateWxOpenId uu);
+
+
     Userinfo selectByPhone(String userPhone);
 
     @Select("select SUM(promotion_amount) from oder where  p_id in (select pddPid from userinfo where  id in (select userId from agent where agentId=#{uid}))")
@@ -80,6 +89,7 @@ public interface UserinfoMapper {
 
     @Select("select userId from invcode where id=#{id}")
     Integer queryUserCode(Long id);
+
 
 
 }

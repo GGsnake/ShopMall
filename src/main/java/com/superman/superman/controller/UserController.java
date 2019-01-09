@@ -2,8 +2,10 @@ package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.Dto.UpdateWxOpenId;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.OderMapper;
+import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.TokenModel;
 import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
@@ -14,6 +16,7 @@ import com.superman.superman.utils.*;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpMethod;
@@ -47,6 +50,9 @@ public class UserController {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private UserinfoMapper userinfoMapper;
 
 
     @PostMapping("/getBillList")
@@ -99,7 +105,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Object Login(HttpServletRequest request,@RequestBody String body) {
+    public Object Login(HttpServletRequest request, @RequestBody String body) {
         JSONObject data = JSONObject.parseObject(body);
         String userName = data.getString("user_name");
         String passWord = data.getString("pass_word");
@@ -112,18 +118,53 @@ public class UserController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
         }
         //异步上报登录记录
-        logService.addUserLoginLog(user.getId(),request.getRemoteAddr());
+        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态
         TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
         return WeikeResponseUtil.success(model);
     }
+
     /**
-     * 通过wx登陆
-     *
-     * @param reqMap
+     * 手机号登录
+     * @param request
+     * @param phone
+     * @param passWord
      * @return
      */
-//    @PostMapping("/wx/login")
+    @PostMapping("/loginUser")
+    public WeikeResponse loginUser(HttpServletRequest request,String phone,String passWord) {
+        if (phone==null||passWord==null){
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Userinfo user = userServiceApi.queryUserByPhone(phone);
+        if (user == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+
+
+        //获取数据库中的密码，与输入的密码加密后比对
+        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
+        }
+        //获取wx id
+        String wxopenid = user.getWxopenid();
+        if (wxopenid == null) {
+            return WeikeResponseUtil.fail("1000123","没有关联微信号");
+        }
+
+        //异步上报登录记录
+        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
+        //生成一个token，保存用户登录状态
+        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
+        return WeikeResponseUtil.success(model);
+    }
+//    /**
+//     * 通过wx登陆
+//     *
+//     * @param reqMap
+//     * @return
+//     */
+//    @PostMapping("/wxlogin")
 //    public Object LoginWX(@RequestBody Map<String, Object> reqMap) {
 //        String code = RequestUtil.getMapString(reqMap.get("wx_code").toString());
 //        //微信接口
@@ -157,6 +198,53 @@ public class UserController {
 //        }
 //        return ResultUtil.fail();
 //    }
+    /**
+     * 通过wx登陆
+     *
+     * @return
+     */
+    @PostMapping("/wxlogin")
+    public WeikeResponse LoginWX(String wx,HttpServletRequest request) {
+        Userinfo userinfo = userServiceApi.queryByWx(wx);
+        if (userinfo==null){
+          return WeikeResponseUtil.fail("1000124","没有关联的手机号");
+        }
+        logService.addUserLoginLog(userinfo.getId(),request.getRemoteAddr());
+        //生成一个token，保存用户登录状态
+        TokenModel model = tokenService.createToken(userinfo.getId().toString());
+        return WeikeResponseUtil.success(model);
+    }
+
+    /**
+     * 通过wx登陆
+     *
+     * @return
+     */
+    @PostMapping("/bindWx")
+    public WeikeResponse bindWx(String wx,String nickname,String headimgurl,String phone) {
+        Userinfo userinfo = userServiceApi.queryByWx(wx);
+        if (userinfo!=null){
+            return WeikeResponseUtil.fail("1000125","微信号已经有关联的手机");
+        }
+        Userinfo var = userServiceApi.queryUserByPhone(phone);
+        if (var==null){
+            return WeikeResponseUtil.fail("1000126","该手机账号不存在请先注册");
+        }
+        if (var.getWxopenid()!=null){
+            return WeikeResponseUtil.fail("1000128","该手机账号已经绑定微信");
+        }
+        UpdateWxOpenId temp=new UpdateWxOpenId();
+        temp.setName(nickname);
+        temp.setId(wx);
+        temp.setPhoto(headimgurl);
+        Integer flag = userinfoMapper.updateUserWxOpenId(temp);
+        if (flag==0){
+            return WeikeResponseUtil.fail("1000127","绑定手机号失败");
+        }
+        //生成一个token，保存用户登录状态
+        TokenModel model = tokenService.createToken(var.getId().toString());
+        return WeikeResponseUtil.success(model);
+    }
 
 
 }
