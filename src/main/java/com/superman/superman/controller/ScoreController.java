@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/score")
 public class ScoreController {
-
     @Autowired
     private ScoreService scoreService;
 
@@ -40,22 +39,11 @@ public class ScoreController {
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
     }
 
-//    //积分查询
-//    @LoginRequired
-//    @PostMapping("/query")
-//    public WeikeResponse query(HttpServletRequest request) {
-//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-//        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-//        }
-//        ScoreBean scoreBean = new ScoreBean();
-//        Boolean query = scoreService.isExitSign(scoreBean);
-//        return WeikeResponseUtil.success(query);
-//    }
-//
-
-
-    //积分查询
+    /**
+     * 积分查询
+     * @param request
+     * @return
+     */
     @LoginRequired
     @PostMapping("/myScore")
     public WeikeResponse dede(HttpServletRequest request) {

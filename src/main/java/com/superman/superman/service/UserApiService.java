@@ -3,6 +3,7 @@ package com.superman.superman.service;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.req.UserRegiser;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -12,7 +13,7 @@ public interface UserApiService {
 
     String userLogin(User user);
 
-    Boolean createUser(Userinfo userinfo);
+    Boolean createUser(UserRegiser userinfo);
 
     Boolean createUserByPhone(Userinfo userinfo);
 

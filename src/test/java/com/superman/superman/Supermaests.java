@@ -1,23 +1,13 @@
 package com.superman.superman;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.Dto.MemberDetail;
 import com.superman.superman.dao.*;
-import com.superman.superman.model.*;
-import com.superman.superman.req.InvCode;
 import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.HttpDeal;
-import com.superman.superman.utils.PageParam;
-import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.domain.NTbkItem;
-import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.request.TbkUatmFavoritesGetRequest;
-import com.taobao.api.response.TbkItemGetResponse;
 import com.taobao.api.response.TbkUatmFavoritesGetResponse;
 import lombok.extern.java.Log;
 import lombok.var;
@@ -25,18 +15,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.ClassUtils;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageOutputStream;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +52,7 @@ public class Supermaests {
     OtherService otherService;
     @Autowired
     OderMapper oderMapper;
-    @Autowired
-    UserDao userDao;
+
 
     //    @Autowired
 //    AgentDao agentDao;

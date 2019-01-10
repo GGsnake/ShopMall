@@ -1,36 +1,23 @@
 package com.superman.superman.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.Dto.UpdateWxOpenId;
+import com.superman.superman.dto.UpdateWxOpenId;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.TokenModel;
 import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.req.BindWxToUser;
 import com.superman.superman.service.LogService;
 import com.superman.superman.service.TokenService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
-import lombok.var;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,33 +26,17 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class UserController {
 
-    //    @Autowired
-//    private PddApiService pddApiService;
     @Autowired
     private TokenService tokenService;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private UserApiService userServiceApi;
-
     @Autowired
     private LogService logService;
-
     @Autowired
     private UserinfoMapper userinfoMapper;
 
-
-    @PostMapping("/getBillList")
-    public Result pddGoodList(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page,
-                              @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize,
-                              @RequestParam(value = "pid", required = false) String pid, @RequestParam(value = "goodlist[]", required = false) Long[] goodlist
-    ) {
-//        userServiceApi.query();
-
-//        String billList = pddApiService.getBillList(pid, page, String.valueOf(pagesize));
-//        String s = pddApiService.newPromotion(pid, goodlist);
-        return Result.ok(null);
-    }
 
     @LoginRequired
     @PostMapping("/index")
@@ -75,34 +46,23 @@ public class UserController {
         return null;
     }
 
-    //    @PostMapping("/gg")
-//    public Result creat(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page,
-//                              @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize,
-//                              @RequestParam(value = "number", required = false) String pid, @RequestParam(value = "goodlist[]", required = false) Long[] goodlist
-//    )
-//    {
 //
-//        String s = pddApiService.newBillSingle(1);
-//        return Result.ok(s);
+//    @PostMapping(value = "/createUser")
+//    public Result createUser(@RequestParam(value = "mobile") String mobile,
+//                             @RequestParam(value = "pwd") String pwd,
+////                             @RequestParam(value = "code") String code,
+//                             @RequestParam(value = "pid", required = false) String pid) {
 //
-//
-//    }
-    @PostMapping(value = "/createUser")
-    public Result createUser(@RequestParam(value = "mobile") String mobile,
-                             @RequestParam(value = "pwd") String pwd,
-//                             @RequestParam(value = "code") String code,
-                             @RequestParam(value = "pid", required = false) String pid) {
-
-        Userinfo user = new Userinfo();
-        user.setUserphone(mobile);
-        user.setLoginpwd(pwd);
+//        Userinfo user = new Userinfo();
+//        user.setUserphone(mobile);
+//        user.setLoginpwd(pwd);
 //        user.set(code);
-        Boolean flag = userServiceApi.createUserByPhone(user);
-
+//        Boolean flag = userServiceApi.createUserByPhone(user);
+//
 //        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
-
-        return Result.error("验证码错误");
-    }
+//
+//        return Result.error("验证码错误");
+//    }
 
     @PostMapping("/login")
     public Object Login(HttpServletRequest request, @RequestBody String body) {
@@ -125,39 +85,41 @@ public class UserController {
     }
 
     /**
-     * 手机号登录
+     * 通过手机号登录
+     *
      * @param request
      * @param phone
-     * @param passWord
+     * @param validate
      * @return
      */
     @PostMapping("/loginUser")
-    public WeikeResponse loginUser(HttpServletRequest request,String phone,String passWord) {
-        if (phone==null||passWord==null){
+    public WeikeResponse loginUser(HttpServletRequest request, String phone, String validate) {
+        if (phone == null || validate == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
+        Integer code = (Integer) redisTemplate.opsForValue().get("login:" + phone);
+
+        if (code==null||!validate.equals(code.toString())) {
+            return WeikeResponseUtil.fail("1000134", "验证码错误");
+        }
+
         Userinfo user = userServiceApi.queryUserByPhone(phone);
+        Long id = user.getId();
         if (user == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return WeikeResponseUtil.fail("1000131", "该手机号未注册");
         }
-
-
-        //获取数据库中的密码，与输入的密码加密后比对
-        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
-        }
-        //获取wx id
         String wxopenid = user.getWxopenid();
         if (wxopenid == null) {
-            return WeikeResponseUtil.fail("1000123","没有关联微信号");
+            return WeikeResponseUtil.fail("1000132", "未绑定微信号 请绑定");
         }
-
         //异步上报登录记录
-        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
+        logService.addUserLoginLog(id, request.getRemoteAddr());
         //生成一个token，保存用户登录状态
-        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
+        TokenModel model = tokenService.createToken(id.toString());
         return WeikeResponseUtil.success(model);
     }
+
+
 //    /**
 //     * 通过wx登陆
 //     *
@@ -198,53 +160,89 @@ public class UserController {
 //        }
 //        return ResultUtil.fail();
 //    }
+
     /**
-     * 通过wx登陆
+     * 通过微信登陆
      *
      * @return
      */
     @PostMapping("/wxlogin")
-    public WeikeResponse LoginWX(String wx,HttpServletRequest request) {
-        Userinfo userinfo = userServiceApi.queryByWx(wx);
-        if (userinfo==null){
-          return WeikeResponseUtil.fail("1000124","没有关联的手机号");
+    public WeikeResponse LoginWX(String wx, HttpServletRequest request) {
+        Userinfo var = userServiceApi.queryByWx(wx);
+        if (var == null || var.getUserphone() == null) {
+            return WeikeResponseUtil.fail("1000124", "请先关联您的手机号");
         }
-        logService.addUserLoginLog(userinfo.getId(),request.getRemoteAddr());
+        //异步上报登录
+        logService.addUserLoginLog(var.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态
-        TokenModel model = tokenService.createToken(userinfo.getId().toString());
-        return WeikeResponseUtil.success(model);
+        return WeikeResponseUtil.success(tokenService.createToken(var.getId().toString()));
     }
 
     /**
-     * 通过wx登陆
+     * 绑定微信
      *
+     * @param bindWxToUser
      * @return
      */
     @PostMapping("/bindWx")
-    public WeikeResponse bindWx(String wx,String nickname,String headimgurl,String phone) {
-        Userinfo userinfo = userServiceApi.queryByWx(wx);
-        if (userinfo!=null){
-            return WeikeResponseUtil.fail("1000125","微信号已经有关联的手机");
+    public WeikeResponse bindWx(BindWxToUser bindWxToUser, HttpServletRequest request) {
+        if (bindWxToUser.isNone()) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        Userinfo var = userServiceApi.queryUserByPhone(phone);
-        if (var==null){
-            return WeikeResponseUtil.fail("1000126","该手机账号不存在请先注册");
+        //查询该微信号是否授权过
+        Userinfo user = userServiceApi.queryByWx(bindWxToUser.getWx());
+        if (user != null) {
+            return WeikeResponseUtil.fail("1000125", "微信号已经有关联的手机");
         }
-        if (var.getWxopenid()!=null){
-            return WeikeResponseUtil.fail("1000128","该手机账号已经绑定微信");
+
+        Boolean isVaild = redisTemplate.hasKey("token:" + bindWxToUser.getPhone());
+        if (!isVaild) {
+            return WeikeResponseUtil.fail("1000129", "请先登录或注册手机号");
         }
-        UpdateWxOpenId temp=new UpdateWxOpenId();
-        temp.setName(nickname);
-        temp.setId(wx);
-        temp.setPhoto(headimgurl);
+
+        Userinfo var = userServiceApi.queryUserByPhone(bindWxToUser.getPhone());
+        if (var == null) {
+            return WeikeResponseUtil.fail("1000126", "该手机账号不存在请先注册");
+        }
+        if (var.getWxopenid() != null) {
+            return WeikeResponseUtil.fail("1000128", "该手机账号已经绑定微信");
+        }
+
+        UpdateWxOpenId temp = new UpdateWxOpenId();
+        temp.setName(bindWxToUser.getNickname());
+        temp.setId(bindWxToUser.getWx());
+        temp.setPhoto(bindWxToUser.getHeadimgurl());
+        temp.setPhone(bindWxToUser.getPhone());
+
         Integer flag = userinfoMapper.updateUserWxOpenId(temp);
-        if (flag==0){
-            return WeikeResponseUtil.fail("1000127","绑定手机号失败");
+        if (flag == 0) {
+            return WeikeResponseUtil.fail("1000127", "绑定手机号失败");
         }
+        logService.addUserLoginLog(var.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态
         TokenModel model = tokenService.createToken(var.getId().toString());
+
         return WeikeResponseUtil.success(model);
     }
 
+
+    @PostMapping("/sendSMS")
+    public WeikeResponse sendSMS(String phone) {
+        String vaild = "login:" + phone;
+        Boolean aBoolean = redisTemplate.hasKey(vaild);
+        if (aBoolean){
+            return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");
+
+        }
+        int code = (int) ((Math.random() * 9 + 1) * 100000);
+        String content = "此次登录验证码" + code + "，验证码五分钟过期【卷皇】";
+        int result = SmsUtil.sendSmsLogin(phone, content);
+        if (result == 200) {
+            redisTemplate.opsForValue().set(vaild, code);
+            redisTemplate.expire(vaild,300, TimeUnit.SECONDS);
+            return  WeikeResponseUtil.success("验证码发送成功");
+        }
+        return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");
+    }
 
 }

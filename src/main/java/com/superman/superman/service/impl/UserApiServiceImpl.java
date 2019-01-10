@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
+import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.UserApiService;
 import lombok.NonNull;
 import lombok.var;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -25,8 +27,7 @@ public class UserApiServiceImpl implements UserApiService {
     private AgentDao agentDao;
     @Autowired
     private HotUserMapper hotUserMapper;
-    @Autowired
-    private UserDao userDao;
+
     @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
@@ -38,11 +39,8 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public void query() {
-//        UserPdd userPdd = pddDao.selectUsers(112l);
-//        logger.info(userPdd.getUserPid());
-//        logger.info(String.valueOf(userPdd.getUserId()));
-//
-//        String s = null;
+
+
     }
 
     @Override
@@ -51,20 +49,19 @@ public class UserApiServiceImpl implements UserApiService {
     }
 
     @Override
-    public Boolean createUser(Userinfo userinfo) {
-        var ha = redisTemplate.opsForValue();
-//        var code =ha.get("SMS:"+userinfo.getUserphone());
-//        if (code==null||!user.getLoginSecret().equals(code)){
-//            return false;
-        String loginPwd = DigestUtils.md5DigestAsHex(userinfo.getLoginpwd().getBytes());
-        userinfo.setLoginpwd(loginPwd);
+    public Boolean createUser(UserRegiser usr) {
+        ValueOperations var = redisTemplate.opsForValue();
+        String code = (String) var.get("SMS:" + usr.getUserphone());
+        if (code == null || !code.equals(usr.getCode())) {
+            return false;
+        }
         JSONObject tbPid = createTbPid();
         if (tbPid == null || tbPid.size() == 0) {
             return false;
         }
-        userinfo.setTbpid(tbPid.getLong("tb"));
-        userinfo.setPddpid(tbPid.getString("pdd"));
-        int flag = userinfoMapper.insert(userinfo);
+        usr.setTbpid(tbPid.getLong("tb"));
+        usr.setPddpid(tbPid.getString("pdd"));
+        int flag = userinfoMapper.insert(usr);
         return flag == 0 ? false : true;
     }
 
@@ -76,60 +73,19 @@ public class UserApiServiceImpl implements UserApiService {
         }
         userinfo.setRoleId(3);
         userinfo.setScore(0);
-        Boolean oprear = createUser(userinfo);
-        if (oprear) {
-            return true;
-        }
+//        Boolean oprear = createUser(userinfo);
+//        if (oprear) {
+//            return true;
+//        }
         return false;
     }
 
-
-//    public String userLogin(User user) {
-//        if (user==null||user.getUserPhone()==null||user.getLoginPwd()==null){
-//            return "请填写";
-//        }
-//        User loginUser =  userDao.selectByPhone(user.getUserPhone());
-//        if (loginUser==null){
-//            return "用户不存在";
-//        }
-//        if (!DigestUtils.md5DigestAsHex(user.getLoginPwd().getBytes()).equals(loginUser.getLoginPwd())){
-//            return null;
-//        }
-//        String token= String.valueOf(UUID.randomUUID());
-//        loginUser.setLoginPwd("");
-//        redisUtils.set(REDIS_PRIFEX+token, JSONObject.toJSON(loginUser),EXPRESS_TIME);
-//
-//        return token;
-//    }
-//
-//    @Override
-//    public Boolean createUser(User user) {
-//        if (user.getUserPhone()==null||user.getLoginSecret()==null||user.getLoginPwd()==null){
-//            return false;
-//        }
-//        String code = redisUtils.get("SMS:"+user.getUserPhone());
-//        if (code==null||!user.getLoginSecret().equals(code)){
-//            return false;
-//        }
-//        if (user.getPayPwd()!=null){
-//            //TODO 插入邀请码
-//        }
-//        String loginPwd= DigestUtils.md5DigestAsHex(user.getLoginPwd().getBytes());
-//        user.setLoginPwd(loginPwd);
-//        Integer loginUser =  userDao.createUser(user);
-//        if (loginUser==0){
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
     @Override
     public Userinfo queryUserByPhone(@NonNull String userPhone) {
         Userinfo info = userinfoMapper.selectByPhone(userPhone);
         return info;
     }
-
 
 
     @Override

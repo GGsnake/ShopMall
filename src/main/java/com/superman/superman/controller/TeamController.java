@@ -6,10 +6,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
-import com.superman.superman.utils.Constants;
-import com.superman.superman.utils.PageParam;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -29,50 +26,42 @@ import javax.servlet.http.HttpServletRequest;
 public class TeamController {
     @Autowired
     private MemberService memberService;
-
-
     /**
-     * 查看我的直推会员
+     * 查看我的直推会员 （分页）
      * @param request
      * @param pageParam
      * @return
      */
     @LoginRequired
     @PostMapping("/myTeam")
-    public WeikeResponse getMyTeam(HttpServletRequest request, PageParam pageParam) {
-        PageParam var1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+    public WeikeResponse getMyTeam(HttpServletRequest request,PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        PageParam var1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = memberService.getMyTeam(Long.valueOf(uid), var1);
         return WeikeResponseUtil.success(data);
     }
 
-    @ApiOperation(value = "查看我会员下级", notes = "分页加载")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "dsadasdasdsadsadsad", required = true, dataType = "String"),
-    })
+
+    /**
+     * 查看我会员下级 （分页）
+     * @param request
+     * @param pageParam
+     * @return
+     */
     @LoginRequired
     @PostMapping("/myFans")
-    public WeikeResponse getMyFansNoMe(HttpServletRequest request, @RequestBody PageParam pageParam) {
-        PageParam pageParam1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+    public WeikeResponse getMyFansNoMe(HttpServletRequest request,PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        JSONObject query = memberService.getMyNoFans(Long.valueOf(uid), pageParam1);
-        return WeikeResponseUtil.success(query);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        PageParam var = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        JSONObject data = memberService.getMyNoFans(Long.valueOf(uid), var);
+        return WeikeResponseUtil.success(data);
     }
-//   @ApiOperation(value = "查看会员详情")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "userId", value = "112", required = true, dataType = "Long"),
-//    })
-//    @LoginRequired
-//    @PostMapping("/detail")
-//    public WeikeResponse detail(HttpServletRequest request,Long userId) {
-//        //TODO 权限待校验
-//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-//
-//
-//        Userinfo query = memberService.queryMemberDetail(userId);
-//
-//        return WeikeResponseUtil.success(query);
-//    }
 
 
 }

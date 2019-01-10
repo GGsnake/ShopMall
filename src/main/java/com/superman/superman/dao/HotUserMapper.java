@@ -1,6 +1,5 @@
 package com.superman.superman.dao;
 
-import com.superman.superman.model.HotUser;
 import org.apache.ibatis.annotations.Select;
 
 public interface HotUserMapper {

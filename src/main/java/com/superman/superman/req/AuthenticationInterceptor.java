@@ -1,32 +1,18 @@
 package com.superman.superman.req;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.regexp.internal.RE;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.model.HotUser;
 import com.superman.superman.model.TokenModel;
 import com.superman.superman.service.TokenService;
 import com.superman.superman.utils.Constants;
-import com.superman.superman.utils.StringUtil;
 import lombok.extern.java.Log;
-import lombok.var;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/21.

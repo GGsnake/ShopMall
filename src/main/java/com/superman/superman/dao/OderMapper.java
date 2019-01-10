@@ -1,6 +1,6 @@
 package com.superman.superman.dao;
 
-import com.superman.superman.Dto.MemberDetail;
+import com.superman.superman.dto.MemberDetail;
 import com.superman.superman.model.Oder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

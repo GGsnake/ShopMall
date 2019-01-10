@@ -2,7 +2,7 @@ package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.Dto.MemberDetail;
+import com.superman.superman.dto.MemberDetail;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
@@ -21,10 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import lombok.var;
 
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**

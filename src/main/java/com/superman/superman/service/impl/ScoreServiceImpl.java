@@ -2,9 +2,7 @@ package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.ScoreDao;
-import com.superman.superman.dao.UserDao;
 import com.superman.superman.model.ScoreBean;
-import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.Constants;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/14.
@@ -28,8 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class ScoreServiceImpl implements ScoreService {
     @Autowired
     private ScoreDao scoreDao;
-    @Autowired
-    private UserDao userDao;
+
     @Autowired
     private RedisTemplate redisTemplate;
     @Value("${juanhuang.look}")
@@ -61,16 +57,13 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public Long countLooks(Long uid) {
         String kv = read_key + uid.toString() + EveryUtils.getToday();
-
-        SetOperations setOperations = redisTemplate.opsForSet();
-        Long size = setOperations.size(kv);
+        Long size = redisTemplate.opsForSet().size(kv);
         return size > 10 ? 10 : size;
     }
 
     //今日是否分享
     @Override
     public Boolean countShare(Long uid) {
-
         return redisTemplate.opsForSet().isMember(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
     }
 
@@ -84,16 +77,19 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Override
     public String recordBrowse(String uid, Long goodId) {
+        SetOperations setOperations = redisTemplate.opsForSet();
         String kv = read_key + uid + EveryUtils.getToday();
         if (redisTemplate.hasKey(kv)) {
-            redisTemplate.opsForSet().add(kv, goodId.toString());
+            if (setOperations.size(kv)==10){
+
+                return null;
+            }
+            setOperations.add(kv, goodId.toString());
             redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
             return null;
         }
-        redisTemplate.opsForSet().add(kv, goodId.toString());
+        setOperations.add(kv, goodId.toString());
         redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
-
-
         return null;
     }
 
@@ -105,16 +101,19 @@ public class ScoreServiceImpl implements ScoreService {
      */
     @Transactional
     public Boolean addScore(ScoreBean scoreBean) {
+        Userinfo user = new Userinfo();
         try {
             scoreDao.addScore(scoreBean);
-            Userinfo user = new Userinfo();
             user.setId(scoreBean.getUserId());
             user.setUserScore(scoreBean.getScore().intValue());
-            userDao.updateUserScore(user);
+            Integer flag = scoreDao.updateUserScore(user);
+            if (flag==0){
+                log.warning("用户积分增加错误 UID="+user.getId());
+                throw new RuntimeException();
+            }
             return true;
         } catch (Exception e) {
-            log.warning("积分");
-            e.printStackTrace();
+            log.warning("用户积分增加错误 ID="+user.getId()+"----异常信息="+ e.getMessage());
             throw new RuntimeException();
         }
 

@@ -92,7 +92,7 @@
         and order_status=5
     </select>
 
-    <select id="sumAllDevOderByOderCreateTimeForAgent" resultType="com.superman.superman.Dto.MemberDetail">
+    <select id="sumAllDevOderByOderCreateTimeForAgent" resultType="com.superman.superman.dto.MemberDetail">
         select sum(s.money) as money, sum(s.counts) as sums FROM(SELECT IFNULL(SUM(tb.commission),0)*1000 as money,count(tb.id)
         as counts FROM
         tboder tb left join userinfo u on tb.adzone_id=u.tbPid

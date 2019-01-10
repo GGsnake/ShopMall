@@ -5,15 +5,12 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.Dto.SysJhProblem;
-import com.superman.superman.Dto.SysJhVideoTutorial;
+import com.superman.superman.dto.SysJhProblem;
+import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.model.SysAdvice;
-import com.superman.superman.model.SysDaygoods;
-import com.superman.superman.model.SysJhAdviceDev;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.service.SysAdviceService;
-import com.superman.superman.service.SysDaygoodsService;
 import com.superman.superman.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

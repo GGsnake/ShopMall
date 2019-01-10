@@ -1,9 +1,11 @@
 package com.superman.superman.dao;
 
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.model.Userinfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * Created by liujupeng on 2018/11/15.
@@ -19,14 +21,6 @@ public interface ScoreDao {
     ScoreBean isExit(@Param("score") ScoreBean user);
 
     /**
-     * 领取每日商品浏览积分
-     *
-     * @param user
-     * @return
-     */
-    Integer newSign(@Param("score") ScoreBean user);
-
-    /**
      * 增加积分
      *
      * @param user
@@ -34,13 +28,6 @@ public interface ScoreDao {
      */
     Integer addScore(@Param("score") ScoreBean user);
 
-    /**
-     * 增加积分
-     *
-     * @param user
-     * @return
-     */
-    Integer addUserScore(@Param("score") ScoreBean user);
 
     /**
      * 统计积分
@@ -51,4 +38,11 @@ public interface ScoreDao {
     @Select("select ifNULL(sum(score),0) from score_user where userId=#{uid} and status=0")
     Integer countScore(Long uid);
 
+    /**
+     * 增加用户积分
+     * @param user
+     * @return
+     */
+    @Update("update userinfo set userScore=userScore+ #{userScore} where id=#{id}")
+    Integer updateUserScore(Userinfo user);
 }
