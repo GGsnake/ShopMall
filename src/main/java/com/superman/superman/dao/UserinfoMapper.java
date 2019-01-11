@@ -38,7 +38,7 @@ public interface UserinfoMapper {
      * @param uu
      * @return
      */
-    @Update("update userInfo set wxOpenId=#{id},userName=#{name},userPhoto=#{photo} where userPhone=#{phone}")
+    @Update("update userinfo set wxOpenId=#{id},userName=#{name},userPhoto=#{photo} where userPhone=#{phone}")
     Integer updateUserWxOpenId(UpdateWxOpenId uu);
 
 

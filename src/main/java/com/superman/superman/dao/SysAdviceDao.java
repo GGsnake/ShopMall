@@ -5,6 +5,7 @@ import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.model.ApplyCash;
 import com.superman.superman.model.SysAdvice;
 import com.superman.superman.model.SysJhAdviceDev;
+import com.superman.superman.model.SysJhAdviceOder;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -49,5 +50,9 @@ public interface SysAdviceDao extends BaseDao<SysAdvice> {
     //查询视频教程
     @Select("select * from jh_video_tutorial limit #{offset}, #{limit} ")
     List<SysJhVideoTutorial> querySysJhVideoTutorial(@Param("offset") Integer offset, @Param("limit") Integer limit);
+
+    List<SysJhAdviceOder> querySysOderAdvice(@Param("list")List list,@Param("offset") Integer offset, @Param("limit") Integer limit);
+
+    Integer countSysOderAdvice(@Param("list")List list);
 
 }

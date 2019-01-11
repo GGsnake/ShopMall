@@ -15,7 +15,7 @@ public interface UserApiService {
 
     Boolean createUser(UserRegiser userinfo);
 
-    Boolean createUserByPhone(Userinfo userinfo);
+    Boolean createUserByPhone(UserRegiser userinfo);
 
     Userinfo queryUserByPhone(String userPhone);
 
@@ -26,7 +26,7 @@ public interface UserApiService {
 
     Integer createInvCode(Long uid);
 
-    JSONObject createTbPid();
+    JSONObject createPid();
 
     Boolean upAgent(Integer uid, Integer agentId, Integer score);
 }

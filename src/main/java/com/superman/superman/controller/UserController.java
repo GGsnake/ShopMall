@@ -8,6 +8,7 @@ import com.superman.superman.model.TokenModel;
 import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.BindWxToUser;
+import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.LogService;
 import com.superman.superman.service.TokenService;
 import com.superman.superman.service.UserApiService;
@@ -18,6 +19,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -64,25 +66,25 @@ public class UserController {
 //        return Result.error("验证码错误");
 //    }
 
-    @PostMapping("/login")
-    public Object Login(HttpServletRequest request, @RequestBody String body) {
-        JSONObject data = JSONObject.parseObject(body);
-        String userName = data.getString("user_name");
-        String passWord = data.getString("pass_word");
-        Userinfo user = userServiceApi.queryUserByPhone(userName);
-        if (user == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        }
-        //获取数据库中的密码，与输入的密码加密后比对
-        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
-        }
-        //异步上报登录记录
-        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
-        //生成一个token，保存用户登录状态
-        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
-        return WeikeResponseUtil.success(model);
-    }
+//    @PostMapping("/login")
+//    public Object Login(HttpServletRequest request, @RequestBody String body) {
+//        JSONObject data = JSONObject.parseObject(body);
+//        String userName = data.getString("user_name");
+//        String passWord = data.getString("pass_word");
+//        Userinfo user = userServiceApi.queryUserByPhone(userName);
+//        if (user == null) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//        }
+//        //获取数据库中的密码，与输入的密码加密后比对
+//        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
+//        }
+//        //异步上报登录记录
+//        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
+//        //生成一个token，保存用户登录状态
+//        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
+//        return WeikeResponseUtil.success(model);
+//    }
 
     /**
      * 通过手机号登录
@@ -102,15 +104,30 @@ public class UserController {
         if (code==null||!validate.equals(code.toString())) {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
-
-        Userinfo user = userServiceApi.queryUserByPhone(phone);
-        Long id = user.getId();
+        Userinfo user = userinfoMapper.selectByPhone(phone);
         if (user == null) {
-            return WeikeResponseUtil.fail("1000131", "该手机号未注册");
+            UserRegiser re=new UserRegiser();
+            re.setRoleId(3);
+            re.setUserphone(phone);
+            Boolean flag = userServiceApi.createUser(re);
+            if (!flag){
+                return WeikeResponseUtil.fail("1000142", "创建用户失败 请重试");
+            }
+            user = userinfoMapper.selectByPhone(phone);
+            if (user == null) {
+                return WeikeResponseUtil.fail("1000142", "创建用户失败 请重试");
+            }
         }
+        Long id = user.getId();
         String wxopenid = user.getWxopenid();
         if (wxopenid == null) {
-            return WeikeResponseUtil.fail("1000132", "未绑定微信号 请绑定");
+            JSONObject data=new JSONObject();
+            String vai = "phone_token:" + UUID.randomUUID();
+            redisTemplate.opsForValue().set(vai,phone);
+            redisTemplate.expire(vai,600, TimeUnit.SECONDS);
+            data.put("message","未绑定微信号 请绑定");
+            data.put("phone_token",vai);
+            return WeikeResponseUtil.success(data);
         }
         //异步上报登录记录
         logService.addUserLoginLog(id, request.getRemoteAddr());
@@ -166,7 +183,7 @@ public class UserController {
      *
      * @return
      */
-    @PostMapping("/wxlogin")
+    @PostMapping("/wxLogin")
     public WeikeResponse LoginWX(String wx, HttpServletRequest request) {
         Userinfo var = userServiceApi.queryByWx(wx);
         if (var == null || var.getUserphone() == null) {
@@ -195,12 +212,12 @@ public class UserController {
             return WeikeResponseUtil.fail("1000125", "微信号已经有关联的手机");
         }
 
-        Boolean isVaild = redisTemplate.hasKey("token:" + bindWxToUser.getPhone());
+        Boolean isVaild = redisTemplate.hasKey(bindWxToUser.getToken());
         if (!isVaild) {
             return WeikeResponseUtil.fail("1000129", "请先登录或注册手机号");
         }
-
-        Userinfo var = userServiceApi.queryUserByPhone(bindWxToUser.getPhone());
+        String phone = (String) redisTemplate.opsForValue().get(bindWxToUser.getToken());
+        Userinfo var = userServiceApi.queryUserByPhone(phone);
         if (var == null) {
             return WeikeResponseUtil.fail("1000126", "该手机账号不存在请先注册");
         }
@@ -212,7 +229,7 @@ public class UserController {
         temp.setName(bindWxToUser.getNickname());
         temp.setId(bindWxToUser.getWx());
         temp.setPhoto(bindWxToUser.getHeadimgurl());
-        temp.setPhone(bindWxToUser.getPhone());
+        temp.setPhone(phone);
 
         Integer flag = userinfoMapper.updateUserWxOpenId(temp);
         if (flag == 0) {
@@ -228,6 +245,10 @@ public class UserController {
 
     @PostMapping("/sendSMS")
     public WeikeResponse sendSMS(String phone) {
+        if (phone==null||!EveryUtils.isMobile(phone)){
+            return WeikeResponseUtil.fail("1000240","请输入正确的手机号");
+
+        }
         String vaild = "login:" + phone;
         Boolean aBoolean = redisTemplate.hasKey(vaild);
         if (aBoolean){
@@ -239,7 +260,7 @@ public class UserController {
         int result = SmsUtil.sendSmsLogin(phone, content);
         if (result == 200) {
             redisTemplate.opsForValue().set(vaild, code);
-            redisTemplate.expire(vaild,300, TimeUnit.SECONDS);
+            redisTemplate.expire(vaild,600, TimeUnit.SECONDS);
             return  WeikeResponseUtil.success("验证码发送成功");
         }
         return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");

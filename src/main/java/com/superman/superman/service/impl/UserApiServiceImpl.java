@@ -51,32 +51,32 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public Boolean createUser(UserRegiser usr) {
         ValueOperations var = redisTemplate.opsForValue();
-        String code = (String) var.get("SMS:" + usr.getUserphone());
-        if (code == null || !code.equals(usr.getCode())) {
+//        String code = (String) var.get("SMS:" + usr.getUserphone());
+//        if (code == null || !code.equals(usr.getCode())) {
+//            return false;
+//        }
+        JSONObject data = createPid();
+        if (data == null || data.size() == 0) {
             return false;
         }
-        JSONObject tbPid = createTbPid();
-        if (tbPid == null || tbPid.size() == 0) {
-            return false;
-        }
-        usr.setTbpid(tbPid.getLong("tb"));
-        usr.setPddpid(tbPid.getString("pdd"));
+        usr.setTbpid(data.getLong("tb"));
+        usr.setPddpid(data.getString("pdd"));
         int flag = userinfoMapper.insert(usr);
         return flag == 0 ? false : true;
     }
 
     @Override
-    public Boolean createUserByPhone(Userinfo userinfo) {
+    public Boolean createUserByPhone(UserRegiser userinfo) {
         Userinfo info = queryUserByPhone(userinfo.getUserphone());
         if (info != null) {
             return false;
         }
         userinfo.setRoleId(3);
         userinfo.setScore(0);
-//        Boolean oprear = createUser(userinfo);
-//        if (oprear) {
-//            return true;
-//        }
+        Boolean oprear = createUser(userinfo);
+        if (oprear) {
+            return true;
+        }
         return false;
     }
 
@@ -120,7 +120,7 @@ public class UserApiServiceImpl implements UserApiService {
      * @return
      */
     @Override
-    public synchronized JSONObject createTbPid() {
+    public synchronized JSONObject createPid() {
         Long tbpid = hotUserMapper.createTbPid();
         String pddpid = hotUserMapper.createPddPid();
         if (tbpid == null || pddpid == null) {

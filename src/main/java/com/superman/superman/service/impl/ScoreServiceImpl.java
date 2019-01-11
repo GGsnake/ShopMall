@@ -105,7 +105,7 @@ public class ScoreServiceImpl implements ScoreService {
         try {
             scoreDao.addScore(scoreBean);
             user.setId(scoreBean.getUserId());
-            user.setUserScore(scoreBean.getScore().intValue());
+            user.setUserscore(scoreBean.getScore().intValue());
             Integer flag = scoreDao.updateUserScore(user);
             if (flag==0){
                 log.warning("用户积分增加错误 UID="+user.getId());

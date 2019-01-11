@@ -69,7 +69,7 @@ public class MD5Util {
             }  
            
         }  
-        sb.append("key=huanju12345678912345678912345678");  
+        sb.append("key=hzshop12345678912345678912345678");
         String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();  
         return sign;  
     } 

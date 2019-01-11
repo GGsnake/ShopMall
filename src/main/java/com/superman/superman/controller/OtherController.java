@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.model.Agent;
-import com.superman.superman.model.SysDaygoods;
-import com.superman.superman.model.User;
-import com.superman.superman.model.Userinfo;
+import com.superman.superman.dto.SysJhVideoTutorial;
+import com.superman.superman.model.*;
+import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
 import io.swagger.models.Model;
@@ -166,7 +166,7 @@ public class OtherController {
         if (!flag) {
             return "addUserError";
         }
-        Userinfo userinfo = new Userinfo();
+        UserRegiser userinfo = new UserRegiser();
         userinfo.setUserphone(userPhone);
         userinfo.setLoginpwd(loginPwd);
         Boolean userByPhone = userApiService.createUserByPhone(userinfo);
@@ -196,6 +196,30 @@ public class OtherController {
         data.put("pageData", daygoodsList);
         data.put("pageCount", total);
         return WeikeResponseUtil.success(data);
+    }
+
+    @Autowired
+    private SysAdviceService adviceService;
+    @Autowired
+    private SysAdviceDao sysAdviceDao;
+
+    /**
+     * 查询订单通知
+     */
+    @LoginRequired
+    @PostMapping("/oderAdvice")
+    public WeikeResponse querySysAdviceOder(HttpServletRequest request, PageParam pageParam) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        PageParam data = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), data);
+        Integer sum = adviceService.countListOderAdvice(Long.valueOf(uid));
+        JSONObject var1 = new JSONObject();
+        var1.put("pageData", total);
+        var1.put("pageCount", sum);
+        return WeikeResponseUtil.success(var1);
     }
 
 }

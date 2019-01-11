@@ -18,9 +18,9 @@ public class BindWxToUser {
     private String phone;
 
     public Boolean isNone(){
-        if (this.wx==null||this.nickname==null||this.headimgurl==null||this.token==null||this.phone==null){
-            return false;
+        if (this.wx==null||this.nickname==null||this.headimgurl==null||this.token==null){
+            return true;
         }
-        return true;
+        return false;
     }
 }

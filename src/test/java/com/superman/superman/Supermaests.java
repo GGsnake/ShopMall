@@ -2,6 +2,7 @@ package com.superman.superman;
 
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.*;
+import com.superman.superman.model.SysJhAdviceOder;
 import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
@@ -52,6 +53,9 @@ public class Supermaests {
     OtherService otherService;
     @Autowired
     OderMapper oderMapper;
+
+    @Autowired
+    SysAdviceDao sysAdviceDao;
 
 
     //    @Autowired
@@ -216,12 +220,12 @@ public class Supermaests {
     }
     @Test
     public void counst() throws IOException, URISyntaxException {
-
-        var a=new ArrayList<>();
-        a.add(22);
-        a.add(6);
-        a.add(7);
-        a.add(5);
+        List va=new ArrayList();
+        va.add(3);
+        va.add(4);
+        va.add(5);
+        List<SysJhAdviceOder> sysJhAdviceOders = sysAdviceDao.querySysOderAdvice(va,0,1);
+        log.warning(sysJhAdviceOders.get(0).getName());
 //        MemberDetail memberDetail = oderMapper.sumAllDevOderByOderCreateTimeForAgent(a);
 //        log.warning(memberDetail.toString());
     }
