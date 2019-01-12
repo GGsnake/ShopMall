@@ -218,7 +218,7 @@ public class MemberServiceImpl implements MemberService {
         Integer sum = agentDao.countNoMyFansSum(userId);
         JSONObject data = new JSONObject();
         data.put("sum", sum);
-        if (sum == 0 || sum == null) {
+        if ( sum == null||sum == 0 ) {
             data.put("data", new JSONArray());
             return data;
         }

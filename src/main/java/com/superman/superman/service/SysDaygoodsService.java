@@ -1,6 +1,6 @@
 package com.superman.superman.service;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.SysDaygoods;
 import com.superman.superman.utils.PageParam;
 
@@ -13,7 +13,7 @@ public interface SysDaygoodsService {
 	
 	SysDaygoods queryObject(Integer id);
 	
-	JSONArray queryList(PageParam pageParam);
+	JSONObject queryList(PageParam pageParam);
 	
 	int queryTotal();
 	

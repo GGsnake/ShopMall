@@ -54,6 +54,31 @@ public class MyOderController {
         }
         return WeikeResponseUtil.success(allOder);
     }
+    @LoginRequired
+    @PostMapping("/InCome")
+    public WeikeResponse queryInCome(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+
+        JSONObject data = new JSONObject();
+        data.put("oderSum",100);
+        data.put("inCome",20000);
+        data.put("today", 1000);
+        data.put("todayOder", 20);
+        data.put("todaySettle", 300);
+        data.put("yesday", 200);
+        data.put("yesdayOder", 1200);
+        data.put("yesdaySettle", 2300);
+        data.put("yesMonday", 100);
+        data.put("yesMondayOder", 30);
+        data.put("yesMondaySettle", 600);
+        data.put("lastMonday",500);
+        data.put("lastMondayOder",40);
+        data.put("lastMondaySettle",500);
+        return WeikeResponseUtil.success(data);
+    }
 }
 
 

@@ -85,6 +85,11 @@
             <artifactId>core</artifactId>
             <version>3.2.0</version>
         </dependency>
+   <dependency>
+            <groupId>com.jdcps</groupId>
+            <artifactId>jdcpsjar</artifactId>
+            <version>RELEASE</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.zxing</groupId>

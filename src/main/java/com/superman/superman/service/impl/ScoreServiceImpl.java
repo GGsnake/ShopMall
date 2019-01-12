@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,10 @@ public class ScoreServiceImpl implements ScoreService {
     private RedisTemplate redisTemplate;
     @Value("${juanhuang.look}")
     private String read_key;
+    @Value("${juanhuang.sign}")
+    private String sign_key;
+    @Value("${juanhuang.signscore}")
+    private Integer signscore;
 
     //查询今天是否已经领取 过每日浏览积分
     public Boolean isExitSign(ScoreBean scoreBean) {
@@ -45,6 +50,13 @@ public class ScoreServiceImpl implements ScoreService {
         Long looks = countLooks(uid.longValue());
         var.put("looks", looks);
         Boolean var1 = countShare(uid.longValue());
+        String kv =sign_key + uid ;
+        if (redisTemplate.hasKey(kv)) {
+            var.put("sign", 1);
+        }
+        else {
+            var.put("sign",0);
+        }
         if (var1 == false) {
             var.put("share", 0);
         } else {
@@ -117,6 +129,40 @@ public class ScoreServiceImpl implements ScoreService {
             throw new RuntimeException();
         }
 
+    }
+
+    @Transactional
+    public Boolean sign(Long id) {
+        ValueOperations v = redisTemplate.opsForValue();
+        String kv =sign_key + id ;
+        if (redisTemplate.hasKey(kv)) {
+           return false;
+
+        }
+        v.set(kv,"");
+        redisTemplate.boundValueOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
+        try {
+            Userinfo user = new Userinfo();
+            ScoreBean scoreBean=new ScoreBean();
+            scoreBean.setDataSrc(3);
+            scoreBean.setUserId(id);
+            scoreBean.setScoreType(1);
+            scoreBean.setScore(Long.valueOf(signscore));
+            scoreDao.addScore(scoreBean);
+            user.setId(scoreBean.getUserId());
+            user.setUserscore(scoreBean.getScore().intValue());
+            Integer flag = scoreDao.updateUserScore(user);
+            if (flag==0){
+                redisTemplate.delete(kv);
+                log.warning("用户积分增加错误 UID="+user.getId());
+                throw new RuntimeException();
+            }
+            return true;
+        } catch (Exception e) {
+            redisTemplate.delete(kv);
+            log.warning("用户积分增加错误 ID="+id+"----异常信息="+ e.getMessage());
+            throw new RuntimeException();
+        }
     }
 
 }

@@ -6,12 +6,14 @@ import com.superman.superman.model.*;
 import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.UserApiService;
 import lombok.NonNull;
+import lombok.extern.java.Log;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -19,6 +21,7 @@ import org.springframework.util.DigestUtils;
 /**
  * Created by liujupeng on 2018/11/6.
  */
+@Log
 @Service("userServiceApi")
 public class UserApiServiceImpl implements UserApiService {
     private String REDIS_PRIFEX = "token:";
@@ -30,11 +33,6 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Autowired
     private UserinfoMapper userinfoMapper;
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-
-    private final static Logger logger = LoggerFactory.getLogger(UserApiServiceImpl.class);
 
 
     @Override
@@ -48,13 +46,13 @@ public class UserApiServiceImpl implements UserApiService {
         return null;
     }
 
+    /**
+     * 创建新用户
+     * @param usr
+     * @return
+     */
     @Override
     public Boolean createUser(UserRegiser usr) {
-        ValueOperations var = redisTemplate.opsForValue();
-//        String code = (String) var.get("SMS:" + usr.getUserphone());
-//        if (code == null || !code.equals(usr.getCode())) {
-//            return false;
-//        }
         JSONObject data = createPid();
         if (data == null || data.size() == 0) {
             return false;
@@ -62,6 +60,7 @@ public class UserApiServiceImpl implements UserApiService {
         usr.setTbpid(data.getLong("tb"));
         usr.setPddpid(data.getString("pdd"));
         int flag = userinfoMapper.insert(usr);
+        createInvCode(usr.getUserphone());
         return flag == 0 ? false : true;
     }
 
@@ -100,18 +99,31 @@ public class UserApiServiceImpl implements UserApiService {
         return userinfo;
     }
 
+    /**
+     * 异步创建邀请码
+     * @param phone
+     * @return
+     */
+    @Async
     @Override
-    public Integer createInvCode(Long uid) {
+    public Integer createInvCode(String phone) {
         try {
-            Integer integer = userinfoMapper.insertCode(uid);
-            if (integer == null) {
+            Userinfo userinfo = userinfoMapper.selectByPhone(phone);
+            if (userinfo==null){
+                log.warning("用户不存在 所以创建邀请码失败 手机号===" + phone);
+                return 0;
+            }
+
+            Integer flag = userinfoMapper.insertCode(userinfo.getId());
+            if (flag == null) {
+                log.warning("用户创建邀请码表 失败 手机号==="+phone);
                 return 0;
             }
         } catch (Exception e) {
+            log.warning("用户创建邀请码失败 手机号==="+phone+"异常信息"+e.getMessage());
             return 0;
         }
-        Integer id = userinfoMapper.queryCodeId(uid);
-        return id;
+        return 1;
     }
 
     /**
@@ -134,6 +146,13 @@ public class UserApiServiceImpl implements UserApiService {
         return temp;
     }
 
+    /**
+     * 粉丝升级到代理
+     * @param uid
+     * @param agentId
+     * @param score
+     * @return
+     */
     @Override
     @Transactional
     public Boolean upAgent(Integer uid, Integer agentId, Integer score) {
@@ -157,10 +176,10 @@ public class UserApiServiceImpl implements UserApiService {
                 return true;
             }
         } catch (Exception e) {
-            logger.warn("代理" + uid + "升级的时候没有更新时间");
+            log.warning("代理" + uid + "升级的时候没有更新时间");
             throw new RuntimeException("升级代理失败");
         }
-        logger.warn("代理" + uid + "升级的时候没有更新时间");
+        log.warning("代理" + uid + "升级的时候没有更新时间");
         throw new RuntimeException("升级代理失败");
 
     }

@@ -24,9 +24,21 @@ public interface AgentDao {
     @Select("SELECT userId,createTime FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
     List<Agent> queryForUserIdAgentLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
-
+    /**
+     * 统计我的一级粉丝或者代理
+     * @param id
+     * @return
+     */
     @Select("SELECT ifnull(count(userId),0) FROM agent WHERE agentId= #{id} and status=0")
     Integer queryForUserIdCount(@Param("id") Long id);
+
+    /**
+     * 统计我的一级粉丝或者代理
+     * @param id
+     * @return
+     */
+    @Select("SELECT ifnull(count(userId),0) FROM agent WHERE agentId= #{id} and status=0 and  to_days(createTime) = to_days(now())")
+    Integer queryForUserIdCountToday(@Param("id") Long id);
 
 
     @Select("SELECT count(agentId) FROM agent WHERE agentId= #{id}")
@@ -39,8 +51,20 @@ public interface AgentDao {
     @Select("SELECT userId,agentId FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
     List<Agent> countNoMyFans(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
-    @Select("SELECT count(userId) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id})  ")
+    /**
+     * 统计我的非直属粉丝
+     * @param id
+     * @return
+     */
+    @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id})  ")
     Integer countNoMyFansSum(@Param("id") Long id);
+    /**
+     * 统计我的非直属粉丝(按时间)
+     * @param id
+     * @return
+     */
+    @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) and  to_days(createTime) = to_days(now())")
+    Integer countNoMyFansSumToday(@Param("id") Long id);
 
 
     @Select("SELECT count(userId)FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")

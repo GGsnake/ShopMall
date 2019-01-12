@@ -77,6 +77,9 @@ public class TaobaoController {
         if (opt == 4) {
             taoBaoSerachBean.setQ("生活家居");
         }
+        if (opt == 5) {
+            taoBaoSerachBean.setQ("爆款");
+        }
         taoBaoSerachBean.setPageSize(Long.valueOf(pageParam.getPageSize()));
         taoBaoSerachBean.setPageNo(Long.valueOf(pageParam.getPageNo()));
         taoBaoSerachBean.setSort(tbsort);

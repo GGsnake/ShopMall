@@ -59,6 +59,8 @@ public class OtherController {
     private JdApiService jdApiService;
     @Autowired
     private UserinfoMapper userinfoMapper;
+    @Autowired
+    private SysAdviceService adviceService;
 
     @Autowired
     private SysDaygoodsService daygoodsService;
@@ -185,23 +187,14 @@ public class OtherController {
 
     }
 
-    //    @LoginRequired
-    @GetMapping("/dayGoods")
+    @LoginRequired
+    @PostMapping("/dayGoods")
     public WeikeResponse dayGoods(PageParam pageParam) {
         //查询列表数据
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONArray daygoodsList = daygoodsService.queryList(param);
-        Integer total = daygoodsService.queryTotal();
-        JSONObject data = new JSONObject();
-        data.put("pageData", daygoodsList);
-        data.put("pageCount", total);
+        JSONObject data = daygoodsService.queryList(param);
         return WeikeResponseUtil.success(data);
     }
-
-    @Autowired
-    private SysAdviceService adviceService;
-    @Autowired
-    private SysAdviceDao sysAdviceDao;
 
     /**
      * 查询订单通知
@@ -216,10 +209,10 @@ public class OtherController {
         PageParam data = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), data);
         Integer sum = adviceService.countListOderAdvice(Long.valueOf(uid));
-        JSONObject var1 = new JSONObject();
-        var1.put("pageData", total);
-        var1.put("pageCount", sum);
-        return WeikeResponseUtil.success(var1);
+        JSONObject var = new JSONObject();
+        var.put("pageData", total);
+        var.put("pageCount", sum);
+        return WeikeResponseUtil.success(var);
     }
 
 }

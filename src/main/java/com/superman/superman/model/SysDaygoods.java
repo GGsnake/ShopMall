@@ -20,13 +20,11 @@ public class SysDaygoods implements Serializable {
 	//
 	private Integer id;
 	//标题
-	private Long titile;
+	private String titile;
 	//内容
-	private Long content;
+	private String content;
 	//头像
 	private String image;
-	//图片内容url数组
-	private String content_Images;
 	//删除状态
 	private Integer status;
 	//创建时间

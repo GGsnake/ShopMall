@@ -49,4 +49,11 @@ public interface ScoreService {
      */
      Boolean addScore(ScoreBean scoreBean);
 
+    /**
+     * 每日签到
+     * @param id
+     * @return
+     */
+     Boolean sign(Long id);
+
 }

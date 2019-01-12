@@ -3,6 +3,7 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
@@ -26,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 public class TeamController {
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
     /**
      * 查看我的直推会员 （分页）
      * @param request
@@ -60,6 +63,28 @@ public class TeamController {
         }
         PageParam var = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = memberService.getMyNoFans(Long.valueOf(uid), var);
+        return WeikeResponseUtil.success(data);
+    }
+    /**
+     * 查看我的手机号和邀请码 （分页）
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/message")
+    public WeikeResponse message(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Integer code = userinfoMapper.queryInvCodeId(Long.valueOf(uid));
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (userinfo==null){
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        JSONObject data=new JSONObject();
+        data.put("phone",userinfo.getUserphone());
+        data.put("code",code);
         return WeikeResponseUtil.success(data);
     }
 

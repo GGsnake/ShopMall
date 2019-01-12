@@ -68,6 +68,8 @@ mybatis:
 juanhuang:
   range: 90
   look: "score_look"
+  sign: "score_sign"
+  signscore: 5
   logo: "http://120.79.62.89:8087/jhlogo.jpg"
   wx: "BBBBBBBBBBBBssssss1"
   wxurl: "http://img1.imgtn.bdimg.com/it/u=2478181297,1978765048&fm=200&gp=0.jpg"
@@ -79,4 +81,7 @@ domain:
   codeurl: "http://120.79.62.89:8080"
   localurl: "http://192.168.0.102"
   jdimageurl: "http://img14.360buyimg.com/n1/"
+  jdUrl: "https://router.jd.com/api"
+  jdsecret: "909a02d9f2e845578f6333a3a13ea5cd"
+  jdkey: "1b2eadd4ad604021a9e48aa5726c503b"
 

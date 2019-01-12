@@ -3,12 +3,21 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jd.open.api.sdk.DefaultJdClient;
+import com.jd.open.api.sdk.JdClient;
+import com.jd.open.api.sdk.JdException;
 import com.superman.superman.dao.ScoreDao;
+import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.JdSerachReq;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.utils.NetUtils;
+import jd.union.open.goods.query.request.GoodsReq;
+import jd.union.open.goods.query.request.UnionOpenGoodsQueryRequest;
+import jd.union.open.goods.query.response.*;
 import lombok.NonNull;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -30,6 +39,7 @@ import java.util.Map;
 /**
  * Created by liujupeng on 2018/11/14.
  */
+@Log
 @Service("jdApiService")
 //@Cacheable
 public class JdApiServiceImpl implements JdApiService {
@@ -41,8 +51,16 @@ public class JdApiServiceImpl implements JdApiService {
     RestTemplate restTemplate;
     @Value("${domain.jdimageurl}")
     private String jdimageurl;
+    @Value("${domain.jdsecret}")
+    private String jdsecret;
+    @Value("${domain.jdkey}")
+    private String jdkey;
+    @Value("${domain.jdUrl}")
+    private String jdurl;
     @Autowired
     private ScoreDao scoreDao;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
 
     @Value("${juanhuang.range}")
     private Integer RANGE;
@@ -102,6 +120,8 @@ public class JdApiServiceImpl implements JdApiService {
         JSONArray var1 = JSON.parseObject(res).getJSONArray("data");
         Integer count = Integer.valueOf(JSON.parseObject(res).getString("total"));
         JSONArray templist = new JSONArray();
+
+
         for (Object var2 : var1) {
             JSONObject var4 = new JSONObject();
             JSONObject var3 = (JSONObject) var2;
@@ -111,8 +131,10 @@ public class JdApiServiceImpl implements JdApiService {
             String skuName = var3.getString("skuName");
             String price = var3.getString("wlPrice");
             String commissionShare = var3.getString("wlCommissionShare");
+
             BigDecimal coms = new BigDecimal(commissionShare);
             BigDecimal priceall = new BigDecimal(price);
+
             JSONArray coupon = var3.getJSONArray("couponList");
             var4.put("commissionRate", new BigDecimal(commissionShare).intValue() * 100);
             if (coupon != null && coupon.size() != 0) {
@@ -142,6 +164,85 @@ public class JdApiServiceImpl implements JdApiService {
         temp.put("count", count);
 
         return temp;
+    }
+
+    @Override
+    public JSONObject serachGoodsAllJd(GoodsReq goodsReq, Long uid) {
+        Userinfo usr = userinfoMapper.selectByPrimaryKey(uid);
+        if (usr == null) {
+            return null;
+        }
+        Integer roleId = usr.getRoleId();
+        Double score = Double.valueOf(usr.getScore());
+        String accessToken = "";
+        JdClient client = new DefaultJdClient(jdurl, accessToken, jdkey, jdsecret);
+        UnionOpenGoodsQueryRequest request = new UnionOpenGoodsQueryRequest();
+        request.setGoodsReqDTO(goodsReq);
+        JSONObject temp = new JSONObject();
+        try {
+            UnionOpenGoodsQueryResponse response = client.execute(request);
+            if (response.getData() != null && response.getTotalCount() != 0) {
+                GoodsResp[] data = response.getData();
+                Long totalCount = response.getTotalCount();
+                JSONArray templist = new JSONArray();
+                for (GoodsResp var2 : data) {
+                    JSONObject var4 = new JSONObject();
+                    Double price = var2.getPriceInfo()[0].getPrice();
+                    //佣金信息
+                    CommissionInfo[] commissionInfo = var2.getCommissionInfo();
+                    BigDecimal coms = new BigDecimal(commissionInfo[0].getCommissionShare());
+                    BigDecimal commission = new BigDecimal(commissionInfo[0].getCommission());
+
+                    BigDecimal priceall = new BigDecimal(price);
+                    Coupon[] coupon = var2.getCouponInfo()[0].getCouponList();
+                    var4.put("commissionRate", coms.intValue() * 100);
+                    if (coupon != null && coupon.length != 0) {
+//                        Coupon[] couponList = coupon[0].getCouponList();
+//                        BigDecimal discount = new BigDecimal(couponList[0].getDiscount());
+//                        BigDecimal var5 = new BigDecimal(price);
+//                        BigDecimal subtract = var5.subtract(discount);
+//                        var4.put("zk_price", subtract.doubleValue());
+//                        var4.put("zk_money", discount.intValue());
+//                        Double var9 = (subtract.doubleValue() * coms.intValue() / 100) * RANGE / 100;
+//                        var4.put("agent", var9);
+
+                    } else {
+                        if (roleId == 1) {
+                            Double var9 = commission.doubleValue() * RANGE / 100;
+                            BigDecimal var5 = new BigDecimal(var9);
+                            var4.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                        }
+                        if (roleId == 2) {
+                            BigDecimal var5 = new BigDecimal((commission.doubleValue() * RANGE / 100));
+                            Double var3 = score / 100;
+                            BigDecimal var6 = new BigDecimal(var3);
+                            var5.multiply(var6);
+                            var4.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                        }
+                        if (roleId == 3) {
+                            var4.put("agent", 0);
+                        }
+
+
+                    }
+                    var4.put("volume", var2.getInOrderCount30Days());
+                    var4.put("goodId", var2.getSkuId());
+                    var4.put("goodName", var2.getSkuName());
+                    var4.put("imgUrl", var2.getImageInfo()[0].getImageList()[0].getUrl());
+                    var4.put("istmall", "false");
+                    var4.put("price", price);
+                    templist.add(var4);
+                }
+                temp.put("data", templist);
+                temp.put("count", totalCount);
+                return temp;
+            }
+            return null;
+
+        } catch (JdException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

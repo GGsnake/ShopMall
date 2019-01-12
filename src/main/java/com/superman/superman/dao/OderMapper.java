@@ -94,9 +94,9 @@ public interface OderMapper {
 
     List<Oder> sumAllDevOderByOderCreateTime(@Param("list") List list, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
-    @Select("  select sum(s.money) as money,  sum(s.counts) as sums FROM(SELECT  IFNULL(SUM(tb.commission),0)*1000 as money,count(tb.id) as counts FROM tboder tb left join userinfo u on tb.adzone_id=u.tbPid\n" +
+    @Select("  select SUM(s.money) as money,  SUM(s.counts) as sums FROM(SELECT  IFNULL(SUM(tb.commission),0)*1000 as money,COUNT(tb.id) as counts FROM tboder tb left join userinfo u on tb.adzone_id=u.tbPid\n" +
             "WHERE u.id=#{id} and tb.tk_status in ('3','12','14')  and tb.odercreate_time between #{tbstartTime} and #{tbendTime}  UNION   \n" +
-            "SELECT IFNULL(SUM(tb.promotion_amount),0) as money ,count(tb.id) as counts FROM\n" +
+            "SELECT IFNULL(SUM(tb.promotion_amount),0) as money ,COUNT(tb.id) as counts FROM\n" +
             "oder tb left join userinfo u on tb.p_id=u.pddPid WHERE u.id=#{id}    and tb.order_create_time between #{pddstartTime} and #{pddendTime} and tb.order_status in (0,1,2,3,5)) as s\n" +
             "  ")
     MemberDetail sumAllDevOderByOderCreateTimeForMb(@Param("id") Integer id, @Param("tbstartTime") String tbstartTime, @Param("tbendTime") String tbendTime, @Param("pddstartTime") Long pddstartTime, @Param("pddendTime") Long pddendTime);

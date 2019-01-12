@@ -266,4 +266,5 @@ public class UserController {
         return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");
     }
 
+
 }

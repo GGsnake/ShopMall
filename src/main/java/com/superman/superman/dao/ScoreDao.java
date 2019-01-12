@@ -43,6 +43,6 @@ public interface ScoreDao {
      * @param user
      * @return
      */
-    @Update("update userinfo set userScore=userScore+ #{userScore} where id=#{id}")
+    @Update("update userinfo set userScore=userScore+ #{userscore} where id=#{id}")
     Integer updateUserScore(Userinfo user);
 }

@@ -67,6 +67,9 @@ public interface UserinfoMapper {
     @Select("select userId from invcode where id=#{id}")
     Integer queryUserCode(Long id);
 
+    @Select("select id from invcode where userId=#{id}")
+    Integer queryInvCodeId(Long id);
+
 
 
 

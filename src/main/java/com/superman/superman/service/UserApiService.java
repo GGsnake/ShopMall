@@ -24,7 +24,7 @@ public interface UserApiService {
 
     Userinfo queryByWx(String  uid);
 
-    Integer createInvCode(Long uid);
+    Integer createInvCode(String phone);
 
     JSONObject createPid();
 

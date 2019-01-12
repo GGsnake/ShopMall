@@ -38,6 +38,20 @@ public class ScoreController {
         }
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
     }
+    //每日签到
+    @LoginRequired
+    @GetMapping("/sign")
+    public WeikeResponse sign(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid==null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Boolean sign = scoreService.sign(Long.valueOf(uid));
+        if (sign){
+            return WeikeResponseUtil.success();
+        }
+        return WeikeResponseUtil.fail("1000322","已签到");
+    }
 
     /**
      * 积分查询

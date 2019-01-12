@@ -1,6 +1,9 @@
 package com.superman.superman;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jd.open.api.sdk.DefaultJdClient;
+import com.jd.open.api.sdk.JdClient;
+import com.jd.open.api.sdk.JdException;
 import com.superman.superman.dao.*;
 import com.superman.superman.model.SysJhAdviceOder;
 import com.superman.superman.req.OderPdd;
@@ -10,6 +13,9 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.TbkUatmFavoritesGetRequest;
 import com.taobao.api.response.TbkUatmFavoritesGetResponse;
+import jd.union.open.goods.query.request.GoodsReq;
+import jd.union.open.goods.query.request.UnionOpenGoodsQueryRequest;
+import jd.union.open.goods.query.response.UnionOpenGoodsQueryResponse;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -220,12 +226,16 @@ public class Supermaests {
     }
     @Test
     public void counst() throws IOException, URISyntaxException {
-        List va=new ArrayList();
-        va.add(3);
-        va.add(4);
-        va.add(5);
-        List<SysJhAdviceOder> sysJhAdviceOders = sysAdviceDao.querySysOderAdvice(va,0,1);
-        log.warning(sysJhAdviceOders.get(0).getName());
+        GoodsReq gd=new GoodsReq();
+        JSONObject jsonObject = jdApiService.serachGoodsAllJd(gd, Long.valueOf(11));
+
+//        List va=new ArrayList();
+//        va.add(3);
+//        va.add(4);
+//
+//        va.add(5);
+//        List<SysJhAdviceOder> sysJhAdviceOders = sysAdviceDao.querySysOderAdvice(va,0,1);
+//        log.warning(sysJhAdviceOders.get(0).getName());
 //        MemberDetail memberDetail = oderMapper.sumAllDevOderByOderCreateTimeForAgent(a);
 //        log.warning(memberDetail.toString());
     }

@@ -29,6 +29,8 @@ public class SysJhAdviceOder implements Serializable {
 	private String src_Name;
 	//订单标题
 	private String name;
+	//用户名
+	private String userName;
 	//推广位
 	private String pid;
 	//订单状态

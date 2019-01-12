@@ -32,17 +32,6 @@
 		</if>
 	</select>
 
-	<select id="queryListGod" resultType="com.superman.superman.model.SysDaygoods">
-		select * from daygoods
-
-		<if test="page != null and pageSize != null">
-			limit #{page}, #{pageSize}
-		</if>
-	</select>
-
- 	<select id="queryTotal" resultType="int">
-		select count(*) from daygoods
-	</select>
 
 	<insert id="save" parameterType="com.superman.superman.model.SysDaygoods" useGeneratedKeys="true" keyProperty="id">
 		insert into daygoods
@@ -90,16 +79,16 @@
 	</delete>
 
 
-	<select id="getImages" resultType="java.lang.String">
-		select
+	<!--<select id="getImages" resultType="java.lang.String">-->
+		<!--select-->
 
-		from tboder
-		<if test="list!= null">
-			WHERE adzone_id in
-			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-				#{item}
-			</foreach>
-		</if>
-		and tk_status =3
-	</select>
+		<!--from tboder-->
+		<!--<if test="list!= null">-->
+			<!--WHERE adzone_id in-->
+			<!--<foreach item="item" index="index" collection="list" open="(" separator="," close=")">-->
+				<!--#{item}-->
+			<!--</foreach>-->
+		<!--</if>-->
+		<!--and tk_status =3-->
+	<!--</select>-->
 </mapper>

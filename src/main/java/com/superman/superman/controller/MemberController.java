@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.ApplyCash;
@@ -44,6 +45,8 @@ public class MemberController {
 
     @Autowired
     private UserinfoMapper userinfoMapper;
+    @Autowired
+    private AgentDao agentDao;
     //    @Autowired
 //    PddApiService pddApiService;
     @Autowired
@@ -73,6 +76,36 @@ public class MemberController {
     }
 
     /**
+     * 会员中心
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/memberDetail")
+    public WeikeResponse memberDetail(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Long aLong = Long.valueOf(uid);
+        Userinfo userinfo = userApiService.queryByUid(aLong);
+        if (userinfo == null||userinfo.getRoleId()!=1) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Integer under = agentDao.queryForUserIdCount(aLong);
+        Integer sub = agentDao.countNoMyFansSum(aLong);
+        Integer var = agentDao.queryForUserIdCountToday(aLong);
+        Integer var1 = agentDao.countNoMyFansSumToday(aLong);
+
+        JSONObject data = new JSONObject();
+        data.put("add", var + var1);
+        data.put("under", under);
+        data.put("sub", sub);
+        data.put("joinTime", userinfo.getCreatetime());
+        return WeikeResponseUtil.success(data);
+    }
+
+    /**
      * 个人佣金提现接口
      *
      * @param request
@@ -97,7 +130,7 @@ public class MemberController {
         return WeikeResponseUtil.success(data);
     }
 
-   /**
+    /**
      * 个人佣金提现申请接口
      *
      * @param request
@@ -105,33 +138,33 @@ public class MemberController {
      */
     @LoginRequired
     @GetMapping("/apply")
-    public WeikeResponse apply(HttpServletRequest request,Long money,String account,String name) {
+    public WeikeResponse apply(HttpServletRequest request, Long money, String account, String name) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null||money==null||account==null||name==null) {
+        if (uid == null || money == null || account == null || name == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        if (money<0||money>99999){
+        if (money < 0 || money > 99999) {
             return WeikeResponseUtil.fail(ResponseCode.MONEY_MAX);
         }
         Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        if (user==null){
+        if (user == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
-        ApplyCash applyCash=new ApplyCash();
+        ApplyCash applyCash = new ApplyCash();
         applyCash.setUserid(user.getId().intValue());
         applyCash.setMoney(money);
         applyCash.setAccount(account);
         applyCash.setName(name);
         Integer temp = sysAdviceDao.applyCash(applyCash);
-        if (temp==1){
+        if (temp == 1) {
             return WeikeResponseUtil.success();
         }
-        log.warning("用户提现失败-UID="+uid);
-        return WeikeResponseUtil.fail("100063","申请提现失败请重试");
+        log.warning("用户提现失败-UID=" + uid);
+        return WeikeResponseUtil.fail("100063", "申请提现失败请重试");
 
     }
 
-   /**
+    /**
      * 个人佣金提现申请查询 分页
      *
      * @param request
@@ -139,13 +172,13 @@ public class MemberController {
      */
     @LoginRequired
     @GetMapping("/queryApply")
-    public WeikeResponse queryApply(HttpServletRequest request,PageParam pageParam) {
+    public WeikeResponse queryApply(HttpServletRequest request, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(Integer.valueOf(uid),param.getStartRow(),pageParam.getPageSize());
+        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(Integer.valueOf(uid), param.getStartRow(), pageParam.getPageSize());
         return WeikeResponseUtil.success(temp);
     }
 
@@ -198,13 +231,6 @@ public class MemberController {
         }
         return WeikeResponseUtil.success(var);
     }
-
-
-
-
-
-
-
 
 
 }

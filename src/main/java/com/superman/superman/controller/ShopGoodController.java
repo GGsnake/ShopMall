@@ -18,6 +18,7 @@ import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import jd.union.open.goods.query.request.GoodsReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,7 @@ public class ShopGoodController {
             req.setPageNo(Long.valueOf(pageNo));
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(false);
+            req.setSort(tbsort);
             if (tbcat != null && Integer.valueOf(tbcat) != 0) {
                 req.setCat(tbcat);
             }
@@ -111,14 +113,23 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(data);
         }
         if (type == 2) {
-            JdSerachReq var1 = new JdSerachReq();
-            var1.setKeyword(keyword);
-            var1.setPage(pageNo);
-            var1.setPagesize(pageSize);
+//            JdSerachReq var1 = new JdSerachReq();
+//            var1.setKeyword(keyword);
+//            var1.setPage(pageNo);
+//            var1.setPagesize(pageSize);
+//            if (cid != null) {
+//                var1.setCid3(cid);
+//            }
+//            data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
+            GoodsReq goodsReq = new GoodsReq();
+            goodsReq.setKeyword(keyword);
             if (cid != null) {
-                var1.setCid3(cid);
+                goodsReq.setCid3(Long.valueOf(cid));
             }
-            data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
+            goodsReq.setPageIndex(pageNo);
+            goodsReq.setPageSize(pageSize);
+            goodsReq.setIsCoupon(with_coupon);
+            data = jdApiService.serachGoodsAllJd(goodsReq, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
         if (type == 3) {
