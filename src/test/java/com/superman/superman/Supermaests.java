@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jd.open.api.sdk.DefaultJdClient;
 import com.jd.open.api.sdk.JdClient;
 import com.jd.open.api.sdk.JdException;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.dao.*;
 import com.superman.superman.model.SysJhAdviceOder;
 import com.superman.superman.req.OderPdd;
@@ -55,6 +56,8 @@ public class Supermaests {
     OderService oderService;
     @Autowired
     TaoBaoApiService taoBaoApiService;
+    @Autowired
+    PddApiService pddApiService;
     @Autowired
     OtherService otherService;
     @Autowired
@@ -123,8 +126,9 @@ public class Supermaests {
     @Test
     public void pddoder() {
 //        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
-//
-//        log.warning(jsonObject.toJSONString());
+        PddDdkGoodsSearchRequest pr=new PddDdkGoodsSearchRequest();
+        JSONObject data = pddApiService.serachGoodsAll(pr, 1l);
+        //        log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
 //        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
 //        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
@@ -211,18 +215,7 @@ public class Supermaests {
 
     @Test
     public void count() throws IOException, URISyntaxException {
-//        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
-//        BufferedImage img = otherService.crateQRCode("http://www.baidu.com");
-//        File writeName = new File(path+"/img/21321.jpg");
-//        FileImageOutputStream fileImageOutputStream=new FileImageOutputStream(writeName);
-//        ImageIO.write(img, "JPEG",fileImageOutputStream);
-//        ByteArrayOutputStream s = otherService.crateQRCode("http://www.baidu.com");
-//        ByteArrayOutputStream
-//        HttpDeal.saveImageToDisk(QRCODEURL + "app=qr.get&data=www.baidu.com",232l);
-//        log.warning(s.toString());
-//        List a=new ArrayList();2018-12-17 11:04:23
-//
-//        JSONObject aLong = taoBaoApiService.countWaitTb();
+
     }
     @Test
     public void counst() throws IOException, URISyntaxException {

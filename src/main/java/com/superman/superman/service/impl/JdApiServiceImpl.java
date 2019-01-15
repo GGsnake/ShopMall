@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.jd.open.api.sdk.DefaultJdClient;
 import com.jd.open.api.sdk.JdClient;
 import com.jd.open.api.sdk.JdException;
-import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
@@ -16,6 +15,8 @@ import com.superman.superman.utils.NetUtils;
 import jd.union.open.goods.query.request.GoodsReq;
 import jd.union.open.goods.query.request.UnionOpenGoodsQueryRequest;
 import jd.union.open.goods.query.response.*;
+import jd.union.open.promotion.bysubunionid.get.request.UnionOpenPromotionBysubunionidGetRequest;
+import jd.union.open.promotion.bysubunionid.get.response.UnionOpenPromotionBysubunionidGetResponse;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,28 +58,46 @@ public class JdApiServiceImpl implements JdApiService {
     private String jdkey;
     @Value("${domain.jdUrl}")
     private String jdurl;
-    @Autowired
-    private ScoreDao scoreDao;
+    @Value("${domain.jduid}")
+    private String jduid;
     @Autowired
     private UserinfoMapper userinfoMapper;
 
     @Value("${juanhuang.range}")
     private Integer RANGE;
 
-    //    @Cacheable(value="signonCache",key="'petstore:signon:'+#username", unless="#result==null")
-//    @Cacheable(value = "scoreBean", key = "#id")
-    public ScoreBean queryJdOder(String id) {
-        ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setUserId(Long.valueOf(id));
-        scoreBean.setDataSrc(1);
-        ScoreBean exit = scoreDao.isExit(scoreBean);
-        return exit;
-    }
 
     @Override
     public JSONObject convertJd(Long jdpid, Long goodId) {
+        String jdurl = URL + "wxlink?";
+        JSONObject data;
+        Map<String, String> urlSign = new HashMap<>();
+        urlSign.put("positionid",jdpid.toString());
+        urlSign.put("materialids",goodId.toString());
+        urlSign.put("unionid",jduid);
+        String linkStringByGet = null;
+        try {
+            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
+        data = (JSONObject) JSON.parseObject(res).getJSONArray("data").get(0);
+//
+//        UnionOpenPromotionBysubunionidGetRequest request = new UnionOpenPromotionBysubunionidGetRequest();
+//        jd.union.open.promotion.bysubunionid.get.request.PromotionCodeReq promotionCodeReq = new jd.union.open.promotion.bysubunionid.get.request.PromotionCodeReq();
+//        promotionCodeReq.setMaterialId("https://item.jd.com/23484023378.html");
+//        promotionCodeReq.setSubUnionId("1000054104");
+//
+//        request.setPromotionCodeReq(promotionCodeReq);
+//        try {
+//            UnionOpenPromotionBysubunionidGetResponse response = client.execute(request);
+//
+//        } catch (JdException e) {
+//            e.printStackTrace();
+//        }
 
-        return null;
+        return data;
     }
 
     @Override
@@ -192,45 +211,43 @@ public class JdApiServiceImpl implements JdApiService {
                     CommissionInfo[] commissionInfo = var2.getCommissionInfo();
                     BigDecimal coms = new BigDecimal(commissionInfo[0].getCommissionShare());
                     BigDecimal commission = new BigDecimal(commissionInfo[0].getCommission());
-
                     BigDecimal priceall = new BigDecimal(price);
                     Coupon[] coupon = var2.getCouponInfo()[0].getCouponList();
-                    var4.put("commissionRate", coms.intValue() * 100);
+                    var4.put("commissionRate", coms.intValue() * 10);
                     if (coupon != null && coupon.length != 0) {
-//                        Coupon[] couponList = coupon[0].getCouponList();
-//                        BigDecimal discount = new BigDecimal(couponList[0].getDiscount());
-//                        BigDecimal var5 = new BigDecimal(price);
-//                        BigDecimal subtract = var5.subtract(discount);
-//                        var4.put("zk_price", subtract.doubleValue());
-//                        var4.put("zk_money", discount.intValue());
+                        Double couponList = coupon[0].getDiscount();
+                        BigDecimal discount = new BigDecimal(couponList);
+                        BigDecimal subtract = priceall.subtract(discount);
+                        var4.put("zk_price", subtract.doubleValue()*100);
+                        var4.put("zk_money", discount.doubleValue()*100);
 //                        Double var9 = (subtract.doubleValue() * coms.intValue() / 100) * RANGE / 100;
 //                        var4.put("agent", var9);
 
                     } else {
-                        if (roleId == 1) {
-                            Double var9 = commission.doubleValue() * RANGE / 100;
-                            BigDecimal var5 = new BigDecimal(var9);
-                            var4.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                        }
-                        if (roleId == 2) {
-                            BigDecimal var5 = new BigDecimal((commission.doubleValue() * RANGE / 100));
-                            Double var3 = score / 100;
-                            BigDecimal var6 = new BigDecimal(var3);
-                            var5.multiply(var6);
-                            var4.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                        }
-                        if (roleId == 3) {
-                            var4.put("agent", 0);
-                        }
-
-
+                        var4.put("zk_price", priceall.doubleValue()*100);
+                        var4.put("zk_money", 0);
+                    }
+                    if (roleId == 1) {
+                        Double var9 = (100*commission.doubleValue()) * RANGE / 100;
+                        BigDecimal var5 = new BigDecimal(var9);
+                        var4.put("agent", var5.intValue());
+                    }
+                    if (roleId == 2) {
+                        BigDecimal var5 = new BigDecimal(( (100*commission.doubleValue()) * RANGE / 100));
+                        Double var3 = score / 100;
+                        BigDecimal var6 = new BigDecimal(var3);
+                        var5.multiply(var6);
+                        var4.put("agent", var5.intValue());
+                    }
+                    if (roleId == 3) {
+                        var4.put("agent", 0);
                     }
                     var4.put("volume", var2.getInOrderCount30Days());
                     var4.put("goodId", var2.getSkuId());
                     var4.put("goodName", var2.getSkuName());
                     var4.put("imgUrl", var2.getImageInfo()[0].getImageList()[0].getUrl());
                     var4.put("istmall", "false");
-                    var4.put("price", price);
+                    var4.put("price", price*100);
                     templist.add(var4);
                 }
                 temp.put("data", templist);

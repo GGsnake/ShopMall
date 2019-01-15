@@ -1,7 +1,9 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.req.PddSerachBean;
+import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -48,5 +50,11 @@ public interface PddApiService {
      * @return
      */
     JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, PddSerachBean pddSerachBean);
-
+    /**
+     * 拼多多搜索引擎
+     * @param request
+     * @param uid
+     * @return
+     */
+    JSONObject serachGoodsAll(PddDdkGoodsSearchRequest request, Long uid);
 }

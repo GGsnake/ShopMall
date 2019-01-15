@@ -1,5 +1,6 @@
 package com.superman.superman.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Getter
+@Builder
 public class SysDaygoods implements Serializable {
 	
 	//

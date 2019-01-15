@@ -10,9 +10,6 @@ import com.superman.superman.req.UserRegiser;
  */
 public interface UserApiService {
     void query();
-
-    String userLogin(User user);
-
     Boolean createUser(UserRegiser userinfo);
 
     Boolean createUserByPhone(UserRegiser userinfo);

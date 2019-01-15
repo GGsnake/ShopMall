@@ -2,10 +2,13 @@ package com.superman.superman.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
 import com.superman.superman.req.OderPdd;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
 /**
  * Created by liujupeng on 2018/12/19.
@@ -99,6 +102,19 @@ public class ConvertUtils {
         dataJson.put("goodId", o.getLong("goods_id"));
         dataJson.put("istmall", "false");
 
+        return dataJson;
+    }
+    public static JSONObject convertPddSearchForSdk(PddDdkGoodsSearchResponse.GoodsListItem o) {
+        JSONObject dataJson=new JSONObject();
+        if (o==null){
+            return null;
+        }
+        dataJson.put("commissionRate", o.getPromotionRate());
+        dataJson.put("imgUrl", o.getGoodsImageUrl());
+        dataJson.put("volume", o.getSoldQuantity());
+        dataJson.put("goodName", o.getGoodsName());
+        dataJson.put("goodId", o.getGoodsId());
+        dataJson.put("istmall", "false");
         return dataJson;
     }
 

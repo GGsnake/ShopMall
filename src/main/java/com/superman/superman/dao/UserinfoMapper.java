@@ -33,6 +33,11 @@ public interface UserinfoMapper {
     @Select("select id,userPhone from userinfo where wxOpenId=#{id}")
     Userinfo queryUserWxOpenId(String id);
 
+
+
+    @Select("select pidPdd,pddPid where id=#{id}")
+    Userinfo queryUserNewApi(Long id);
+
     /**
      * 手机号码绑定用户微信Id
      * @param uu

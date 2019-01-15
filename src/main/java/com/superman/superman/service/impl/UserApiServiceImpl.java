@@ -41,10 +41,6 @@ public class UserApiServiceImpl implements UserApiService {
 
     }
 
-    @Override
-    public String userLogin(User user) {
-        return null;
-    }
 
     /**
      * 创建新用户

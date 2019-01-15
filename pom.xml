@@ -33,10 +33,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework.boot</groupId>-->
-                    <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-                <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
+            <!--</exclusion>-->
             <!--</exclusions>-->
 
         </dependency>
@@ -85,12 +85,16 @@
             <artifactId>core</artifactId>
             <version>3.2.0</version>
         </dependency>
-   <dependency>
+        <dependency>
             <groupId>com.jdcps</groupId>
             <artifactId>jdcpsjar</artifactId>
             <version>RELEASE</version>
         </dependency>
-
+        <dependency>
+        <groupId>com.pdd</groupId>
+        <artifactId>pddsdk</artifactId>
+        <version>1.0.0</version>
+    </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -249,11 +253,11 @@
             <!--</dependency>-->
             <!--</dependencies>-->
             <!--</plugin>-->
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
 
-                    </plugin>
+            </plugin>
 
         </plugins>
 

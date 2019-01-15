@@ -84,4 +84,11 @@ domain:
   jdUrl: "https://router.jd.com/api"
   jdsecret: "909a02d9f2e845578f6333a3a13ea5cd"
   jdkey: "1b2eadd4ad604021a9e48aa5726c503b"
+  jduid: "1001142862"
 
+pdd_pro:
+  pdd-key: "bbc1737d63e44e278dbffa9e96a7eca3"
+  pdd-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
+  pdd-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
+  pdd-url: "https://wj.hxksky.com"
+  pdd-router-url: "https://gw-api.pinduoduo.com/api/router"

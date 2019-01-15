@@ -17,7 +17,7 @@
         <result column="userStatus" property="userstatus" jdbcType="INTEGER"/>
         <result column="userTotalScore" property="usertotalscore" jdbcType="BIGINT"/>
         <result column="jdPid" property="jdpid" jdbcType="VARCHAR"/>
-        <result column="pddPid" property="pddpid" jdbcType="VARCHAR"/>
+        <result column="pddPid" property="pddpid" />
         <result column="tbPid" property="tbpid" jdbcType="BIGINT"/>
         <result column="wphPid" property="wphpid" jdbcType="VARCHAR"/>
         <result column="createTime" property="createtime" jdbcType="TIMESTAMP"/>

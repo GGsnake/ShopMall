@@ -54,22 +54,6 @@ public class SysAdviceController{
 		return WeikeResponseUtil.success(var1);
 	}
 
-//	/**
-//	 * 列表
-//	 */
-//	@GetMapping("/adv")
-//	public WeikeResponse advList(@RequestParam Map<String, Object> params){
-//		//查询列表数据
-//        Query query = new Query(params);
-//		List<SysAdvice> adviceList = adviceService.queryList(query);
-//		int total = adviceService.queryTotal(query);
-//
-//		PageUtils pageUtil = new PageUtils(adviceList, total, query.getLimit(), query.getPage());
-//		JSONObject var1=new JSONObject();
-//		var1.put("page", pageUtil);
-//
-//		return WeikeResponseUtil.success(var1);
-//	}
 	/**
 	 * 官方通知
 	 */
@@ -78,7 +62,7 @@ public class SysAdviceController{
 			//查询列表数据
 		PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
 		JSONArray adviceList = otherService.queryAdviceForDev(param);
-		int total = sysAdviceDao.tcountAdv();
+		int total = sysAdviceDao.countAdvSum();
 		JSONObject var1=new JSONObject();
 		var1.put("pageData", adviceList);
 		var1.put("pageCount", total);

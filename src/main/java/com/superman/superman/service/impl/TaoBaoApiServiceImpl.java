@@ -63,13 +63,16 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         TbkDgMaterialOptionalResponse rsp = null;
         try {
             rsp = client.execute(request);
-            JSONArray dataArray = new JSONArray();
             List<TbkDgMaterialOptionalResponse.MapData> resultList = rsp.getResultList();
             if (resultList == null || resultList.size() == 0) {
                 return data;
             }
-            Boolean isTmall = request.getIsTmall();
             Long count = rsp.getTotalResults();
+            if (count == 0) {
+                return data;
+            }
+            JSONArray dataArray = new JSONArray();
+            Boolean isTmall = request.getIsTmall();
             if (ufo.getRoleId() == 1) {
                 for (int i = 0; i < resultList.size(); i++) {
                     TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
@@ -80,15 +83,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     if (coupon_info1 != null && !coupon_info1.equals("")) {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                        dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                        dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
                     } else {
                         dataJson.put("zk_money", 0);
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
-                    dataJson.put("commissionRate", commissionRate);
+                    dataJson.put("commissionRate", commissionRate/10);
                     BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue()*10);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -105,7 +108,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     if (coupon_info1 != null && !coupon_info1.equals("")) {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                        dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                        dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
                     } else {
                         dataJson.put("zk_money", 0);
                     }
@@ -114,8 +117,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                    dataJson.put("commissionRate", commissionRate);
+                    dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue()*10);
+                    dataJson.put("commissionRate", commissionRate/10);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -128,18 +131,17 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                 String coupon_info1 = dataObj.getCouponInfo();
                 String coupon_info = null;
-                String commissionRate = dataObj.getCommissionRate();
+                Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                 if (coupon_info1 != null && !coupon_info1.equals("")) {
                     int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                     coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                    dataJson.put("zk_money", Integer.parseInt(coupon_info));
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
                 } else {
                     dataJson.put("zk_money", 0);
                 }
-                dataJson.put("zk_money", coupon_info);
                 dataJson.put("istmall", isTmall);
                 dataJson.put("agent", 0l);
-                dataJson.put("commissionRate", commissionRate);
+                dataJson.put("commissionRate", commissionRate/10);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);

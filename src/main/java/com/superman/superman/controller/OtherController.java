@@ -72,14 +72,13 @@ public class OtherController {
 
     @LoginRequired
     @PostMapping("/convert")
-    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId) throws IOException, URISyntaxException {
+    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         if (goodId == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        Userinfo userinfo = userApiService.queryByUid(Long.valueOf(uid));
-        String pddpid = userinfo.getPddpid();
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         Long tbpid = userinfo.getTbpid();
         String jdpid = userinfo.getJdpid();
         JSONObject data = new JSONObject();
@@ -97,6 +96,7 @@ public class OtherController {
         }
 
         if (devId == 1) {
+            String pddpid = userinfo.getPddpid();
             data = pddApiService.convertPdd(pddpid, goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -107,12 +107,26 @@ public class OtherController {
             }
             data.put("qrcode", QINIUURL + uland_url);
         }
+        if (devId == 2) {
+            data = jdApiService.convertJd(Long.valueOf(jdpid), goodId);
+            if (data == null || data.getString(goodId.toString()) == null) {
+                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            }
+            String jdurl =data.getString(goodId.toString());
+            data.clear();
+            data.put("url", jdurl);
+            data.put("uland_url", jdurl);
+            data.put("tkLink", "");
+            String uland_url = otherService.addQrCodeUrl(jdurl, uid);
+            if (uland_url == null) {
+                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            }
+            data.put("qrcode", QINIUURL + uland_url);
 
-        if (devId == 2)
-            data = jdApiService.convertJd(goodId, Long.valueOf(tbpid));
-
-        if (devId == 3)
+        }
+        if (devId == 3) {
             data = taoBaoApiService.convertTaobao(goodId, Long.valueOf(tbpid));
+        }
         return WeikeResponseUtil.success(data);
     }
 
@@ -206,13 +220,13 @@ public class OtherController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
-        PageParam data = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), data);
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), param);
         Integer sum = adviceService.countListOderAdvice(Long.valueOf(uid));
-        JSONObject var = new JSONObject();
-        var.put("pageData", total);
-        var.put("pageCount", sum);
-        return WeikeResponseUtil.success(var);
+        JSONObject data = new JSONObject();
+        data.put("pageData", total);
+        data.put("pageCount", sum);
+        return WeikeResponseUtil.success(data);
     }
 
 }

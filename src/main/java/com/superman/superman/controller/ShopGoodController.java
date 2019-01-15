@@ -3,6 +3,7 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
@@ -42,15 +43,7 @@ public class ShopGoodController {
     private JdApiService jdApiService;
     @Autowired
     private TaoBaoApiService taoBaoApiService;
-    @Autowired
-    private MemberService memberService;
-    @Autowired
-    private UserApiService userApiService;
-    //    static final String SERVER_URL = "https://api.jd.com/routerjson";
-//    static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
-//    static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
-//    static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
-    //    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
+
     private final static Logger logger = LoggerFactory.getLogger(ShopGoodController.class);
 
 
@@ -75,23 +68,29 @@ public class ShopGoodController {
     @LoginRequired
     @PostMapping("/Search")
     public WeikeResponse Search(HttpServletRequest request, PageParam pageParam, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,  @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,  @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo, @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
 
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        Integer pageSize = pageParam.getPageSize();
-        Integer pageNo = pageParam.getPageNo();
         JSONObject data;
         if (type == 0) {
-            PddSerachBean pddSerachBean = new PddSerachBean();
+//            PddSerachBean pddSerachBean = new PddSerachBean();
+//            pddSerachBean.setKeyword(keyword);
+//            pddSerachBean.setWith_coupon(with_coupon == 0 ? true : false);
+//            pddSerachBean.setOpt_id(opt);
+//            pddSerachBean.setSort_type(sort);
+//            data = pddApiService.getPddGoodList(Long.valueOf(uid), pageSize, pageNo, pddSerachBean);
+            PddDdkGoodsSearchRequest pddSerachBean = new PddDdkGoodsSearchRequest();
+            pddSerachBean.setPage(pageNo);
+            pddSerachBean.setPageSize(pageSize);
             pddSerachBean.setKeyword(keyword);
-            pddSerachBean.setWith_coupon(with_coupon == 0 ? true : false);
-            pddSerachBean.setOpt_id(opt);
-            pddSerachBean.setSort_type(sort);
-            data = pddApiService.getPddGoodList(Long.valueOf(uid), pageSize, pageNo, pddSerachBean);
+            pddSerachBean.setWithCoupon(with_coupon == 0 ? true : false);
+            pddSerachBean.setOptId(opt);
+            pddSerachBean.setSortType(sort);
+            data = pddApiService.serachGoodsAll(pddSerachBean, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
         if (type == 1) {

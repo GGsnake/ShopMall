@@ -11,7 +11,6 @@ import lombok.ToString;
 @Setter
 @Getter
 public class UpdateWxOpenId {
-
     private String id;
     private String name;
     private String photo;

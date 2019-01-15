@@ -10,10 +10,23 @@ import jd.union.open.goods.query.request.GoodsReq;
  * Created by liujupeng on 2018/11/14.
  */
 public interface JdApiService {
-    ScoreBean queryJdOder(String id);
-    JSONObject convertJd(Long jdpid,Long goodId);
+    /**
+     * 京东生成推广URL
+     * @param pid
+     * @param goodId
+     * @return
+     */
+    JSONObject convertJd(Long pid,Long goodId);
+
+
     JSONObject serachGoodsAll(JdSerachReq jdSerachReq, Long uid);
 
+    /**
+     * 京东搜索引擎
+     * @param goodsReq
+     * @param uid
+     * @return
+     */
     JSONObject serachGoodsAllJd(GoodsReq goodsReq, Long uid);
 
     /** 京东商品详情
