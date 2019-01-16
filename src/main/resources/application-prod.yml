@@ -92,3 +92,15 @@ pdd_pro:
   pdd-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
   pdd-url: "https://wj.hxksky.com"
   pdd-router-url: "https://gw-api.pinduoduo.com/api/router"
+
+weixin:
+  wx-key: "bbc1737d63e44e278dbffa9e96a7eca3"
+  wx-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
+  wx-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
+  wx-url: "https://wj.hxksky.com"
+  wx-pay-url:  "https://api.mch.weixin.qq.com/pay/unifiedorder"
+  wx-pay-appid:  "wxc7df701f4d4f1eab"
+  wx-pay-partnerid:  "1521764621"
+  wx-pay-notify-url:  "http://120.79.62.89:8080/wx/wechatBySuccess"
+  wx-pay-money:  "2000"
+  wx-router-url: "https://gw-api.pinduoduo.com/api/router"

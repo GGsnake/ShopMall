@@ -362,6 +362,9 @@ public class PddApiServiceImpl implements PddApiService {
                     dataArray.add(dataJson);
                 }
             }
+            goodsList.forEach(goodsListItem -> {
+
+            });
             if (roleId == 2) {
                 for (int i = 0; i < goodsList.size(); i++) {
                     PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);

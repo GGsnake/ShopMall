@@ -6,6 +6,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.utils.*;
 import lombok.extern.java.Log;
 import org.dom4j.DocumentException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,17 @@ import java.util.TreeMap;
 @RequestMapping("/wx")
 public class PayController {
 
+    @Value("${weixin.wx-pay-url}")
+    private String pay_url;
+    @Value("${weixin.wx-pay-appid}")
+    private String pay_appid;
+    @Value("${weixin.wx-pay-partnerid}")
+    private String partner_id;
+    @Value("${weixin.wx-pay-notify-url}")
+    private String notify_url;
+    @Value("${weixin.wx-pay-money}")
+    private Integer money;
+
     /**
      * 微信预支付（技能开通支付）
      *
@@ -41,90 +53,86 @@ public class PayController {
     public WeikeResponse wechatOrderPay(HttpServletResponse response, HttpServletRequest request) throws IOException, DocumentException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid != null) {
-        /* 设置格式为text/html */
-        request.setCharacterEncoding("utf-8");
+            /* 设置格式为text/html */
+            request.setCharacterEncoding("utf-8");
+            String ip = request.getRemoteAddr();
+
 //        微信支付商户号 1521764621
 //        应用APPID wxc7df701f4d4f1eab
 //        API秘钥：hzshop12345678912345678912345678
-        String url2 = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String appid = "wxc7df701f4d4f1eab";
-        String body = "ssssssssssssssssss";
-        String partnerid = "1521764621";
-        String noncestr = Util.getRandomString(30);
-        String notifyurl = "http://120.79.62.89:8080/wx/wechatBySuccess";//回调地址wechatBySuccess
+            String url2 = pay_url;
+            String appid = pay_appid;
+            String body = "升级成为运营商";
+            String partnerid = partner_id;
+            String noncestr = Util.getRandomString(30);
+            String notifyurl = notify_url;
+            int totalfee = (int) (100 * money);
+            String attach = uid;//附加参数:用户id
+            String tradetype = "APP";
+            String key = "hzshop12345678912345678912345678";
 
-        double money = 1;
+            // 时间戳
+            Long times = System.currentTimeMillis();
+            String outtradeno = "hj" + times + "" + attach;
 
-        String ip = request.getRemoteAddr();
+            String prepayid;
+            String timestamp = String.valueOf(times / 1000);
+            SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+            parameters.put("appid", appid);//应用ID
+            parameters.put("mch_id", partnerid);//商户号
+            parameters.put("nonce_str", noncestr);//随机字符串
+            parameters.put("body", body);//商品描述
+            parameters.put("key", key);//秘钥
+            parameters.put("trade_type", tradetype);//交易类型
+            parameters.put("out_trade_no", outtradeno);//商户订单号
+            parameters.put("total_fee", totalfee);//总金额
+            parameters.put("spbill_create_ip", ip);//终端IP
+            parameters.put("notify_url", notifyurl);//回调地址
+            parameters.put("attach", attach);//附加参数
+            String sign = MD5Util.createSign("utf-8", parameters);
+            String params = String.format("<xml>" + "<appid>%s</appid>"
+                            + "<attach>%s</attach>"
+                            + "<body>%s</body>" + "<mch_id>%s</mch_id>"
+                            + "<nonce_str>%s</nonce_str>"
+                            + "<notify_url>%s</notify_url>"
+                            + "<out_trade_no>%s</out_trade_no>"
+                            + "<spbill_create_ip>%s</spbill_create_ip>"
+                            + "<total_fee>%s</total_fee>"
+                            + "<trade_type>%s</trade_type>" + "<sign>%s</sign>"
+                            + "</xml>", appid, attach, body, partnerid, noncestr,
+                    notifyurl, outtradeno, ip, totalfee, tradetype,
+                    sign);
 
-
-        int totalfee = (int) (100 * money);
-        String attach = uid ;//附加参数:用户id
-        String tradetype = "APP";
-        String key = "hzshop12345678912345678912345678";
-
-        // 时间戳
-        Long times = System.currentTimeMillis();
-        String outtradeno = "hj" + times + "" + attach;
-
-        String prepayid;
-        String timestamp = String.valueOf(times / 1000);
-        SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
-        parameters.put("appid", appid);//应用ID
-        parameters.put("mch_id", partnerid);//商户号
-        parameters.put("nonce_str", noncestr);//随机字符串
-        parameters.put("body", body);//商品描述
-        parameters.put("key", key);//秘钥
-        parameters.put("trade_type", tradetype);//交易类型
-        parameters.put("out_trade_no", outtradeno);//商户订单号
-        parameters.put("total_fee", totalfee);//总金额
-        parameters.put("spbill_create_ip", ip);//终端IP
-        parameters.put("notify_url", notifyurl);//回调地址
-        parameters.put("attach", attach);//附加参数
-        String sign = MD5Util.createSign("utf-8", parameters);
-        String params = String.format("<xml>" + "<appid>%s</appid>"
-                        + "<attach>%s</attach>"
-                        + "<body>%s</body>" + "<mch_id>%s</mch_id>"
-                        + "<nonce_str>%s</nonce_str>"
-                        + "<notify_url>%s</notify_url>"
-                        + "<out_trade_no>%s</out_trade_no>"
-                        + "<spbill_create_ip>%s</spbill_create_ip>"
-                        + "<total_fee>%s</total_fee>"
-                        + "<trade_type>%s</trade_type>" + "<sign>%s</sign>"
-                        + "</xml>", appid, attach, body, partnerid, noncestr,
-                notifyurl, outtradeno, ip, totalfee, tradetype,
-                sign);
-
-        String result = HttpUtil.doPost(url2, params);
+            String result = HttpUtil.doPost(url2, params);
 
 /*		System.out.println("---------------result---------------"+result);
 		String newStr = new String(result.getBytes(), "UTF-8");
 		System.out.println("---------------newStr---------------"+newStr);*/
 
-        //二次签名
-        Map<String, String> keyval = XmlUtil.treeWalkStart(result);
-        noncestr = keyval.get("nonce_str");
-        String packageValue = "Sign=WXPay";
-        prepayid = keyval.get("prepay_id");
+            //二次签名
+            Map<String, String> keyval = XmlUtil.treeWalkStart(result);
+            noncestr = keyval.get("nonce_str");
+            String packageValue = "Sign=WXPay";
+            prepayid = keyval.get("prepay_id");
 
-        String stringA = "appid=%s&noncestr=%s&package=%s&partnerid=%s&prepayid=%s&timestamp=%s&key=%s";
-        String stringSignTemp = String.format(stringA, appid,
-                noncestr, packageValue, partnerid, prepayid,
-                timestamp, key);
-        sign = MD5.md5(stringSignTemp).toUpperCase();
+            String stringA = "appid=%s&noncestr=%s&package=%s&partnerid=%s&prepayid=%s&timestamp=%s&key=%s";
+            String stringSignTemp = String.format(stringA, appid,
+                    noncestr, packageValue, partnerid, prepayid,
+                    timestamp, key);
+            sign = MD5.md5(stringSignTemp).toUpperCase();
 
 
-        JSONObject map = new JSONObject();
-        map.put("appid", appid);
-        map.put("partnerid", partnerid);
-        map.put("prepayid", prepayid);
-        map.put("packageValue", packageValue);
-        map.put("noncestr", noncestr);
-        map.put("timestamp", timestamp);
-        map.put("sign", sign);
-        map.put("ordersNo", outtradeno);
-        map.put("attach", attach);
-        return WeikeResponseUtil.success(map);
+            JSONObject map = new JSONObject();
+            map.put("appid", appid);
+            map.put("partnerid", partnerid);
+            map.put("prepayid", prepayid);
+            map.put("packageValue", packageValue);
+            map.put("noncestr", noncestr);
+            map.put("timestamp", timestamp);
+            map.put("sign", sign);
+            map.put("ordersNo", outtradeno);
+            map.put("attach", attach);
+            return WeikeResponseUtil.success(map);
         }
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 
@@ -161,11 +169,11 @@ public class PayController {
         String return_code = resultMap.get("return_code");
         String result_code = resultMap.get("result_code");
         String attach = resultMap.get("attach");
-
-
-        System.out.println("----resultMap----" + resultMap);
-
-        System.out.println("======return_code:" + return_code + "=========result_code:" + result_code);
+//
+//
+//        System.out.println("----resultMap----" + resultMap);
+//
+//        System.out.println("======return_code:" + return_code + "=========result_code:" + result_code);
 
         if (result_code.equalsIgnoreCase("SUCCESS")) {
 

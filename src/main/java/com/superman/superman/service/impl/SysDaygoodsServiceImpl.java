@@ -28,7 +28,8 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 	
 	@Override
 	public JSONObject queryList(PageParam pageParam){
-		List<SysDaygoods> sysDaygoods = daygoodsDao.queryListGod(pageParam.getStartRow(), pageParam.getPageSize());
+		PageParam temp =new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+		List<SysDaygoods> sysDaygoods = daygoodsDao.queryListGod(temp.getStartRow(), temp.getPageSize());
 		Integer count = daygoodsDao.countDayGoods();
 		JSONObject var=new JSONObject();
 		JSONArray data=new JSONArray();

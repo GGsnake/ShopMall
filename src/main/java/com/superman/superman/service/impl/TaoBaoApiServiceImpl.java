@@ -117,7 +117,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue()*10);
+                    dataJson.put("agent", agent.setScale(11, BigDecimal.ROUND_DOWN).doubleValue()*10);
                     dataJson.put("commissionRate", commissionRate/10);
                     dataArray.add(dataJson);
                 }

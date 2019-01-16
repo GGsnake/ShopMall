@@ -68,7 +68,8 @@ public class ShopGoodController {
     @LoginRequired
     @PostMapping("/Search")
     public WeikeResponse Search(HttpServletRequest request, PageParam pageParam, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,  @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,  @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo, @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "tbcat", required = false) String tbcat
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize, @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                                @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort, @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder, @RequestParam(value = "tbcat", required = false) String tbcat
 
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
@@ -112,19 +113,13 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(data);
         }
         if (type == 2) {
-//            JdSerachReq var1 = new JdSerachReq();
-//            var1.setKeyword(keyword);
-//            var1.setPage(pageNo);
-//            var1.setPagesize(pageSize);
-//            if (cid != null) {
-//                var1.setCid3(cid);
-//            }
-//            data = jdApiService.serachGoodsAll(var1, Long.valueOf(uid));
             GoodsReq goodsReq = new GoodsReq();
             goodsReq.setKeyword(keyword);
             if (cid != null) {
                 goodsReq.setCid3(Long.valueOf(cid));
             }
+            goodsReq.setSort(jdorder);
+            goodsReq.setSortName(jdsort);
             goodsReq.setPageIndex(pageNo);
             goodsReq.setPageSize(pageSize);
             goodsReq.setIsCoupon(with_coupon);

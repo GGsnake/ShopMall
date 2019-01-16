@@ -201,7 +201,6 @@ public class OtherController {
 
     }
 
-    @LoginRequired
     @PostMapping("/dayGoods")
     public WeikeResponse dayGoods(PageParam pageParam) {
         //查询列表数据

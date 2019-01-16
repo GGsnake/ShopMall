@@ -16,10 +16,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Getter
-@Builder
 public class SysDaygoods implements Serializable {
-	
-	//
 	private Integer id;
 	//标题
 	private String titile;
