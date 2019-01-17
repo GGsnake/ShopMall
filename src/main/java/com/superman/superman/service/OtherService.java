@@ -14,5 +14,20 @@ public interface OtherService {
         ByteArrayOutputStream crateQRCode(String content);
        JSONArray queryAdviceForDev(PageParam pageParam);
         String addQrCodeUrl(String data,String uid) throws IOException;
+
+    /**
+     * 生成分享APP邀请二维码的图片URL
+     * @param data
+     * @param uid
+     * @return
+     * @throws IOException
+     */
         String addQrCodeUrlInv(String data,String uid) throws IOException;
+    /**
+     * 微信预付款
+     * @param uid
+     * @param ip
+     * @return
+     */
+        String payMoney(String uid,String ip);
 }

@@ -266,14 +266,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      */
     @Override
     public JSONObject convertTaobao(@NonNull Long pid, @NonNull Long good_id) {
-
         String taobaoSercahUrl = URL + "convert/id-to-token?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
         urlSign.put("pid", APID + pid);
         urlSign.put("good_id", String.valueOf(good_id));
         urlSign.put("appkey", QQAPPKEY);
-
         String linkStringByGet = null;
         try {
             linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
@@ -320,39 +318,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         return var;
     }
 
-    /**
-     * 查询淘宝的商品详情
-     *
-     * @return
-     */
-    @Override
-    public JSONObject recommend(Long goodId,Integer uid  ) {
-//        JSONObject var = new JSONObject();
-//        TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
-//        TbkItemRecommendGetRequest req = new TbkItemRecommendGetRequest();
-//        req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url");
-//        req.setNumIid(123L);
-//        req.setCount(20L);
-//        req.setPlatform(1L);
-//        TbkItemRecommendGetResponse rsp = client.execute(req);
-//        System.out.println(rsp.getBody());
-//        try {
-//            JSONArray var1 = new JSONArray();
-//            rsp = client.execute(req);
-//            if (JSONObject.parseObject(rsp.getBody()).getJSONObject("error_response") != null) {
-//                var.put("list", var1);
-//                return var;
-//            }
-//            TbkItemInfoGetResponse.NTbkItem results = rsp.getResults().get(0);
-//            List<String> itemUrl = results.getSmallImages();
-//            var.put("list", itemUrl);
-//        } catch (ApiException e) {
-//            e.printStackTrace();
-//        }
-
-
-        return null;
-    }
 
     /**
      * 查询淘宝商品单个的缩略图
@@ -368,7 +333,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         try {
             rsp = client.execute(req);
             List<TbkItemInfoGetResponse.NTbkItem> results = rsp.getResults();
-            if (results == null) {
+            if (results == null||results.get(0)==null) {
                 return null;
             }
 

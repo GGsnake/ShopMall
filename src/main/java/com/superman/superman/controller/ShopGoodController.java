@@ -78,12 +78,7 @@ public class ShopGoodController {
         }
         JSONObject data;
         if (type == 0) {
-//            PddSerachBean pddSerachBean = new PddSerachBean();
-//            pddSerachBean.setKeyword(keyword);
-//            pddSerachBean.setWith_coupon(with_coupon == 0 ? true : false);
-//            pddSerachBean.setOpt_id(opt);
-//            pddSerachBean.setSort_type(sort);
-//            data = pddApiService.getPddGoodList(Long.valueOf(uid), pageSize, pageNo, pddSerachBean);
+            //拼多多搜索引擎
             PddDdkGoodsSearchRequest pddSerachBean = new PddDdkGoodsSearchRequest();
             pddSerachBean.setPage(pageNo);
             pddSerachBean.setPageSize(pageSize);
@@ -95,7 +90,7 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(data);
         }
         if (type == 1) {
-//            data = taoBaoApiService.serachGoods(Long.valueOf(uid), keyword, null, true, true, page.longValue(), pagesize.longValue(), tbsort, null);
+            //淘宝搜索引擎
             TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
             req.setPageNo(Long.valueOf(pageNo));
             req.setPageSize(Long.valueOf(pageSize));
@@ -113,6 +108,7 @@ public class ShopGoodController {
             return WeikeResponseUtil.success(data);
         }
         if (type == 2) {
+            //京东搜索引擎
             GoodsReq goodsReq = new GoodsReq();
             goodsReq.setKeyword(keyword);
             if (cid != null) {

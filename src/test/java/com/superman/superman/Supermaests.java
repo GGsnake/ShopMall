@@ -17,6 +17,9 @@ import com.taobao.api.response.TbkUatmFavoritesGetResponse;
 import jd.union.open.goods.query.request.GoodsReq;
 import jd.union.open.goods.query.request.UnionOpenGoodsQueryRequest;
 import jd.union.open.goods.query.response.UnionOpenGoodsQueryResponse;
+import jd.union.open.order.query.request.OrderReq;
+import jd.union.open.order.query.request.UnionOpenOrderQueryRequest;
+import jd.union.open.order.query.response.UnionOpenOrderQueryResponse;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
@@ -75,23 +78,25 @@ public class Supermaests {
 
     @Test
     public void test() throws Exception {
-        final String url = "http://gw.api.taobao.com/router/rest";
-        final String appkey = "25338125";
-        final String secret = "c4d36be247e477a9d88704f022e1c514";
 
-//        var li=new ArrayList<>();
-//        li.add("4165519_37896294");
 //
-//        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
-//        log.warning(String.valueOf(integer));
-        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
-        TbkUatmFavoritesGetRequest req = new TbkUatmFavoritesGetRequest();
-        req.setPageNo(1L);
-        req.setPageSize(20L);
-        req.setFields("favorites_title,favorites_id,type");
-        req.setType(1l);
-        TbkUatmFavoritesGetResponse rsp = client.execute(req);
-        System.out.println(rsp.getBody());
+//        final String url = "http://gw.api.taobao.com/router/rest";
+//        final String appkey = "25338125";
+//        final String secret = "c4d36be247e477a9d88704f022e1c514";
+//
+////        var li=new ArrayList<>();
+////        li.add("4165519_37896294");
+////
+////        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
+////        log.warning(String.valueOf(integer));
+//        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+//        TbkUatmFavoritesGetRequest req = new TbkUatmFavoritesGetRequest();
+//        req.setPageNo(1L);
+//        req.setPageSize(20L);
+//        req.setFields("favorites_title,favorites_id,type");
+//        req.setType(1l);
+//        TbkUatmFavoritesGetResponse rsp = client.execute(req);
+//        System.out.println(rsp.getBody());
 //        JSONObject jsonObject = memberService.queryMemberDetail(4l);
 //        log.warning(jsonObject.toJSONString());
 //        var a=new ArrayList<>();

@@ -11,10 +11,10 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.model.SysJhAdviceDev;
 import com.superman.superman.service.OtherService;
-import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.PageParam;
+import com.superman.superman.utils.*;
 import lombok.extern.java.Log;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,7 @@ import javax.servlet.ServletOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liujupeng on 2018/11/20.
@@ -35,6 +34,17 @@ import java.util.List;
 public class OtherServiceImpl implements OtherService {
     @Autowired
     private SysAdviceDao sysAdviceDao;
+
+    @Value("${weixin.wx-pay-url}")
+    private String pay_url;
+    @Value("${weixin.wx-pay-appid}")
+    private String pay_appid;
+    @Value("${weixin.wx-pay-partnerid}")
+    private String partner_id;
+    @Value("${weixin.wx-pay-notify-url}")
+    private String notify_url;
+    @Value("${weixin.wx-pay-money}")
+    private Integer money;
 
     @Value("${juanhuang.logo}")
     private String logo;
@@ -116,7 +126,14 @@ public class OtherServiceImpl implements OtherService {
         }
         return codeImgUrl;
     }
-    @Override
+
+    /**
+     * 生成分享APP邀请二维码的图片URL
+     * @param data
+     * @param uid
+     * @return
+     * @throws IOException
+     */
     public String addQrCodeUrlInv(String data, String uid) {
         ByteArrayOutputStream stream = null;
         String codeImgUrl = null;
@@ -129,5 +146,89 @@ public class OtherServiceImpl implements OtherService {
             return null;
         }
         return codeImgUrl;
+    }
+
+    @Override
+    public String payMoney(String uid,String ip) {
+        //        微信支付商户号 1521764621
+//        应用APPID wxc7df701f4d4f1eab
+//        API秘钥：hzshop12345678912345678912345678
+        String url2 = pay_url;
+        String appid = pay_appid;
+        String body = "升级成为运营商";
+        String partnerid = partner_id;
+        String noncestr = Util.getRandomString(30);
+        String notifyurl = notify_url;
+        int totalfee = (int) (100 * money);
+        String attach = uid;//附加参数:用户id
+        String tradetype = "APP";
+        String key = "hzshop12345678912345678912345678";
+        // 时间戳
+        Long times = System.currentTimeMillis();
+        String outtradeno = "hj" + times + "" + attach;
+
+        String prepayid;
+        String timestamp = String.valueOf(times / 1000);
+        SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+        parameters.put("appid", appid);//应用ID
+        parameters.put("mch_id", partnerid);//商户号
+        parameters.put("nonce_str", noncestr);//随机字符串
+        parameters.put("body", body);//商品描述
+        parameters.put("key", key);//秘钥
+        parameters.put("trade_type", tradetype);//交易类型
+        parameters.put("out_trade_no", outtradeno);//商户订单号
+        parameters.put("total_fee", totalfee);//总金额
+        parameters.put("spbill_create_ip", ip);//终端IP
+        parameters.put("notify_url", notifyurl);//回调地址
+        parameters.put("attach", attach);//附加参数
+        String sign = MD5Util.createSign("utf-8", parameters);
+        String params = String.format("<xml>" + "<appid>%s</appid>"
+                        + "<attach>%s</attach>"
+                        + "<body>%s</body>" + "<mch_id>%s</mch_id>"
+                        + "<nonce_str>%s</nonce_str>"
+                        + "<notify_url>%s</notify_url>"
+                        + "<out_trade_no>%s</out_trade_no>"
+                        + "<spbill_create_ip>%s</spbill_create_ip>"
+                        + "<total_fee>%s</total_fee>"
+                        + "<trade_type>%s</trade_type>" + "<sign>%s</sign>"
+                        + "</xml>", appid, attach, body, partnerid, noncestr,
+                notifyurl, outtradeno, ip, totalfee, tradetype,
+                sign);
+
+        String result = HttpUtil.doPost(url2, params);
+
+/*		System.out.println("---------------result---------------"+result);
+		String newStr = new String(result.getBytes(), "UTF-8");
+		System.out.println("---------------newStr---------------"+newStr);*/
+
+        //二次签名
+        Map<String, String> keyval = null;
+        try {
+            keyval = XmlUtil.treeWalkStart(result);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        noncestr = keyval.get("nonce_str");
+        String packageValue = "Sign=WXPay";
+        prepayid = keyval.get("prepay_id");
+
+        String stringA = "appid=%s&noncestr=%s&package=%s&partnerid=%s&prepayid=%s&timestamp=%s&key=%s";
+        String stringSignTemp = String.format(stringA, appid,
+                noncestr, packageValue, partnerid, prepayid,
+                timestamp, key);
+        sign = MD5.md5(stringSignTemp).toUpperCase();
+
+
+        JSONObject map = new JSONObject();
+        map.put("appid", appid);
+        map.put("partnerid", partnerid);
+        map.put("prepayid", prepayid);
+        map.put("packageValue", packageValue);
+        map.put("noncestr", noncestr);
+        map.put("timestamp", timestamp);
+        map.put("sign", sign);
+        map.put("ordersNo", outtradeno);
+        map.put("attach", attach);
+        return null;
     }
 }

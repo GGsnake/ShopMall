@@ -56,8 +56,6 @@ logging:
     com.superman.superman: debug
   file: ./logs/core.log
   root: INFO
-
-
 server:
   port: 8080
 

@@ -44,13 +44,7 @@ public interface TaoBaoApiService {
      */
     JSONObject convertTaobao(Long pid, Long good_id);
 
-    /**
-     * 为你推荐
-     *
-     * @param goodId
-     * @return
-     */
-    JSONObject recommend(Long goodId,Integer uid);
+
 
     /**
      * 查询淘宝的商品详情
