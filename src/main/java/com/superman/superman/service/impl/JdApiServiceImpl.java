@@ -44,7 +44,7 @@ import java.util.Map;
 @Service("jdApiService")
 //@Cacheable
 public class JdApiServiceImpl implements JdApiService {
-    private static final String URL = "http://jdapi.apptimes.cn/";
+    private static final String URL = "https://api.open.21ds.cn/jd_api_v1/";
     private static final String QQAPPKEY = "8k8lhumd";
     private static final String APID = "mm_261060037_253650051_";
 
@@ -66,15 +66,18 @@ public class JdApiServiceImpl implements JdApiService {
     @Value("${juanhuang.range}")
     private Integer RANGE;
 
+    @Value("${miao.apkey}")
+    private String apkey;
 
     @Override
-    public JSONObject convertJd(Long jdpid, Long goodId) {
-        String jdurl = URL + "wxlink?";
+    public JSONObject convertJd(Long jdpid, String materialId) {
+        String jdurl = URL + "getitemcpsurl?";
         JSONObject data;
         Map<String, String> urlSign = new HashMap<>();
-        urlSign.put("positionid",jdpid.toString());
-        urlSign.put("materialids",goodId.toString());
-        urlSign.put("unionid",jduid);
+        urlSign.put("apkey", apkey);
+        urlSign.put("unionId", jduid);
+        urlSign.put("materialId","http://"+materialId);
+        urlSign.put("positionId", jdpid.toString());
         String linkStringByGet = null;
         try {
             linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
@@ -82,7 +85,16 @@ public class JdApiServiceImpl implements JdApiService {
             e.printStackTrace();
         }
         String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
-        data = (JSONObject) JSON.parseObject(res).getJSONArray("data").get(0);
+        Integer code = JSON.parseObject(res).getInteger("code");
+        if (code==200){
+            JSONObject data1 = JSON.parseObject(res).getJSONObject("data");
+            String uland_url = data1.getString("shortURL");
+            data=new JSONObject();
+            data.put("uland_url", uland_url);
+            data.put("tkLink", null);
+            data.put("url", null);
+            return data;
+        }
 //
 //        UnionOpenPromotionBysubunionidGetRequest request = new UnionOpenPromotionBysubunionidGetRequest();
 //        jd.union.open.promotion.bysubunionid.get.request.PromotionCodeReq promotionCodeReq = new jd.union.open.promotion.bysubunionid.get.request.PromotionCodeReq();
@@ -97,7 +109,7 @@ public class JdApiServiceImpl implements JdApiService {
 //            e.printStackTrace();
 //        }
 
-        return data;
+        return null;
     }
 
     @Override
@@ -191,8 +203,40 @@ public class JdApiServiceImpl implements JdApiService {
         if (usr == null) {
             return null;
         }
+
         Integer roleId = usr.getRoleId();
         Double score = Double.valueOf(usr.getScore());
+
+        String jdurl = URL + "getseckillitems?";
+        JSONObject data;
+        Map<String, String> urlSign = new HashMap<>();
+        urlSign.put("apkey", apkey);
+        urlSign.put("unionId", jduid);
+        if (goodsReq.getCid3() != null) {
+            urlSign.put("cid3", goodsReq.getCid3().toString());
+        }
+        if (goodsReq.getPageSize() != null) {
+            urlSign.put("pageSize", String.valueOf(goodsReq.getPageSize()));
+        }
+        if (goodsReq.getPageIndex() != null) {
+            urlSign.put("pageIndex", goodsReq.getPageIndex().toString());
+        }
+        if (goodsReq.getSortName() != null) {
+            urlSign.put("sortName", String.valueOf(goodsReq.getSortName()));
+
+        }
+        if (goodsReq.getSort() != null) {
+            urlSign.put("sort", goodsReq.getSort());
+
+        }
+        String linkStringByGet = null;
+        try {
+            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
+        JSONArray var1 = JSON.parseObject(res).getJSONArray("data");
         String accessToken = "";
         JdClient client = new DefaultJdClient(jdurl, accessToken, jdkey, jdsecret);
         UnionOpenGoodsQueryRequest request = new UnionOpenGoodsQueryRequest();

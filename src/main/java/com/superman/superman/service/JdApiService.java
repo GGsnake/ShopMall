@@ -13,10 +13,10 @@ public interface JdApiService {
     /**
      * 京东生成推广URL
      * @param pid
-     * @param goodId
+     * @param materialId
      * @return
      */
-    JSONObject convertJd(Long pid,Long goodId);
+    JSONObject convertJd(Long pid, String materialId);
 
 
     JSONObject serachGoodsAll(JdSerachReq jdSerachReq, Long uid);

@@ -91,6 +91,10 @@ pdd_pro:
   pdd-url: "https://wj.hxksky.com"
   pdd-router-url: "https://gw-api.pinduoduo.com/api/router"
 
+miao:
+  apkey: "bb67403e-b370-681d-139c-770100c8eec2"
+  tbname: "华众有个店"
+
 weixin:
   wx-key: "bbc1737d63e44e278dbffa9e96a7eca3"
   wx-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"

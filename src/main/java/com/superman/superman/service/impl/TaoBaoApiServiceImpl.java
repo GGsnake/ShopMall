@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.jsonbean.taobao.TaoBaoCovert;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.GoodUtils;
@@ -35,7 +36,7 @@ import java.util.*;
 public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     private static final String QQAPPKEY = "8k8lhumd";
     private static final String APID = "mm_261060037_253650051_";
-    final String URL = "http://tkapi.apptimes.cn/";
+    final String URL = "https://api.open.21ds.cn/apiv1/";
     final String TAOBAOURL = "http://gw.api.taobao.com/router/rest";
     final String APPKEY = "25377219";
     final String SECRET = "4c3e6b9e6484ce2982bca63d524564c1";
@@ -48,6 +49,11 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     TboderMapper tboderMapper;
     @Value("${juanhuang.range}")
     Double rangeaa;
+    @Value("${miao.apkey}")
+    String apkey;
+
+    @Value("${miao.tbname}")
+    String tbname;
 
 
     @Override
@@ -83,15 +89,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     if (coupon_info1 != null && !coupon_info1.equals("")) {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                        dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
+                        dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
                     } else {
                         dataJson.put("zk_money", 0);
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
-                    dataJson.put("commissionRate", commissionRate/10);
+                    dataJson.put("commissionRate", commissionRate / 10);
                     BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue()*10);
+                    dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 10);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -108,7 +114,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     if (coupon_info1 != null && !coupon_info1.equals("")) {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                        dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
+                        dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
                     } else {
                         dataJson.put("zk_money", 0);
                     }
@@ -117,8 +123,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
                     dataJson.put("istmall", isTmall);
-                    dataJson.put("agent", agent.setScale(11, BigDecimal.ROUND_DOWN).doubleValue()*10);
-                    dataJson.put("commissionRate", commissionRate/10);
+                    dataJson.put("agent", agent.setScale(11, BigDecimal.ROUND_DOWN).doubleValue() * 10);
+                    dataJson.put("commissionRate", commissionRate / 10);
                     dataArray.add(dataJson);
                 }
                 data.put("data", dataArray);
@@ -135,13 +141,13 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 if (coupon_info1 != null && !coupon_info1.equals("")) {
                     int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                     coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                    dataJson.put("zk_money", Integer.parseInt(coupon_info)*100);
+                    dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
                 } else {
                     dataJson.put("zk_money", 0);
                 }
                 dataJson.put("istmall", isTmall);
                 dataJson.put("agent", 0l);
-                dataJson.put("commissionRate", commissionRate/10);
+                dataJson.put("commissionRate", commissionRate / 10);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -151,8 +157,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
         return data;
     }
+
     /**
      * 淘宝搜索首页专用
+     *
      * @param request
      * @param uid
      * @return
@@ -266,12 +274,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      */
     @Override
     public JSONObject convertTaobao(@NonNull Long pid, @NonNull Long good_id) {
-        String taobaoSercahUrl = URL + "convert/id-to-token?";
+        String taobaoSercahUrl = URL + "getitemgyurl?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
+        urlSign.put("apkey", apkey);
         urlSign.put("pid", APID + pid);
-        urlSign.put("good_id", String.valueOf(good_id));
-        urlSign.put("appkey", QQAPPKEY);
+        urlSign.put("itemid", String.valueOf(good_id));
+        urlSign.put("tbname", tbname);
+        urlSign.put("shorturl", "1");
+        urlSign.put("tpwd", "1");
         String linkStringByGet = null;
         try {
             linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
@@ -279,12 +290,27 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             e.printStackTrace();
         }
         String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
-        String uland_url = JSON.parseObject(res).getJSONObject("data").getString("uland_url");
-        String token = JSON.parseObject(res).getJSONObject("data").getString("token");
-        temp.put("uland_url", uland_url);
-        temp.put("tkLink", token);
-        temp.put("url", null);
-        return temp;
+        JSONObject taoBaoCovert = JSONObject.parseObject(res).getJSONObject("result").getJSONObject("data");
+        Integer code = JSON.parseObject(res).getInteger("code");
+        if (code == 200) {
+            if (taoBaoCovert.getBoolean("has_coupon")) {
+                String uland_url = taoBaoCovert.getString("coupon_click_url");
+                String token = taoBaoCovert.getString("tpwd");
+                temp.put("uland_url", uland_url);
+                temp.put("tkLink", token);
+                temp.put("url", null);
+                return temp;
+            } else {
+                String uland_url = taoBaoCovert.getString("short_url");
+                String token = taoBaoCovert.getString("tpwd");
+                temp.put("uland_url", uland_url);
+                temp.put("tkLink", token);
+                temp.put("url", null);
+                return temp;
+            }
+
+        }
+        return null;
     }
 
     /**
@@ -321,6 +347,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 
     /**
      * 查询淘宝商品单个的缩略图
+     *
      * @param goodId
      * @return
      */
@@ -333,7 +360,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         try {
             rsp = client.execute(req);
             List<TbkItemInfoGetResponse.NTbkItem> results = rsp.getResults();
-            if (results == null||results.get(0)==null) {
+            if (results == null || results.get(0) == null) {
                 return null;
             }
 

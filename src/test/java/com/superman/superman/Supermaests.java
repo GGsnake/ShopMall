@@ -241,7 +241,9 @@ public class Supermaests {
     private JdApiService jdApiService;
     @Test
     public void jdDeatiTest() {
-        jdApiService.jdDetail(38412174396l);
+        JSONObject jsonObject = jdApiService.convertJd(1656110005l, "item.jd.com/35250335411.html");
+        log.warning(jsonObject.toJSONString());
+//        jdApiService.jdDetail(38412174396l);
     }
 
 

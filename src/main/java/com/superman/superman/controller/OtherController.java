@@ -108,20 +108,20 @@ public class OtherController {
             data.put("qrcode", QINIUURL + uland_url);
         }
         if (devId == 2) {
-            data = jdApiService.convertJd(Long.valueOf(jdpid), goodId);
-            if (data == null || data.getString(goodId.toString()) == null) {
-                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-            }
-            String jdurl =data.getString(goodId.toString());
-            data.clear();
-            data.put("url", jdurl);
-            data.put("uland_url", jdurl);
-            data.put("tkLink", "");
-            String uland_url = otherService.addQrCodeUrl(jdurl, uid);
-            if (uland_url == null) {
-                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-            }
-            data.put("qrcode", QINIUURL + uland_url);
+//            data = jdApiService.convertJd(Long.valueOf(jdpid), goodId);
+//            if (data == null || data.getString(goodId.toString()) == null) {
+//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            }
+//            String jdurl =data.getString(goodId.toString());
+//            data.clear();
+//            data.put("url", jdurl);
+//            data.put("uland_url", jdurl);
+//            data.put("tkLink", "");
+//            String uland_url = otherService.addQrCodeUrl(jdurl, uid);
+//            if (uland_url == null) {
+//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            }
+//            data.put("qrcode", QINIUURL + uland_url);
 
         }
         if (devId == 3) {
