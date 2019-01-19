@@ -16,10 +16,8 @@ public interface JdApiService {
      * @param materialId
      * @return
      */
-    JSONObject convertJd(Long pid, String materialId);
+    JSONObject convertJd(String pid, String materialId);
 
-
-    JSONObject serachGoodsAll(JdSerachReq jdSerachReq, Long uid);
 
     /**
      * 京东搜索引擎

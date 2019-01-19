@@ -224,13 +224,14 @@ public class Supermaests {
     }
     @Test
     public void counst() throws IOException, URISyntaxException {
-        GoodsReq gd=new GoodsReq();
-        JSONObject jsonObject = jdApiService.serachGoodsAllJd(gd, Long.valueOf(11));
+//        GoodsReq gd=new GoodsReq();
+//        JSONObject jsonObject = jdApiService.serachGoodsAllJd(gd, Long.valueOf(11));
+        JSONObject jsonObject = jdApiService.jdDetail(29676167239l);
+        log.warning(jsonObject.toJSONString());
 
 //        List va=new ArrayList();
 //        va.add(3);
 //        va.add(4);
-//
 //        va.add(5);
 //        List<SysJhAdviceOder> sysJhAdviceOders = sysAdviceDao.querySysOderAdvice(va,0,1);
 //        log.warning(sysJhAdviceOders.get(0).getName());
@@ -241,7 +242,9 @@ public class Supermaests {
     private JdApiService jdApiService;
     @Test
     public void jdDeatiTest() {
-        JSONObject jsonObject = jdApiService.convertJd(1656110005l, "item.jd.com/35250335411.html");
+        var ja=new GoodsReq();
+        ja.setKeyword("手机");
+        JSONObject jsonObject = jdApiService.serachGoodsAllJd(ja, 6l);
         log.warning(jsonObject.toJSONString());
 //        jdApiService.jdDetail(38412174396l);
     }

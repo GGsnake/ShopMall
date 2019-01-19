@@ -70,13 +70,21 @@ public class OtherController {
     @Autowired
     private UserApiService userApiService;
 
+    /**
+     * 生成推广链接
+     * @param request
+     * @param goodId
+     * @param devId 0天猫淘宝 1拼多多  2京东
+     * @return
+     * @throws IOException
+     */
     @LoginRequired
     @PostMapping("/convert")
-    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId) throws IOException {
+    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId,String jdurl) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        if (goodId == null)
+        if (goodId == null&&jdurl==null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         Long tbpid = userinfo.getTbpid();
@@ -92,7 +100,6 @@ public class OtherController {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
-
         }
 
         if (devId == 1) {
@@ -108,24 +115,16 @@ public class OtherController {
             data.put("qrcode", QINIUURL + uland_url);
         }
         if (devId == 2) {
-//            data = jdApiService.convertJd(Long.valueOf(jdpid), goodId);
-//            if (data == null || data.getString(goodId.toString()) == null) {
-//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-//            }
-//            String jdurl =data.getString(goodId.toString());
-//            data.clear();
-//            data.put("url", jdurl);
-//            data.put("uland_url", jdurl);
-//            data.put("tkLink", "");
-//            String uland_url = otherService.addQrCodeUrl(jdurl, uid);
-//            if (uland_url == null) {
-//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-//            }
-//            data.put("qrcode", QINIUURL + uland_url);
+            data = jdApiService.convertJd(jdpid, jdurl);
+            if (data == null || data.getString("uland_url") == null) {
+                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            }
+            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            if (uland_url == null) {
+                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            }
+            data.put("qrcode", QINIUURL + uland_url);
 
-        }
-        if (devId == 3) {
-            data = taoBaoApiService.convertTaobao(goodId, Long.valueOf(tbpid));
         }
         return WeikeResponseUtil.success(data);
     }

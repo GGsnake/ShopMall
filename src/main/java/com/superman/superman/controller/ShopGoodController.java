@@ -67,9 +67,9 @@ public class ShopGoodController {
      */
     @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(HttpServletRequest request, PageParam pageParam, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize, @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
-                                @RequestParam(value = "cid", required = false) Integer cid, @RequestParam(value = "opt", required = false) Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort, @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder, @RequestParam(value = "tbcat", required = false) String tbcat
+    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "jd_coupon", defaultValue = "1", required = false) Integer jd_coupon, @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize, @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                                Integer cid, Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort, @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder, String tbcat
 
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
@@ -118,7 +118,7 @@ public class ShopGoodController {
             goodsReq.setSortName(jdsort);
             goodsReq.setPageIndex(pageNo);
             goodsReq.setPageSize(pageSize);
-            goodsReq.setIsCoupon(with_coupon);
+            goodsReq.setIsCoupon(jd_coupon);
             data = jdApiService.serachGoodsAllJd(goodsReq, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
@@ -162,9 +162,6 @@ public class ShopGoodController {
         }
         if (type == 2) {
             var = jdApiService.jdDetail(goodId);
-        }
-        if (type == 3) {
-
         }
         return WeikeResponseUtil.success(var);
     }
