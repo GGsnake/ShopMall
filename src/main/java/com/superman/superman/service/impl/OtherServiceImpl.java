@@ -45,13 +45,10 @@ public class OtherServiceImpl implements OtherService {
     private String notify_url;
     @Value("${weixin.wx-pay-money}")
     private Integer money;
-
     @Value("${juanhuang.logo}")
     private String logo;
     @Override
     public ByteArrayOutputStream crateQRCode(String content) {
-
-        String resultImage = "";
         if (!StringUtils.isEmpty(content)) {
             ServletOutputStream stream = null;
             ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -60,12 +57,9 @@ public class OtherServiceImpl implements OtherService {
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8"); // 指定字符编码为“utf-8”
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M); // 指定二维码的纠错等级为中级
             hints.put(EncodeHintType.MARGIN, 2); // 设置图片的边距
-
-
             try {
                 QRCodeWriter writer = new QRCodeWriter();
                 BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 300, 300, hints);
-
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ImageIO.write(bufferedImage, "png", os);
                 return os;
@@ -93,7 +87,6 @@ public class OtherServiceImpl implements OtherService {
     public JSONArray queryAdviceForDev(PageParam pageParam) {
         List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(pageParam.getStartRow(), pageParam.getPageSize());
         JSONArray data=new JSONArray();
-
         for (SysJhAdviceDev sy:sysJhAdviceDevs)
         {
             JSONObject var=new JSONObject();
@@ -162,12 +155,12 @@ public class OtherServiceImpl implements OtherService {
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
+        String prepayid;
         String key = "hzshop12345678912345678912345678";
         // 时间戳
         Long times = System.currentTimeMillis();
         String outtradeno = "hj" + times + "" + attach;
 
-        String prepayid;
         String timestamp = String.valueOf(times / 1000);
         SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
         parameters.put("appid", appid);//应用ID
@@ -181,7 +174,7 @@ public class OtherServiceImpl implements OtherService {
         parameters.put("spbill_create_ip", ip);//终端IP
         parameters.put("notify_url", notifyurl);//回调地址
         parameters.put("attach", attach);//附加参数
-        String sign = MD5Util.createSign("utf-8", parameters);
+        String sign = MD5Util.createSign("utf-8", parameters,key);
         String params = String.format("<xml>" + "<appid>%s</appid>"
                         + "<attach>%s</attach>"
                         + "<body>%s</body>" + "<mch_id>%s</mch_id>"
@@ -211,14 +204,11 @@ public class OtherServiceImpl implements OtherService {
         noncestr = keyval.get("nonce_str");
         String packageValue = "Sign=WXPay";
         prepayid = keyval.get("prepay_id");
-
         String stringA = "appid=%s&noncestr=%s&package=%s&partnerid=%s&prepayid=%s&timestamp=%s&key=%s";
         String stringSignTemp = String.format(stringA, appid,
                 noncestr, packageValue, partnerid, prepayid,
                 timestamp, key);
         sign = MD5.md5(stringSignTemp).toUpperCase();
-
-
         JSONObject map = new JSONObject();
         map.put("appid", appid);
         map.put("partnerid", partnerid);

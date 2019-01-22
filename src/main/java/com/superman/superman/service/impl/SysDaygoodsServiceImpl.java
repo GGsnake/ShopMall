@@ -35,7 +35,7 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 		JSONArray data=new JSONArray();
 		if (count==null||count==0){
 			var.put("pageCount",0);
-			var.put("pageaData",data);
+			var.put("pageData",data);
 			return var;
 		}
 		for (SysDaygoods sy:sysDaygoods){
@@ -46,7 +46,7 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 			data.add(dto);
 		}
 		var.put("pageCount",count);
-		var.put("pageaData",data);
+		var.put("pageData",data);
 		return var;
 	}
 	

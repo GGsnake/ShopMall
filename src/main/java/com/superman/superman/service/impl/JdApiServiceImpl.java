@@ -135,7 +135,6 @@ public class JdApiServiceImpl implements JdApiService {
             temp.put("count", totalCount);
             return temp;
         }
-        GoodsResp s = new GoodsResp();
         dataArray = JSON.parseObject(res).getJSONObject("data").getJSONArray("lists");
         JSONArray templist = new JSONArray();
         for (int i = 0; i < dataArray.size(); i++) {
@@ -187,6 +186,7 @@ public class JdApiServiceImpl implements JdApiService {
             jdData.put("imgUrl", img.getString("url"));
             jdData.put("istmall", "false");
             jdData.put("price", price * 100);
+            jdData.put("jdurl", "http://"+jdJson.getString("materialUrl"));
             templist.add(jdData);
         }
         temp.put("data", templist);
@@ -201,11 +201,11 @@ public class JdApiServiceImpl implements JdApiService {
     @Override
     public JSONObject jdDetail(@NonNull Long goodId) {
         JSONObject data = new JSONObject();
-        String jdurl = URL + "gettgiteminfo?";
-        Map<String, String> urlSign = new HashMap<>();
-        urlSign.put("apkey", apkey);
-        urlSign.put("skuids", goodId.toString());
-        String link = null;
+//        String jdurl = URL + "gettgiteminfo?";
+//        Map<String, String> urlSign = new HashMap<>();
+//        urlSign.put("apkey", apkey);
+//        urlSign.put("skuids", goodId.toString());
+//        String link = null;
         String jdurl1 = URL + "getitemdesc?";
         Map<String, String> urlSign1 = new HashMap<>();
         urlSign1.put("apkey", apkey);
@@ -213,20 +213,20 @@ public class JdApiServiceImpl implements JdApiService {
         String linkStringByGet1 = null;
         try {
             linkStringByGet1 = NetUtils.createLinkStringByGet(urlSign1);
-            link = NetUtils.createLinkStringByGet(urlSign);
+//            link = NetUtils.createLinkStringByGet(urlSign);
             String res1 = restTemplate.getForObject(jdurl1 + linkStringByGet1, String.class);
-            String res = restTemplate.getForObject(jdurl + link, String.class);
+//            String res = restTemplate.getForObject(jdurl + link, String.class);
 
-            if (JSON.parseObject(res1).getInteger("code") == 200 && JSON.parseObject(res).getInteger("code") == 200) {
+            if (JSON.parseObject(res1).getInteger("code") == 200 ) {
                 JSONArray list = JSON.parseObject(res1).getJSONArray("data");
-                JSONObject object = (JSONObject) JSON.parseObject(res).getJSONArray("data").get(0);
+//                JSONObject object = (JSONObject) JSON.parseObject(res).getJSONArray("data").get(0);
                 JSONArray jsonArray = new JSONArray();
                 list.forEach(img -> {
                     String url = (String) img;
                     jsonArray.add("http:" + url);
                 });
                 data.put("list", jsonArray);
-                data.put("url", object.getString("materialUrl"));
+//                data.put("url", object.getString("materialUrl"));
                 return data;
             }
 

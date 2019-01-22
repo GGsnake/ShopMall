@@ -55,7 +55,7 @@ public class MD5Util {
      * @return 
      */  
     @SuppressWarnings("rawtypes")  
-    public static String createSign(String characterEncoding,SortedMap<Object,Object> parameters){  
+    public static String createSign(String characterEncoding,SortedMap<Object,Object> parameters,String key){
         StringBuffer sb = new StringBuffer();  
         Set es = parameters.entrySet();//所有参与传参的参数按照accsii排序（升序）  
         Iterator it = es.iterator();  
@@ -69,7 +69,7 @@ public class MD5Util {
             }  
            
         }  
-        sb.append("key=hzshop12345678912345678912345678");
+        sb.append("key="+key);
         String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();  
         return sign;  
     } 

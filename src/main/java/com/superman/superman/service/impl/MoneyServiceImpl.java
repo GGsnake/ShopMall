@@ -46,13 +46,13 @@ public class MoneyServiceImpl implements MoneyService {
         }
         var roleId = user.getRoleId();
         HashSet<Long> uidSet = new HashSet<>();
+        uidSet.add(uid);
         switch (roleId) {
             case 1:
                 //查询代理或者直属粉丝
                 List<Userinfo> userInfosList = agentDao.superQueryFansUserInfo(uid.intValue());
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
-
                 for (Userinfo useId : userInfosList) {
                     if (useId == null) {
                         continue;

@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.pdd.pop.sdk.common.util.JsonUtil;
 import com.pdd.pop.sdk.http.PopClient;
 import com.pdd.pop.sdk.http.PopHttpClient;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsDetailRequest;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
+import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
@@ -117,7 +119,6 @@ public class PddApiServiceImpl implements PddApiService {
         urlSign.put("goods_id_list", str.toString());
         urlSign.put("data_type", "JSON");
         urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
-        //        urlSign.put("access_token", ACCESS_TOKEN);
         try {
             res = HttpRequest.sendPost(PDD_URL, urlSign);
 
@@ -139,38 +140,34 @@ public class PddApiServiceImpl implements PddApiService {
     //查询拼多多商品详情
     @Override
     public JSONObject pddDetail(Long goodIdList) {
-        String res = null;
-        StringBuilder str = new StringBuilder();
-        str.append("[" + goodIdList + "]");
-        String type = "pdd.ddk.goods.detail";
-        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-        SortedMap<String, String> urlSign = new TreeMap<>();
-        urlSign.put("client_id", KEY);
-        urlSign.put("type", type);
-        urlSign.put("timestamp", timestamp);
-        urlSign.put("goods_id_list", str.toString());
-        urlSign.put("data_type", "JSON");
-        urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
+        PopClient client = new PopHttpClient(KEY, SECRET);
+        PddDdkGoodsDetailRequest request = new PddDdkGoodsDetailRequest();
+        List gd = new ArrayList();
+        gd.add(goodIdList);
+        request.setGoodsIdList(gd);
+        PddDdkGoodsDetailResponse response = null;
         try {
-            res = HttpRequest.sendPost("", urlSign);
-        } catch (IOException e) {
+            response = client.syncInvoke(request);
+            JSONObject temp = new JSONObject();
+            JSONArray var1 = new JSONArray();
+            if (response.getGoodsDetailResponse().getGoodsDetails().size() == 0) {
+                temp.put("list", var1);
+                return temp;
+            }
+            List<String> goodsGalleryUrls = response.getGoodsDetailResponse().getGoodsDetails().get(0).getGoodsGalleryUrls();
+            if (goodsGalleryUrls == null) {
+                temp.put("list", var1);
+                return temp;
+            }
+            temp.clear();
+            temp.put("list", goodsGalleryUrls);
+            return temp;
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        JSONObject temp = new JSONObject();
-        JSONArray var1 = new JSONArray();
-        if (JSONObject.parseObject(res).getJSONObject("error_response") != null) {
-            temp.put("list", var1);
-            return temp;
-        }
-        temp = (JSONObject) JSONObject.parseObject(res).getJSONObject("goods_detail_response").getJSONArray("goods_details").get(0);
-        if (temp == null) {
-            temp.put("list", var1);
-            return temp;
-        }
-        JSONArray goods_gallery_urls = temp.getJSONArray("goods_gallery_urls");
-        temp.clear();
-        temp.put("list", goods_gallery_urls);
-        return temp;
+        return null;
+
     }
 
     /**
@@ -330,7 +327,7 @@ public class PddApiServiceImpl implements PddApiService {
             JSONObject data = new JSONObject();
             Integer roleId = ufo.getRoleId();
             response = client.syncInvoke(request);
-            if (response == null){
+            if (response == null) {
                 data.put("data", dataArray);
                 data.put("count", 0);
                 return data;
@@ -362,9 +359,6 @@ public class PddApiServiceImpl implements PddApiService {
                     dataArray.add(dataJson);
                 }
             }
-            goodsList.forEach(goodsListItem -> {
-
-            });
             if (roleId == 2) {
                 for (int i = 0; i < goodsList.size(); i++) {
                     PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);

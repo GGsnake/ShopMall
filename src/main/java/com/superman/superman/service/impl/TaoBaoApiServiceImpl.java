@@ -34,27 +34,30 @@ import java.util.*;
  */
 @Service("taoBaoApiService")
 public class TaoBaoApiServiceImpl implements TaoBaoApiService {
-    private static final String QQAPPKEY = "8k8lhumd";
-    private static final String APID = "mm_261060037_253650051_";
-    final String URL = "https://api.open.21ds.cn/apiv1/";
-    final String TAOBAOURL = "http://gw.api.taobao.com/router/rest";
-    final String APPKEY = "25377219";
-    final String SECRET = "4c3e6b9e6484ce2982bca63d524564c1";
-
     @Autowired
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
     @Autowired
-    UserinfoMapper userinfoMapper;
+    private UserinfoMapper userinfoMapper;
     @Autowired
-    TboderMapper tboderMapper;
+    private TboderMapper tboderMapper;
     @Value("${juanhuang.range}")
-    Double rangeaa;
+    private Double RANGE;
     @Value("${miao.apkey}")
-    String apkey;
-
+    private String APKEY;
     @Value("${miao.tbname}")
-    String tbname;
-
+    private String TBNAME;
+    @Value("${miao.url}")
+    private String URL;
+    @Value("${tb.appkey}")
+    private String APPKEY;
+    @Value("${tb.secret}")
+    private String SECRET;
+    @Value("${tb.adzoneid}")
+    private String APPID;
+    @Value("${tb.pid}")
+    private Long PID;
+    @Value("${tb.api-url}")
+    private String TAOBAOURL;
 
     @Override
     public JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid) {
@@ -62,7 +65,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (ufo == null) {
             return null;
         }
-        request.setAdzoneId(71784050073l);
+        request.setAdzoneId(PID);
         Double score = Double.valueOf(ufo.getScore());
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         JSONObject data = new JSONObject();
@@ -95,7 +98,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     dataJson.put("commissionRate", commissionRate / 10);
-                    BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+                    BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), RANGE);
                     dataJson.put("istmall", isTmall);
                     dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 10);
                     dataArray.add(dataJson);
@@ -120,7 +123,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     Double var3 = score / 100;
-                    BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+                    BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), RANGE);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
                     dataJson.put("istmall", isTmall);
                     dataJson.put("agent", agent.setScale(11, BigDecimal.ROUND_DOWN).doubleValue() * 10);
@@ -201,7 +204,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     dataJson.put("commissionRate", commissionRate);
-                    BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+                    BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), RANGE);
                     dataJson.put("istmall", dataObj.getUserType() == 1 ? true : false);
                     dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataArray.add(dataJson);
@@ -226,7 +229,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     Double var3 = score / 100;
-                    BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), rangeaa);
+                    BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), RANGE);
                     BigDecimal agent = var4.multiply(new BigDecimal(var3));
                     dataJson.put("istmall", dataObj.getUserType() == 1 ? true : false);
                     dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
@@ -277,10 +280,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         String taobaoSercahUrl = URL + "getitemgyurl?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
-        urlSign.put("apkey", apkey);
-        urlSign.put("pid", APID + pid);
+        urlSign.put("apkey", APKEY);
+        urlSign.put("pid", "mm_"+"261060037"+"_"+APPID +"_"+ pid);
         urlSign.put("itemid", String.valueOf(good_id));
-        urlSign.put("tbname", tbname);
+        urlSign.put("tbname", TBNAME);
         urlSign.put("shorturl", "1");
         urlSign.put("tpwd", "1");
         String linkStringByGet = null;
@@ -290,9 +293,9 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             e.printStackTrace();
         }
         String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
-        JSONObject taoBaoCovert = JSONObject.parseObject(res).getJSONObject("result").getJSONObject("data");
         Integer code = JSON.parseObject(res).getInteger("code");
         if (code == 200) {
+            JSONObject taoBaoCovert = JSONObject.parseObject(res).getJSONObject("result").getJSONObject("data");
             if (taoBaoCovert.getBoolean("has_coupon")) {
                 String uland_url = taoBaoCovert.getString("coupon_click_url");
                 String token = taoBaoCovert.getString("tpwd");
