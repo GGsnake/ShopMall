@@ -122,11 +122,9 @@ public class MemberController {
         Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         Long waitMoney = moneyService.queryCashMoney(Long.valueOf(uid), 0, user);
         Long finishMoney = moneyService.queryCashMoney(Long.valueOf(uid), 1, user);
-        Long cash = 0l;
-        //TODO
         data.put("waitMoney", waitMoney);
         data.put("finishMoney", finishMoney);
-        data.put("cash", cash);
+        data.put("cash", user.getLoginsecret());
         return WeikeResponseUtil.success(data);
     }
 

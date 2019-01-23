@@ -134,8 +134,14 @@ public class ShopGoodController {
             req.setPageNo(Long.valueOf(pageNo));
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(true);
-            if (tbcat != null && !tbcat.equals(0)) {
+            req.setSort(tbsort);
+            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
                 req.setCat(tbcat);
+            }
+            if (keyword.equals("") || keyword == null) {
+                req.setQ("");
+            } else {
+                req.setQ(keyword);
             }
             req.setQ(keyword);
             data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
@@ -185,6 +191,24 @@ public class ShopGoodController {
             data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
+        if (type == 3) {
+            //天猫
+            TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
+            req.setPageNo(Long.valueOf(pageNo));
+            req.setPageSize(Long.valueOf(pageSize));
+            req.setIsTmall(true);
+            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
+                req.setCat(tbcat);
+            }
+            if (keyword.equals("") || keyword == null) {
+                req.setQ("");
+            } else {
+                req.setQ(keyword);
+            }
+            req.setQ(keyword);
+            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
+        }
         if (type == 2) {
             //京东搜索引擎
             GoodsReq goodsReq = new GoodsReq();
@@ -200,19 +224,7 @@ public class ShopGoodController {
             data = jdApiService.serachGoodsAllJd(goodsReq, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
-        if (type == 3) {
-            //天猫
-            TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
-            req.setPageNo(Long.valueOf(pageNo));
-            req.setPageSize(Long.valueOf(pageSize));
-            req.setIsTmall(true);
-            if (tbcat != null && !tbcat.equals(0)) {
-                req.setCat(tbcat);
-            }
-            req.setQ(keyword);
-            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
-            return WeikeResponseUtil.success(data);
-        }
+
         return null;
     }
 

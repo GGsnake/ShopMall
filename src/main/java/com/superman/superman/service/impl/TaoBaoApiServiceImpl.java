@@ -22,6 +22,7 @@ import com.taobao.api.response.TbkItemInfoGetResponse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -93,8 +94,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                         dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
+                        dataJson.put("hasCoupon", 1);
+
                     } else {
                         dataJson.put("zk_money", 0);
+                        dataJson.put("hasCoupon", 0);
+
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     dataJson.put("commissionRate", commissionRate / 10);
@@ -118,8 +123,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                         int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                         dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
+                        dataJson.put("hasCoupon",1);
                     } else {
                         dataJson.put("zk_money", 0);
+                        dataJson.put("hasCoupon", 0);
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
                     Double var3 = score / 100;
@@ -145,8 +152,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
                     coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                     dataJson.put("zk_money", Integer.parseInt(coupon_info) * 100);
+                    dataJson.put("hasCoupon", 1);
                 } else {
                     dataJson.put("zk_money", 0);
+                    dataJson.put("hasCoupon", 0);
                 }
                 dataJson.put("istmall", isTmall);
                 dataJson.put("agent", 0l);
@@ -316,6 +325,40 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         return null;
     }
 
+    @Override
+    @Cacheable(value = "tb-tkl",key="#tkl")
+    public JSONObject convertTaobaoTkl(String tkl) {
+        String taobaoSercahUrl = URL + "jiexitkl?";
+        JSONObject temp = new JSONObject();
+        Map<String, String> urlSign = new HashMap<>();
+        urlSign.put("apkey", APKEY);
+        urlSign.put("kouling",tkl);
+        String linkStringByGet = null;
+        try {
+            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String res = restTemplate.getForObject(taobaoSercahUrl + linkStringByGet, String.class);
+        Integer code = JSON.parseObject(res).getInteger("code");
+        if (code == 200) {
+            JSONObject taoBaoCovert = JSONObject.parseObject(res).getJSONObject("data");
+                //	淘口令链接
+                String url = taoBaoCovert.getString("url");
+                String title = taoBaoCovert.getString("title");
+                String pic = taoBaoCovert.getString("pic");
+                String ownerid = taoBaoCovert.getString("ownerid");
+                String youxiaoqi = taoBaoCovert.getString("youxiaoqi");
+                temp.put("url", url);
+                temp.put("title", title);
+                temp.put("pic", pic);
+                temp.put("ownerid", ownerid);
+                temp.put("youxiaoqi", youxiaoqi);
+                return temp;
+        }
+        return null;
+    }
+
     /**
      * 查询淘宝的商品详情
      *
@@ -342,12 +385,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         } catch (ApiException e) {
             e.printStackTrace();
         }
-
-
         return var;
     }
-
-
     /**
      * 查询淘宝商品单个的缩略图
      *

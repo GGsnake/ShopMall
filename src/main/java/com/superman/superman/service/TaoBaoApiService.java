@@ -45,6 +45,14 @@ public interface TaoBaoApiService {
     JSONObject convertTaobao(Long pid, Long good_id);
 
 
+    /**
+     * 解析淘口令
+     * @param tkl
+     * @return
+     */
+    JSONObject convertTaobaoTkl(String tkl);
+
+
 
     /**
      * 查询淘宝的商品详情

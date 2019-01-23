@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @author heguoliang
- * @Description: TODO(通知表)
+ * @Description:
  * @date 2018-12-22 18:05:59
  */
 @RestController

@@ -40,7 +40,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("other")
 public class OtherController {
-    private static final String QINIUURL = "http://pjx55zb0m.bkt.clouddn.com/";
     @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
@@ -53,6 +52,8 @@ public class OtherController {
     private String DOMAINURL;
     @Value("${domain.codeurl}")
     private String QINIUURLLAST;
+    @Value("${domain.qnyurl}")
+    private String QINIUURL;
     @Value("${server.port}")
     private Integer port;
     @Autowired

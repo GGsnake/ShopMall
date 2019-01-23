@@ -51,6 +51,7 @@ public class UserApiServiceImpl implements UserApiService {
     public Boolean createUser(UserRegiser usr) {
         JSONObject data = createPid();
         if (data == null || data.size() == 0) {
+            log.warning("警告PId不足"+System.currentTimeMillis()/1000);
             return false;
         }
         usr.setTbpid(data.getLong("tb"));
@@ -134,11 +135,12 @@ public class UserApiServiceImpl implements UserApiService {
         if (tbpid == null || pddpid == null) {
             return null;
         }
+        String substring = pddpid.substring(2, pddpid.length());
         hotUserMapper.deleteTbPid(tbpid);
         hotUserMapper.deletePddPid(pddpid);
         JSONObject temp = new JSONObject();
         temp.put("tb", tbpid);
-        temp.put("pdd", pddpid);
+        temp.put("pdd", substring);
         return temp;
     }
 

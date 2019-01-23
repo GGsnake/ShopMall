@@ -61,7 +61,6 @@ public class MyOderController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-
         JSONObject data = new JSONObject();
         data.put("oderSum",100);
         data.put("inCome",20000);

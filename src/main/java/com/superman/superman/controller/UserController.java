@@ -256,14 +256,14 @@ public class UserController {
 
         }
         int code = (int) ((Math.random() * 9 + 1) * 100000);
-        String content = "此次登录验证码" + code + "，验证码五分钟过期【卷皇】";
+        String content = "此次登录验证码" + code + "，验证码五分钟过期【券皇】";
         int result = SmsUtil.sendSmsLogin(phone, content);
         if (result == 200) {
             redisTemplate.opsForValue().set(vaild, code);
-            redisTemplate.expire(vaild,600, TimeUnit.SECONDS);
+            redisTemplate.expire(vaild,60, TimeUnit.SECONDS);
             return  WeikeResponseUtil.success("验证码发送成功");
         }
-        return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");
+        return WeikeResponseUtil.fail("1000242","短信商发送间隔太快，请稍后");
     }
 
 

@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * @author heguoliang
- * @Description: TODO(常见问题)
+ * @Description: (常见问题)
  * @date 2019-01-09 16:28:57
  */
 public class SysJhProblem implements Serializable {

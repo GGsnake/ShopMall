@@ -50,12 +50,12 @@ spring:
       min-idle: 5       # 连接池中的最小空闲连接
     timeout: 20000
   application:
-    name: maofan
+    name: ljp
 
 eureka:
   client:
     erviceUrl:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://192.168.0.103:8761/eureka/
 
 logging:
   level:
@@ -89,6 +89,7 @@ domain:
   jdsecret: "909a02d9f2e845578f6333a3a13ea5cd"
   jdkey: "1b2eadd4ad604021a9e48aa5726c503b"
   jduid: "1001142862"
+  qnyurl: "http://qny.quanhuangmaoyi.com/"
 
 pdd_pro:
   pdd-key: "bbc1737d63e44e278dbffa9e96a7eca3"
