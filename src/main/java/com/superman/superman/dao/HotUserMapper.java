@@ -12,4 +12,8 @@ public interface HotUserMapper {
     Integer deleteTbPid(Long pid);
     @Update("update  jh_pid_pdd set status=1  where pid=#{pid}")
     Integer deletePddPid(String pid);
+
+
+    @Update("update  userinfo set score=0  where id=#{id}")
+    Integer updateScore(Integer id);
 }

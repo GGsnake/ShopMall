@@ -18,7 +18,7 @@ public interface OderService {
      * @param pageParam
      * @return
      */
-    JSONObject queryPddOder(Long uid, List status, PageParam pageParam);
+    JSONObject queryPddOder(   Userinfo userinfo, List status, PageParam pageParam);
     /**
      * 分页查询京东的订单
      * @param uid
@@ -26,15 +26,15 @@ public interface OderService {
      * @param pageParam
      * @return
      */
-    JSONObject queryJdOder(Long uid,List status, PageParam pageParam);
+    JSONObject queryJdOder(   Userinfo userinfo,List status, PageParam pageParam);
     /**
      * 分页查询淘宝的订单
-     * @param uid
+     * @param userinfo
      * @param status
      * @param pageParam
      * @return
      */
-    JSONObject queryTbOder(Long uid,List status, PageParam pageParam);
+    JSONObject queryTbOder(Userinfo userinfo,List status, PageParam pageParam);
 
     /**
      * 统计已结算/未结算 订单

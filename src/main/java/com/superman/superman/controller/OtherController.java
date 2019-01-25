@@ -8,6 +8,7 @@ import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.model.*;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
@@ -32,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/12/17.
@@ -71,26 +73,34 @@ public class OtherController {
     @Autowired
     private UserApiService userApiService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     /**
      * 生成推广链接
+     *
      * @param request
      * @param goodId
-     * @param devId 0天猫淘宝 1拼多多  2京东
+     * @param devId   0天猫淘宝 1拼多多  2京东
      * @return
      * @throws IOException
      */
     @LoginRequired
     @PostMapping("/convert")
-    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId,String jdurl) throws IOException {
+    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId, String jdurl) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        if (goodId == null&&jdurl==null)
+        if (goodId == null && jdurl == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         Long tbpid = userinfo.getTbpid();
         String jdpid = userinfo.getJdpid();
         JSONObject data = new JSONObject();
+        String key = "convert:" + devId.toString() + uid + goodId + jdurl;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         if (devId == 0) {
             data = taoBaoApiService.convertTaobao(tbpid, goodId);
             if (data == null || data.getString("uland_url") == null) {
@@ -127,6 +137,8 @@ public class OtherController {
             data.put("qrcode", QINIUURL + uland_url);
 
         }
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 500, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -204,8 +216,14 @@ public class OtherController {
     @PostMapping("/dayGoods")
     public WeikeResponse dayGoods(PageParam pageParam) {
         //查询列表数据
+        String key = "dayGoods:" + pageParam.getPageNo();
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = daygoodsService.queryList(param);
+        redisUtil.set(key,data.toJSONString());
+        redisUtil.expire(key,260, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -219,12 +237,18 @@ public class OtherController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
+        String key = "oderAdvice:" + uid + pageParam.getPageNo();
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), param);
         Integer sum = adviceService.countListOderAdvice(Long.valueOf(uid));
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 5, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

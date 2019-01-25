@@ -2,6 +2,7 @@ package com.superman.superman.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -9,6 +10,7 @@ import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.model.SysAdvice;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.service.SysAdviceService;
 import com.superman.superman.utils.*;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/advice")
 public class SysAdviceController{
 
+	@Autowired
+	private RedisUtil redisUtil;
 	@Autowired
 	private SysAdviceService adviceService;
 	@Autowired
@@ -59,6 +63,10 @@ public class SysAdviceController{
 	 */
 	@PostMapping("/adv")
 	public WeikeResponse queryAdviceForDev(PageParam pageParam){
+		String key = "adv:" + pageParam.getPageNo();
+		if (redisUtil.hasKey(key)) {
+			return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+		}
 			//查询列表数据
 		PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
 		JSONArray adviceList = otherService.queryAdviceForDev(param);
@@ -66,6 +74,8 @@ public class SysAdviceController{
 		JSONObject var1=new JSONObject();
 		var1.put("pageData", adviceList);
 		var1.put("pageCount", total);
+		redisUtil.set(key, var1.toJSONString());
+		redisUtil.expire(key, 150, TimeUnit.SECONDS);
 		return WeikeResponseUtil.success(var1);
 	}
 

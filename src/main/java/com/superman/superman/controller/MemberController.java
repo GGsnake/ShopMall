@@ -10,6 +10,7 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.ApplyCash;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.MoneyService;
 import com.superman.superman.service.PddApiService;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/9.
@@ -43,6 +45,8 @@ import java.util.*;
 @RequestMapping("/member")
 public class MemberController {
 
+    @Autowired
+    private RedisUtil redisUtil;
     @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
@@ -71,7 +75,13 @@ public class MemberController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
+        String key = "me:" + uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -87,10 +97,15 @@ public class MemberController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
+
         Long aLong = Long.valueOf(uid);
         Userinfo userinfo = userApiService.queryByUid(aLong);
         if (userinfo == null||userinfo.getRoleId()!=1) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        String key = "memberDetail:" + uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
         Integer under = agentDao.queryForUserIdCount(aLong);
         Integer sub = agentDao.countNoMyFansSum(aLong);
@@ -102,6 +117,8 @@ public class MemberController {
         data.put("under", under);
         data.put("sub", sub);
         data.put("joinTime", userinfo.getCreatetime());
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -159,7 +176,6 @@ public class MemberController {
         }
         log.warning("用户提现失败-UID=" + uid);
         return WeikeResponseUtil.fail("100063", "申请提现失败请重试");
-
     }
 
     /**
@@ -194,14 +210,21 @@ public class MemberController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
+        String key = "child:"+id.toString()+uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
+        JSONObject var ;
+
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         Integer roleId = userinfo.getRoleId();
 
         if (roleId == 3) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        JSONObject var = new JSONObject();
         var = memberService.queryMemberDetail(id, userinfo.getId().intValue());
+        redisUtil.set(key, var.toJSONString());
+        redisUtil.expire(key, 50, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(var);
     }   //
 

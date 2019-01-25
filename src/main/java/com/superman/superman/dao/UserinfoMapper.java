@@ -35,8 +35,8 @@ public interface UserinfoMapper {
 
 
 
-    @Select("select pidPdd,pddPid where id=#{id}")
-    Userinfo queryUserNewApi(Long id);
+    @Select("select roleId from userinfo where id=#{id} limit 1")
+    Integer queryMyRole(Integer id);
 
     /**
      * 手机号码绑定用户微信Id

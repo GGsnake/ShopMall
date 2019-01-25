@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+
 @Setter
 @Getter
 @ToString
@@ -176,5 +177,7 @@ public class Tboder {
      * @mbggenerated
      */
     private Date updatetime;
+    private Double pub_share_pre_fee;
+    private String income_rate;
 
 }

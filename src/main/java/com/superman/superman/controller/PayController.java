@@ -3,7 +3,12 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.PayDao;
+import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.OtherService;
+import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
 import lombok.extern.java.Log;
 import org.dom4j.DocumentException;
@@ -32,6 +37,12 @@ import java.util.TreeMap;
 public class PayController {
     @Autowired
     private OtherService otherService;
+    @Autowired
+    private PayDao payDao;
+    @Autowired
+    private AgentDao agentDao;
+    private UserinfoMapper userinfoMapper;
+
     /**
      * 微信预支付（技能开通支付）
      *
@@ -47,12 +58,10 @@ public class PayController {
         if (uid != null) {
             /* 设置格式为text/html */
             request.setCharacterEncoding("utf-8");
-            String s = otherService.payMoney(uid, request.getRemoteAddr());
-
-
+            JSONObject data = otherService.payMoney(uid, request.getRemoteAddr());
+            return WeikeResponseUtil.success(data);
         }
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-
     }
 
 
@@ -68,7 +77,6 @@ public class PayController {
         // 设置格式为text/html
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        log.warning("回调ACTION:paySuccessSSSSSSSSSSSSSSS");
         InputStream inStream = request.getInputStream();
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -76,7 +84,6 @@ public class PayController {
         while ((len = inStream.read(buffer)) != -1) {
             outSteam.write(buffer, 0, len);
         }
-        log.warning("~~~~~~~~~~~~~~~~付款成功~~~~~~~~~");
         outSteam.close();
         inStream.close();
         String result = new String(outSteam.toByteArray(), "utf-8");// 获取微信调用我们notify_url的返回信息
@@ -86,33 +93,20 @@ public class PayController {
         String return_code = resultMap.get("return_code");
         String result_code = resultMap.get("result_code");
         String attach = resultMap.get("attach");
-//
-//
-//        System.out.println("----resultMap----" + resultMap);
-//
-//        System.out.println("======return_code:" + return_code + "=========result_code:" + result_code);
-
         if (result_code.equalsIgnoreCase("SUCCESS")) {
-
             if (return_code.equalsIgnoreCase("SUCCESS")) {
-                //TODO 支付成功
-                System.out.println("-----------支付成功----------------");
-
-                System.out.println("---------附加参数-----" + attach);
-                System.out.println("-------订单号---" + out_trade_no);
-
-
+                Map map = new HashMap();
+                map.put("id", attach);
+                map.put("sn", out_trade_no);
+                payDao.addPayLog(map);
             } else {
-                System.out.println("--------------------支付后验签失败，请检查-------------------");
             }
-
-
             String ty = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
             out.write(ty);
             out.flush();
             out.close();
         } else {
-            System.out.println("--------------------支付后验签失败，请检查-------------------");
+
         }
 
 

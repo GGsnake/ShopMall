@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
@@ -25,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 public class ScoreController {
     @Autowired
     private ScoreService scoreService;
-
+    @Autowired
+    RedisUtil redisUtil;
 
     //浏览商品积分上报
     @LoginRequired
@@ -65,7 +67,14 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
+        String key = "myScore:" + uid ;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         JSONObject data = scoreService.myScore(Integer.valueOf(uid));
+
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 4, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

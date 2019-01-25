@@ -43,8 +43,6 @@ public class OtherServiceImpl implements OtherService {
     private String partner_id;
     @Value("${weixin.wx-pay-notify-url}")
     private String notify_url;
-    @Value("${weixin.wx-pay-money}")
-    private Integer money;
     @Value("${juanhuang.logo}")
     private String logo;
     @Override
@@ -142,7 +140,7 @@ public class OtherServiceImpl implements OtherService {
     }
 
     @Override
-    public String payMoney(String uid,String ip) {
+    public JSONObject payMoney(String uid, String ip) {
         //        微信支付商户号 1521764621
 //        应用APPID wxc7df701f4d4f1eab
 //        API秘钥：hzshop12345678912345678912345678
@@ -152,6 +150,7 @@ public class OtherServiceImpl implements OtherService {
         String partnerid = partner_id;
         String noncestr = Util.getRandomString(30);
         String notifyurl = notify_url;
+        double money=0.01;
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
@@ -160,7 +159,6 @@ public class OtherServiceImpl implements OtherService {
         // 时间戳
         Long times = System.currentTimeMillis();
         String outtradeno = "hj" + times + "" + attach;
-
         String timestamp = String.valueOf(times / 1000);
         SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
         parameters.put("appid", appid);//应用ID
@@ -189,11 +187,6 @@ public class OtherServiceImpl implements OtherService {
                 sign);
 
         String result = HttpUtil.doPost(url2, params);
-
-/*		System.out.println("---------------result---------------"+result);
-		String newStr = new String(result.getBytes(), "UTF-8");
-		System.out.println("---------------newStr---------------"+newStr);*/
-
         //二次签名
         Map<String, String> keyval = null;
         try {
@@ -219,6 +212,6 @@ public class OtherServiceImpl implements OtherService {
         map.put("sign", sign);
         map.put("ordersNo", outtradeno);
         map.put("attach", attach);
-        return null;
+        return map;
     }
 }

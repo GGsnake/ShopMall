@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.utils.PageParam;
 
 import java.io.ByteArrayOutputStream;
@@ -44,5 +45,5 @@ public interface OtherService {
      * @param ip
      * @return
      */
-    String payMoney(String uid, String ip);
+    JSONObject payMoney(String uid, String ip);
 }

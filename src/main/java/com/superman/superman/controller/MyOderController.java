@@ -5,6 +5,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.OderManager;
 import com.superman.superman.model.Oder;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/24.
@@ -24,9 +26,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/oder")
 public class MyOderController {
-
     @Autowired
-    private OderService oderService;
+    private RedisUtil redisUtil;
     @Autowired
     private OderManager oderManager;
 
@@ -43,15 +44,27 @@ public class MyOderController {
         if (uid == null || status == null || status >= 3 || status < 0) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        var param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List statusList = ConvertUtils.getStatus(devId, status);
         JSONObject allOder = new JSONObject();
+        String key = "oder:"+devId.toString()+uid+ status.toString() + pageParam.getPageNo();
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         if (devId == 0) {
             allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
         }
         if (devId == 1) {
-            allOder = oderManager.getAllOder(Long.valueOf(uid), statusList, param);
+            allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
         }
+        if (devId == 2) {
+            allOder = oderManager.getJdOder(Long.valueOf(uid), statusList, param);
+        }
+        if (devId == 3) {
+            allOder = oderManager.getPddOder(Long.valueOf(uid), statusList, param);
+        }
+        redisUtil.set(key,allOder.toJSONString());
+        redisUtil.expire(key,10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(allOder);
     }
     @LoginRequired

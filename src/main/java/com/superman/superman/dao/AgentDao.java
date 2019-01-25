@@ -2,12 +2,10 @@ package com.superman.superman.dao;
 
 import com.superman.superman.model.Agent;
 import com.superman.superman.model.Userinfo;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/23.
@@ -91,12 +89,24 @@ public interface AgentDao {
     @Select("SELECT score FROM userinfo WHERE tbPid=#{id}")
     Integer queryUserScoreTb(Long id);
 
+    @Select("SELECT score FROM userinfo WHERE jdPid=#{id}")
+    Integer queryUserScoreJd(Long id);
+
 
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insert(Agent agent);
-    @Insert("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
+    @Update("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
     Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
-    @Insert("update agent set updateTime=now() where userId=#{uid}")
+
+    @Update("update agent set status=1,updateTime=now() where userId=#{id}")
+    Integer upbeComeBoss(Integer uid);
+
+
+    @Update("update userinfo set roleId=1 ,score=0,updateTime=now() where id=#{uid}")
+    Integer beComeBoss(Integer uid);
+
+
+    @Update("update agent set updateTime=now() where userId=#{uid}")
     Integer upAgentTime(@Param("uid")Integer uid);
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insertAgLog(Agent agent);

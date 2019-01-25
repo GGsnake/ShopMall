@@ -40,9 +40,11 @@
 		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 			#{item}
 		</foreach>
+		ORDER BY  oder_createTime desc
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
+
 	</select>
 	<select id="countSysOderAdvice" resultType="java.lang.Integer">
 		select IFNULL(count(*),0) from jh_advice_oder where userId in
