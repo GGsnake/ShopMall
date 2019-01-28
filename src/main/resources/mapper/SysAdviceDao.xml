@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superman.superman.dao.SysAdviceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysAdvice" id="adviceMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="img" column="img"/>
+        <result property="status" column="status"/>
+        <result property="createtime" column="createTime"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.superman.superman.model.SysAdvice">
+		select * from advice where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.superman.superman.model.SysAdvice">
+		select * from advice
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from advice 
+	</select>
+	 
+	<insert id="save" parameterType="com.superman.superman.model.SysAdvice" useGeneratedKeys="true" keyProperty="id">
+		insert into advice
+		(
+			`title`, 
+			`content`, 
+			`img`, 
+			`status`, 
+			`createTime`
+		)
+		values
+		(
+			#{title}, 
+			#{content}, 
+			#{img}, 
+			#{status}, 
+			#{createtime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.superman.superman.model.SysAdvice">
+		update advice 
+		<set>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="img != null">`img` = #{img}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="createtime != null">`createTime` = #{createtime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from advice where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from advice where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

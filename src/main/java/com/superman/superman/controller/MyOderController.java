@@ -1,26 +1,34 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.manager.OderManager;
+import com.superman.superman.model.Oder;
 import com.superman.superman.service.OderService;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by liujupeng on 2018/11/24.
  */
 @RestController
+@RequestMapping("/oder")
 public class MyOderController {
+
     @Autowired
     private OderService oderService;
+    @Autowired
+    private OderManager oderManager;
     @Autowired
     private UserinfoMapper userinfoMapper;
 
@@ -31,16 +39,19 @@ public class MyOderController {
             @ApiImplicitParam(name = "status", value = "订单状态", required = false, dataType = "Integer"),
             @ApiImplicitParam(name = "sort", value = "排序方式", required = false, dataType = "Integer")
     })
+    @LoginRequired
     @PostMapping("/myOder")
-    public WeikeResponse queryAllOder(@RequestParam Integer devId, Integer status) {
-        var userinfo = userinfoMapper.selectByPrimaryKey(2l);
-        var pddPid = userinfo.getPddpid();
-        if (devId == 0) {
-            var pddOderList = oderService.queryPddOderListToId(pddPid, status,status);
-            return WeikeResponseUtil.success(pddOderList);
+    public WeikeResponse queryAllOder(HttpServletRequest request, PageParam pageParam, Integer devId, Integer status) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null||status==null||status>=3||status<0) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        return WeikeResponseUtil.success();
+        var param=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+        List statusList = ConvertUtils.getStatus(devId, status);
+        JSONObject allOder = oderManager.getAllOder(Long.valueOf(uid), statusList, param);
+        return WeikeResponseUtil.success(allOder);
     }
-
-
 }
+
+
+

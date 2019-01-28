@@ -63,6 +63,32 @@
         </if>
         and order_status in ('1','2','3')
     </select>
+
+    <select id="superQueryForListToWait" resultType="java.lang.Long">
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*1000,0)) as count from
+        userinfo us left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(1,2,3)
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14)
+
+        <if test="list!= null">
+            WHERE  us.id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="superQueryForListToFinsh" resultType="java.lang.Long">
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*1000,0)) as count from
+        userinfo us left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3
+        <if test="list!= null">
+            WHERE  us.id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
     <select id="selectPidInFinish" resultType="java.lang.Integer">
         select
         SUM(promotion_amount)
@@ -88,7 +114,6 @@
         <if test="startTime!= null">
             and order_create_time between #{startTime} and #{endTime}
         </if>
-
         and order_status in ('1','2')
     </select>
 

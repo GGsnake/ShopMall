@@ -2,12 +2,13 @@ package com.superman.superman;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.dao.AgentDao;
-import com.superman.superman.dao.OderMapper;
-import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
+import com.superman.superman.req.InvCode;
+import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
+import com.superman.superman.utils.HttpDeal;
 import com.superman.superman.utils.PageParam;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -25,7 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ClassUtils;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +56,8 @@ public class Supermaests {
     @Autowired
     UserinfoMapper userinfoMapper;
     @Autowired
+    AllDevOderMapper allDevOderMapper;
+    @Autowired
     MoneyService moneyService;
     @Autowired
     MemberService memberService;
@@ -55,7 +68,11 @@ public class Supermaests {
     @Autowired
     TaoBaoApiService taoBaoApiService;
     @Autowired
+    OtherService otherService;
+    @Autowired
     OderMapper oderMapper;
+    @Autowired
+    UserDao userDao;
 //    @Autowired
 //    AgentDao agentDao;
     public static void main(String[] args){
@@ -189,10 +206,37 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
+    @Autowired UserApiService userApiService;
     @Test
-    public void simm(){
-        Long aLong = moneyService.queryFinishMoney(11l);
+    public void queryFinishMoney(){
+        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null,6l,0,10);
+        log.warning(integer.toString());
+    }
+    @Test
+    public void conver(){
+        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l,583856228119l);
         log.warning(String.valueOf(aLong));
+    }
+    @Test
+    public void netthread(){
+        for (int i=243;i<1000;i++){
+            userDao.sqltest(String.valueOf(i));
+        }
+    }
+    @Test
+    public void count() throws IOException, URISyntaxException {
+//        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
+//        BufferedImage img = otherService.crateQRCode("http://www.baidu.com");
+//        File writeName = new File(path+"/img/21321.jpg");
+//        FileImageOutputStream fileImageOutputStream=new FileImageOutputStream(writeName);
+//        ImageIO.write(img, "JPEG",fileImageOutputStream);
+//        ByteArrayOutputStream s = otherService.crateQRCode("http://www.baidu.com");
+//        ByteArrayOutputStream
+//        HttpDeal.saveImageToDisk(QRCODEURL + "app=qr.get&data=www.baidu.com",232l);
+//        log.warning(s.toString());
+//        List a=new ArrayList();
+//
+//        JSONObject aLong = taoBaoApiService.countWaitTb();
     }
 
 

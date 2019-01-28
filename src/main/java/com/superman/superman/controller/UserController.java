@@ -91,23 +91,18 @@ public class UserController {
         user.setUserphone(mobile);
         user.setLoginpwd(pwd);
 //        user.set(code);
-        Userinfo info = userServiceApi.queryUserByPhone(user.getUserphone());
-        if (info != null) {
-            return Result.error("手机号已注册");
-        }
-        Boolean oprear = userServiceApi.createUser(user);
-        if (oprear) {
-            return Result.ok("注册成功");
-        }
+        Boolean flag = userServiceApi.createUserByPhone(user);
+
 //        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
+
         return Result.error("验证码错误");
     }
 
     @PostMapping("/login")
-    public Object Login(HttpServletRequest request,@RequestBody Map<String, Object> reqMap) {
-        String userName = RequestUtil.getMapString(reqMap.get("user_name").toString());
-        String passWord = RequestUtil.getMapString(reqMap.get("pass_word").toString());
-        //判断用户名是否存在
+    public Object Login(HttpServletRequest request,@RequestBody String body) {
+        JSONObject data = JSONObject.parseObject(body);
+        String userName = data.getString("user_name");
+        String passWord = data.getString("pass_word");
         Userinfo user = userServiceApi.queryUserByPhone(userName);
         if (user == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);

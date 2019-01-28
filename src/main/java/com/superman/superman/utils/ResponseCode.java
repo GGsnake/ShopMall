@@ -2,7 +2,7 @@ package com.superman.superman.utils;
 
 /**
  * 系统返回码
- * 
+ *
  * @author Yaphis 2015年9月8日 下午2:08:13
  */
 public class ResponseCode {
@@ -41,7 +41,8 @@ public class ResponseCode {
     public static final ResponseCode APPLY_SUCCESS = new ResponseCode("100026", "提交成功");
     public static final ResponseCode APPLY_FAIL = new ResponseCode("100027", "提交失败或者已经提交过");
     public static final ResponseCode COMMON_USER_PASSWORD_ERROR = new ResponseCode("100028", "密码错误");
-  public static final ResponseCode DELETE_ERROR = new ResponseCode("100033", "删除错误");
+    public static final ResponseCode DELETE_ERROR = new ResponseCode("100033", "删除错误");
+    public static final ResponseCode PERMISSIONS_ERROR = new ResponseCode("100053", "无权限");
 
     private String errCode;
     private String errMsg;

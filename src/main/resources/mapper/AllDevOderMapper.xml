@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.superman.superman.dao.AllDevOderMapper">
+
+    <sql id="Base_Column_Pdd">
+    goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn
+  </sql>
+
+
+    <select id="selectInFans" resultType="com.superman.superman.model.Userinfo">
+        SELECT id,userName,userPhone,pddPid,tbPid,jdPid
+        FROM userinfo
+        <if test="list!= null">
+            WHERE id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and status=0
+    </select>
+
+
+    <select id="queryPddPageSize" resultType="com.superman.superman.req.OderPdd">
+        SELECT
+        goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn,p_id
+        FROM oder
+        WHERE p_id in (Select pddPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select pddPid from userinfo WHERE id =#{id})
+        <if test="status!= null">
+            and order_status in
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
+    <select id="queryPddPageSizeCount" resultType="java.lang.Integer">
+        SELECT IFNULL(count(id),0)
+        FROM oder
+        WHERE p_id in (Select pddPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select pddPid from userinfo WHERE id =#{id})
+        <if test="status!= null">
+            and order_status in
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>
