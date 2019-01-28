@@ -96,6 +96,11 @@
         <version>1.0.0</version>
     </dependency>
         <dependency>
+        <groupId>com.sms</groupId>
+        <artifactId>sms</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+        <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
             <version>3.2.0</version>

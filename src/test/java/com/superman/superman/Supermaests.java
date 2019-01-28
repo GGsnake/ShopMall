@@ -119,7 +119,7 @@ public class Supermaests {
 //        }
 
 //        Long aLong = scoreService.countLooks(33l);
-//        Long s = scoreService.countLooks(33l);
+//        Long sd = scoreService.countLooks(33l);
 //        ScoreBean scoreBean1 = new ScoreBean();
 //        scoreBean1.setUserId(122l);
 //        scoreBean1.setScoreType(0);

@@ -12,6 +12,9 @@ import com.superman.superman.dao.SysAdviceDao;
 import com.superman.superman.model.SysJhAdviceDev;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.utils.*;
+import com.superman.superman.utils.net.HttpUtil;
+import com.superman.superman.utils.sign.MD5;
+import com.superman.superman.utils.sign.MD5Util;
 import lombok.extern.java.Log;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
@@ -145,12 +148,13 @@ public class OtherServiceImpl implements OtherService {
 //        应用APPID wxc7df701f4d4f1eab
 //        API秘钥：hzshop12345678912345678912345678
         String url2 = pay_url;
+        //TODO
         String appid = pay_appid;
         String body = "升级成为运营商";
         String partnerid = partner_id;
         String noncestr = Util.getRandomString(30);
         String notifyurl = notify_url;
-        double money=0.01;
+        double money=2188;
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
@@ -195,7 +199,7 @@ public class OtherServiceImpl implements OtherService {
             e.printStackTrace();
         }
         noncestr = keyval.get("nonce_str");
-        String packageValue = "Sign=WXPay";
+        String packageValue = "sign=WXPay";
         prepayid = keyval.get("prepay_id");
         String stringA = "appid=%s&noncestr=%s&package=%s&partnerid=%s&prepayid=%s&timestamp=%s&key=%s";
         String stringSignTemp = String.format(stringA, appid,

@@ -139,6 +139,7 @@ public class Userinfo {
     }
 
     private String wxopenid;
+    private Double cash;
 
 
 

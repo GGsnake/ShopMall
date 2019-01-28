@@ -77,6 +77,21 @@ public class ScoreController {
         redisUtil.expire(key, 4, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
+    /**
+     * 积分全部提现
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/cash")
+    public WeikeResponse cash(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Boolean data = scoreService.scoreToCash(Long.valueOf(uid));
+        return WeikeResponseUtil.success(data);
+    }
 
 
     // 每日浏览商品积分领取
@@ -134,6 +149,5 @@ public class ScoreController {
             return WeikeResponseUtil.success();
         }
         return WeikeResponseUtil.fail("100089", "签到失败 请重试");
-
     }
 }

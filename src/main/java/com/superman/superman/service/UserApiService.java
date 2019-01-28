@@ -1,18 +1,17 @@
 package com.superman.superman.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.UserRegiser;
+
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/6.
  */
 public interface UserApiService {
-    void query();
     Boolean createUser(UserRegiser userinfo);
 
-    Boolean createUserByPhone(UserRegiser userinfo);
+    Integer createUserByPhone(UserRegiser userinfo);
 
     Userinfo queryUserByPhone(String userPhone);
 
@@ -23,7 +22,7 @@ public interface UserApiService {
 
     Integer createInvCode(String phone);
 
-    JSONObject createPid();
+    Map<String, Object> createPid();
 
     Boolean upAgent(Integer uid, Integer agentId, Integer score);
 }

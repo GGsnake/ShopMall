@@ -55,5 +55,11 @@ public interface ScoreService {
      * @return
      */
      Boolean sign(Long id);
+    /**
+     * 积分提现
+     * @param id
+     * @return
+     */
+     Boolean scoreToCash(Long id);
 
 }

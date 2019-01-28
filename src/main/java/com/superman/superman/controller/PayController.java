@@ -46,14 +46,13 @@ public class PayController {
     /**
      * 微信预支付（技能开通支付）
      *
-     * @param response
      * @param request
      * @throws IOException
      * @throws DocumentException
      */
     @LoginRequired
     @RequestMapping("/wechatOrderPay")
-    public WeikeResponse wechatOrderPay(HttpServletResponse response, HttpServletRequest request) throws IOException, DocumentException {
+    public WeikeResponse wechatOrderPay(HttpServletRequest request) throws IOException, DocumentException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid != null) {
             /* 设置格式为text/html */
@@ -67,7 +66,6 @@ public class PayController {
 
     /**
      * 微信付款成功！（开通技能服务）
-     *
      * @throws IOException
      * @throws DocumentException
      */
@@ -98,6 +96,7 @@ public class PayController {
                 Map map = new HashMap();
                 map.put("id", attach);
                 map.put("sn", out_trade_no);
+                log.warning(EveryUtils.getNowday() + "用户付款uid为==" + attach);
                 payDao.addPayLog(map);
             } else {
             }

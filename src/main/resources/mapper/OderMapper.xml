@@ -54,11 +54,10 @@
     </select>
 
     <select id="superQueryForListToWait" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*1000,0)) as count from userinfo us
-
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(1,2,3)
-
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as count from userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(0,1,2,3)
         left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14)
+        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17)
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -68,9 +67,10 @@
     </select>
 
     <select id="superQueryForListToFinsh" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.commission*1000,0)) as count from
-        userinfo us left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as count from userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5
         left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3
+        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode= 18
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">

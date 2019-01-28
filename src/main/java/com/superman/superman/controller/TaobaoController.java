@@ -2,7 +2,6 @@ package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.req.TaoBaoSerachBean;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.*;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;

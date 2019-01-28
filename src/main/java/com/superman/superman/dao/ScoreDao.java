@@ -28,15 +28,39 @@ public interface ScoreDao {
      */
     Integer addScore(@Param("score") ScoreBean user);
 
-
+//
+//    /**
+//     * 统计积分
+//     *
+//     * @param uid
+//     * @return
+//     */
+//    @Select("select ifNULL(sum(score),0) from score_user where userId=#{uid} and status=0")
+//    Integer countScore(Long uid);
     /**
      * 统计积分
      *
      * @param uid
      * @return
      */
-    @Select("select ifNULL(sum(score),0) from score_user where userId=#{uid} and status=0")
+    @Select("select userScore from userinfo where id=#{uid} and status=0")
     Integer countScore(Long uid);
+
+    /**
+     * 积分提现
+     * @param user
+     * @return
+     */
+    @Update("update userinfo set cash=cash+ #{cash} where id=#{id}")
+    Integer updateCash(Userinfo user);
+
+    /**
+     * 积分减少0
+     * @param user
+     * @return
+     */
+    @Update("update userinfo set userScore=0 where id=#{id}")
+    Integer updateScoreZero(Userinfo user);
 
     /**
      * 增加用户积分

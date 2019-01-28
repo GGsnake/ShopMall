@@ -71,10 +71,11 @@ public class MemberServiceImpl implements MemberService {
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
         switch (roleId) {
             case 1:
+                //查询自己的订单预估收入
                 Long myMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
                 Long AllMoney = moneyService.queryCashMoney(uid, 0, user);
-                myJson.put("myMoney", (AllMoney +myMoney)*range/100);
-                myJson.put("myTeamMoney",((AllMoney +myMoney)-myMoney)*range/100);
+                myJson.put("myMoney", (AllMoney + myMoney) * range / 100);
+                myJson.put("myTeamMoney", ((AllMoney + myMoney) - myMoney) * range / 100);
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
                 //查询代理或者直属粉丝
@@ -106,14 +107,34 @@ public class MemberServiceImpl implements MemberService {
 
             //代理
             case 2:
-                //查询我的订单收入
-                Long myMoney2 = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
-                Long AllMoney2 = moneyService.queryCashMoney(uid, 0, user);
-                myJson.put("myMoney", AllMoney2);
-                myJson.put("myTeamMoney", AllMoney2 - myMoney2);
-                List<Long> var2 = agentDao.queryForAgentIdNew(uid.intValue());
-                uidSet.addAll(var2);
-                myJson.put("myTeamCount", uidSet.size());
+                // 佣金比率
+                int score = user.getScore();
+                //先查询自己的订单预估收入
+                Long isMyMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
+                if (isMyMoney != 0) {
+                    //代理的收入经过平台扣费后再根据代理的佣金比率进行计算
+                    isMyMoney = isMyMoney * (range / 100) * (score / 100);
+                }
+                //查询自己的粉丝下级
+                List<Long> fansIdList = agentDao.queryForAgentIdNew(uid.intValue());
+                uidSet.addAll(fansIdList);
+                int teamCount = uidSet.size();
+
+                if (fansIdList == null || fansIdList.size() == 0) {
+                    myJson.put("myMoney", isMyMoney);
+                    myJson.put("myTeamMoney", 0);
+                } else {
+                    //粉丝贡献的收入
+                    uidSet.clear();
+                    uidSet.addAll(fansIdList);
+                    Long fansMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), 0);
+                    if (fansMoney != 0) {
+                        fansMoney = fansMoney * (range / 100) * (score / 100);
+                    }
+                    myJson.put("myMoney", isMyMoney+fansMoney);
+                    myJson.put("myTeamMoney", fansMoney);
+                }
+                myJson.put("myTeamCount", teamCount);
                 myJson.put("myAgentCount", 0);
                 return myJson;
             //粉丝
@@ -214,18 +235,16 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public JSONObject getMyNoFans(Long userId, PageParam pageParam) {
-
-        Integer sum = agentDao.countNoMyFansSum(userId);
+        //计算非直属粉丝数量
+        Integer fansCount = agentDao.countNoMyFansSum(userId);
         JSONObject data = new JSONObject();
-        data.put("sum", sum);
-        if ( sum == null||sum == 0 ) {
+        data.put("sum", fansCount);
+        if (fansCount == null || fansCount == 0) {
             data.put("data", new JSONArray());
             return data;
         }
         List<Agent> idList = agentDao.countNoMyFans(userId, pageParam.getStartRow(), pageParam.getPageSize());
-
-        JSONArray jsonArray = new JSONArray();
-
+        JSONArray dataArray = new JSONArray();
         for (int i = 0; i < idList.size(); i++) {
             Userinfo agent = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getAgentId()));
             Userinfo uid = userinfoMapper.selectByPrimaryKey(Long.valueOf(idList.get(i).getUserId()));
@@ -234,15 +253,14 @@ public class MemberServiceImpl implements MemberService {
             jsonObject.put("pidname", uid.getUsername());
             jsonObject.put("image", uid.getUserphoto());
             jsonObject.put("uid", uid.getId());
-            jsonArray.add(jsonObject);
+            dataArray.add(jsonObject);
         }
-        data.put("data", jsonArray);
+        data.put("data", dataArray);
         return data;
     }
 
     @Override
     public JSONObject queryMemberDetail(Long userId, Integer myid) {
-
         JSONObject data = new JSONObject();
         Long todayTime = EveryUtils.getToday();
         Long todayEndTime = todayTime + 86400;
@@ -300,7 +318,6 @@ public class MemberServiceImpl implements MemberService {
             MemberDetail var2 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs1, tbe1, yesDayTime, yesDayEndTime);
             if (myrole == 1) {
                 yesDayMoneyCount = (var2.getMoney() * range / 100d);
-
             }
             if (myrole == 2) {
                 yesDayMoneyCount = (var2.getMoney() * range / 100d) * (mySc / 100d);

@@ -1,9 +1,6 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.model.ScoreBean;
-import com.superman.superman.req.JdSerachReq;
-import io.swagger.models.Model;
 import jd.union.open.goods.query.request.GoodsReq;
 
 /**

@@ -92,10 +92,10 @@ domain:
   qnyurl: "http://qny.quanhuangmaoyi.com/"
 
 pdd_pro:
-  pdd-key: "bbc1737d63e44e278dbffa9e96a7eca3"
-  pdd-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
+  pdd-key: "8f8a9efa079b4fb8a2d9fa86352b5e00"
+  pdd-secret: "36f5e05bfcce59ec6a0d6f27f380362c831239d7"
   pdd-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
-  pdd-url: "https://wj.hxksky.com"
+  pdd-url: "http://quanhuangmaoyi.com"
   pdd-router-url: "https://gw-api.pinduoduo.com/api/router"
 tb:
   appkey: "25377219"

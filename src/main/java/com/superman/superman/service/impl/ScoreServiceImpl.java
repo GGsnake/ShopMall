@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -50,12 +51,11 @@ public class ScoreServiceImpl implements ScoreService {
         Long looks = countLooks(uid.longValue());
         var.put("looks", looks);
         Boolean var1 = countShare(uid.longValue());
-        String kv =sign_key + uid ;
+        String kv = sign_key + uid;
         if (redisTemplate.hasKey(kv)) {
             var.put("sign", 1);
-        }
-        else {
-            var.put("sign",0);
+        } else {
+            var.put("sign", 0);
         }
         if (var1 == false) {
             var.put("share", 0);
@@ -92,7 +92,7 @@ public class ScoreServiceImpl implements ScoreService {
         SetOperations setOperations = redisTemplate.opsForSet();
         String kv = read_key + uid + EveryUtils.getToday();
         if (redisTemplate.hasKey(kv)) {
-            if (setOperations.size(kv)==10){
+            if (setOperations.size(kv) == 10) {
 
                 return null;
             }
@@ -119,13 +119,13 @@ public class ScoreServiceImpl implements ScoreService {
             user.setId(scoreBean.getUserId());
             user.setUserscore(scoreBean.getScore().intValue());
             Integer flag = scoreDao.updateUserScore(user);
-            if (flag==0){
-                log.warning("用户积分增加错误 UID="+user.getId());
+            if (flag == 0) {
+                log.warning("用户积分增加错误 UID=" + user.getId());
                 throw new RuntimeException();
             }
             return true;
         } catch (Exception e) {
-            log.warning("用户积分增加错误 ID="+user.getId()+"----异常信息="+ e.getMessage());
+            log.warning("用户积分增加错误 ID=" + user.getId() + "----异常信息=" + e.getMessage());
             throw new RuntimeException();
         }
 
@@ -134,16 +134,16 @@ public class ScoreServiceImpl implements ScoreService {
     @Transactional
     public Boolean sign(Long id) {
         ValueOperations v = redisTemplate.opsForValue();
-        String kv =sign_key + id ;
+        String kv = sign_key + id;
         if (redisTemplate.hasKey(kv)) {
-           return false;
+            return false;
 
         }
-        v.set(kv,"");
+        v.set(kv, "");
         redisTemplate.boundValueOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
         try {
             Userinfo user = new Userinfo();
-            ScoreBean scoreBean=new ScoreBean();
+            ScoreBean scoreBean = new ScoreBean();
             scoreBean.setDataSrc(3);
             scoreBean.setUserId(id);
             scoreBean.setScoreType(1);
@@ -152,17 +152,41 @@ public class ScoreServiceImpl implements ScoreService {
             user.setId(scoreBean.getUserId());
             user.setUserscore(scoreBean.getScore().intValue());
             Integer flag = scoreDao.updateUserScore(user);
-            if (flag==0){
+            if (flag == 0) {
                 redisTemplate.delete(kv);
-                log.warning("用户积分增加错误 UID="+user.getId());
+                log.warning("用户积分增加错误 UID=" + user.getId());
                 throw new RuntimeException();
             }
             return true;
         } catch (Exception e) {
             redisTemplate.delete(kv);
-            log.warning("用户积分增加错误 ID="+id+"----异常信息="+ e.getMessage());
+            log.warning("用户积分增加错误 ID=" + id + "----异常信息=" + e.getMessage());
             throw new RuntimeException();
         }
+    }
+
+    @Transactional
+    public Boolean scoreToCash(Long id) {
+        Integer score = scoreDao.countScore(id);
+        if (score == 0) {
+            return true;
+        }
+        if (score < 1000) {
+            return false;
+        }
+        BigDecimal scoreBg = new BigDecimal(score).divide(new BigDecimal(1000));
+        Userinfo userinfo = new Userinfo();
+        userinfo.setCash(scoreBg.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+        userinfo.setId(id);
+        Integer flag = scoreDao.updateCash(userinfo);
+        if (flag == 0) {
+            throw new RuntimeException("积分提现异常");
+        }
+        Integer flag1 = scoreDao.updateScoreZero(userinfo);
+        if (flag1 == 0) {
+            throw new RuntimeException("积分提现异常");
+        }
+        return true;
     }
 
 }
