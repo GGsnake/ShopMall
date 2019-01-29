@@ -637,7 +637,7 @@ public class MemberServiceImpl implements MemberService {
             }
             todayMoneyCount=todayBossMoney.intValue()+todayAgentMoney;
             todayCount=todayBossCount+todayAgentCount.intValue();
-
+            Double s1=bossTodaymb1Settlex+settlex;
             //今日
             String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
             String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
@@ -666,6 +666,7 @@ public class MemberServiceImpl implements MemberService {
             }
             yesDayMoneyCount=todayBossMoney2.intValue()+todayAgentMoney2;
             yesDayCount=todayBossCount2+todayAgentCount2.intValue();
+            Double s2=bossTodaymb1Settlex2+settlex2;
 
             //今日
             String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
@@ -694,7 +695,37 @@ public class MemberServiceImpl implements MemberService {
                 settlex3 +=  mb1.getMoney() * range / 100d * agentSc / 100d;
             }
             yesMonthMoneyvarCount=todayBossMoney3.intValue()+todayAgentMoney3;
-            yesMonthCount=todayBossCount3+todayAgentCount3.intValue();
+            yesMonthCount=todayBossCount3+todayAgentCount3.intValue();  //今日
+            Double s3=bossTodaymb1Settlex3+settlex3;
+
+            String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
+            String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            MemberDetail bossToday4 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
+            MemberDetail bossTodaymb4 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
+            Double  bossTodaymb1Settlex4 =  bossTodaymb4.getMoney() * range / 100d;
+            Double todayBossMoney4 = bossToday4.getMoney() * range / 100d ;
+            Integer todayBossCount4 = bossToday4.getSums();
+            Long agentMoneyTemp4 = 0l;
+            Double todayAgentCount4 = 0d;
+            Double settlex4= 0d;
+            Double todayAgentMoney4 =0d;
+            for (Userinfo userio : agentIdList) {
+                Integer agentSc = 100-userio.getScore();
+                List<Long> uidlist1 = new ArrayList<>(10);
+                uidlist.add(userId);
+                List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
+                if (agents1 != null && agents1.size() != 0) {
+                    uidlist1.addAll(agents1);
+                }
+                MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist1, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
+                todayAgentMoney3 += var1.getMoney() * range / 100d * agentSc / 100d;
+                todayAgentCount3 +=var1.getSums();
+                MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist1, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
+                settlex3 +=  mb1.getMoney() * range / 100d * agentSc / 100d;
+            }
+            yesLastMonthMoneyCount=todayBossMoney4.intValue()+todayAgentMoney4;
+            yesLastMonthCount=todayBossCount4+todayAgentCount4.intValue();
+            Double s4=bossTodaymb1Settlex4+settlex4;
 
 //            //今日
 //            String tbs = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
@@ -726,20 +757,21 @@ public class MemberServiceImpl implements MemberService {
 
 //            MemberDetail all = oderMapper.sumAllDevAllOder(uidlist);
 //            Double settle5 = (all.getMoney() * range / 100d) * (agentSc / 100d);
-            data.put("oderSum",0);
-            data.put("inCome", 0);
+            Long myMoney = getMyMoney(userId).getLong("myMoney");
+            data.put("oderSum",yesMonthCount);
+            data.put("inCome", myMoney);
             data.put("today", todayMoneyCount);
             data.put("todayOder", todayCount);
-            data.put("todaySettle", settle1);
+            data.put("todaySettle", s1);
             data.put("yesday", yesDayMoneyCount);
             data.put("yesdayOder", yesDayCount);
-            data.put("yesdaySettle", settle2);
+            data.put("yesdaySettle", s2);
             data.put("yesMonday", yesMonthMoneyvarCount);
             data.put("yesMondayOder", yesMonthCount);
-            data.put("yesMondaySettle", settle3);
+            data.put("yesMondaySettle", s3);
             data.put("lastMonday", yesLastMonthMoneyCount);
             data.put("lastMondayOder", yesLastMonthCount);
-            data.put("lastMondaySettle", settle4);
+            data.put("lastMondaySettle", s4);
             return data;
         }
         return null;
