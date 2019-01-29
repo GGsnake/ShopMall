@@ -5,6 +5,7 @@ import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.OderManager;
 import com.superman.superman.model.Oder;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/24.
@@ -24,14 +26,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/oder")
 public class MyOderController {
-
     @Autowired
-    private OderService oderService;
+    private RedisUtil redisUtil;
     @Autowired
     private OderManager oderManager;
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
 
     @ApiOperation(value = "我的订单", notes = "灵活搜索")
     @ApiImplicitParams({
@@ -43,13 +41,55 @@ public class MyOderController {
     @PostMapping("/myOder")
     public WeikeResponse queryAllOder(HttpServletRequest request, PageParam pageParam, Integer devId, Integer status) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null||status==null||status>=3||status<0) {
+        if (uid == null || status == null || status >= 3 || status < 0) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        var param=new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List statusList = ConvertUtils.getStatus(devId, status);
-        JSONObject allOder = oderManager.getAllOder(Long.valueOf(uid), statusList, param);
+        JSONObject allOder = new JSONObject();
+        String key = "oder:"+devId.toString()+uid+ status.toString() + pageParam.getPageNo();
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
+        if (devId == 0) {
+            allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
+        }
+        if (devId == 1) {
+            allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
+        }
+        if (devId == 2) {
+            allOder = oderManager.getJdOder(Long.valueOf(uid), statusList, param);
+        }
+        if (devId == 3) {
+            allOder = oderManager.getPddOder(Long.valueOf(uid), statusList, param);
+        }
+        redisUtil.set(key,allOder.toJSONString());
+        redisUtil.expire(key,10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(allOder);
+    }
+    @LoginRequired
+    @PostMapping("/InCome")
+    public WeikeResponse queryInCome(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject data = new JSONObject();
+        data.put("oderSum",100);
+        data.put("inCome",20000);
+        data.put("today", 1000);
+        data.put("todayOder", 20);
+        data.put("todaySettle", 300);
+        data.put("yesday", 200);
+        data.put("yesdayOder", 1200);
+        data.put("yesdaySettle", 2300);
+        data.put("yesMonday", 100);
+        data.put("yesMondayOder", 30);
+        data.put("yesMondaySettle", 600);
+        data.put("lastMonday",500);
+        data.put("lastMondayOder",40);
+        data.put("lastMondaySettle",500);
+        return WeikeResponseUtil.success(data);
     }
 }
 

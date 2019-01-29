@@ -1,8 +1,15 @@
 package com.superman.superman.req;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * Created by liujupeng on 2018/11/9.
  */
+@Getter
+@Setter
+@ToString
 public class PddSerachBean {
 
      private Long uid;
@@ -14,5 +21,4 @@ public class PddSerachBean {
     private  Long opt_id;
     private  Long category_id;
     private  Integer merchant_type;
-
 }

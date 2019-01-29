@@ -1,21 +1,18 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
-import com.superman.superman.utils.Constants;
-import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Size;
@@ -26,94 +23,117 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/score")
-public class ScoreController  {
-
-    @Autowired
-    private RedisTemplate redisTemplate;
+public class ScoreController {
     @Autowired
     private ScoreService scoreService;
-//    @Autowired
-//    private JdApiService jdApiService;
+    @Autowired
+    RedisUtil redisUtil;
 
     //浏览商品积分上报
-    @PostMapping("/upVis")
-    public WeikeResponse upVis(@RequestParam(value = "userId")Integer userId, @RequestParam(value = "goodId")Long goodId) {
-        //TODO token校验
-        String kv="score:" + userId.toString();
-        return  WeikeResponseUtil.success("重新创建");
-
-    }
-    //积分查询
     @LoginRequired
-    @PostMapping("/quu")
-    public WeikeResponse quee() {
-        //TODO token校验
-        ScoreBean scoreBean=new ScoreBean();
-        Boolean query = scoreService.isExitSign(scoreBean);
-        return WeikeResponseUtil.success(query);
-    }
-    //积分查询
-//    @PostMapping("/ts")
-//    public WeikeResponse ts(String id) {
-//        TODO token校验
-//        ScoreBean query = jdApiService.queryJdOder(id);
-//        return WeikeResponseUtil.success(query);
-//    }
-    //积分查询
-    @LoginRequired
-    @PostMapping("/dede")
-    public WeikeResponse dede(HttpServletRequest request) {
-
-        var  uid=request.getAttribute(Constants.CURRENT_USER_ID);
-//        ScoreBean query = jdApiService.queryJdOder(id);
-        return WeikeResponseUtil.success(uid);
-    }
-
-    //每日浏览商品积分领取
-//    @PostMapping("/dayScore")
-//    public WeikeResponse dayScore(HttpServletRequest request) {
-//        //TODO token校验
-//
-//        String uid=request.getParameter("Constants.CURRENT_USER_ID");
-//        Long sum = scoreService.countLooks(uid);
-//        if (sum==10){
-//            ScoreBean scoreBean=new ScoreBean();
-//            scoreBean.setUserId(uid);
-//            scoreBean.setScore(10l);
-//            scoreBean.setScoreType(0);
-//            scoreBean.setDataSrc(2);
-//            if (scoreService.isExitSign(scoreBean)){
-//                return WeikeResponseUtil.fail("100042","今日已经签到");
-//            }
-//
-//            Boolean flag = scoreService.addScore(scoreBean);
-//            return WeikeResponseUtil.success(null);
-//        }
-//        return WeikeResponseUtil.fail("100041","浏览次数不足");
-//
-//
-//    }
-    //每日分享积分领取
-    @PostMapping("/shareScore")
-    public WeikeResponse shareScore() {
-        //TODO token校验
-        //TODO 校验
-        Long uid=2l;
-        Boolean exit = scoreService.countShare(uid);
-        if (!exit){
-            return WeikeResponseUtil.fail("100042","今日未分享");
+    @GetMapping("/upVis")
+    public WeikeResponse upVis(Long goodId, HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid != null && goodId != null) {
+            scoreService.recordBrowse(uid, goodId);
+            return WeikeResponseUtil.success();
         }
-        ScoreBean scoreBean=new ScoreBean();
-        scoreBean.setUserId(uid);
+        return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+    }
+    //每日签到
+    @LoginRequired
+    @GetMapping("/sign")
+    public WeikeResponse sign(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid==null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Boolean sign = scoreService.sign(Long.valueOf(uid));
+        if (sign){
+            return WeikeResponseUtil.success();
+        }
+        return WeikeResponseUtil.fail("1000322","已签到");
+    }
+
+    /**
+     * 积分查询
+     * @param request
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/myScore")
+    public WeikeResponse dede(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        String key = "myScore:" + uid ;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
+        JSONObject data = scoreService.myScore(Integer.valueOf(uid));
+
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 4, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(data);
+    }
+
+
+    // 每日浏览商品积分领取
+    @LoginRequired
+    @PostMapping("/dayScore")
+    public WeikeResponse dayScore(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Long sum = scoreService.countLooks(Long.valueOf(uid));
+        if (sum == 10) {
+            ScoreBean scoreBean = new ScoreBean();
+            scoreBean.setUserId(Long.valueOf(uid));
+            scoreBean.setScore(10l);
+            scoreBean.setScoreType(0);
+            scoreBean.setDataSrc(2);
+            if (scoreService.isExitSign(scoreBean)) {
+                return WeikeResponseUtil.fail("100042", "今日已经签到");
+            }
+            Boolean flag = scoreService.addScore(scoreBean);
+            if (flag) {
+                return WeikeResponseUtil.success();
+            }
+        }
+        return WeikeResponseUtil.fail("100041", "浏览次数不足");
+
+
+    }
+
+    //每日分享积分领取
+    @LoginRequired
+    @PostMapping("/shareScore")
+    public WeikeResponse shareScore(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Boolean exit = scoreService.countShare(Long.valueOf(uid));
+        if (!exit) {
+            return WeikeResponseUtil.fail("100042", "今日未分享");
+        }
+        //签到分享
+        ScoreBean scoreBean = new ScoreBean();
+        scoreBean.setUserId(Long.valueOf(uid));
         scoreBean.setScore(5l);
         scoreBean.setScoreType(0);
-        //签到分享
         scoreBean.setDataSrc(1);
-       if (scoreService.isExitSign(scoreBean)){
-           return WeikeResponseUtil.fail("100042","今日已经签到");
-       }
 
+        if (scoreService.isExitSign(scoreBean)) {
+            return WeikeResponseUtil.fail("100042", "今日已经签到");
+        }
         Boolean flag = scoreService.addScore(scoreBean);
-        return WeikeResponseUtil.success(null);
+        if (flag) {
+            return WeikeResponseUtil.success();
+        }
+        return WeikeResponseUtil.fail("100089", "签到失败 请重试");
+
     }
 }

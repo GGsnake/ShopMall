@@ -33,10 +33,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework.boot</groupId>-->
-                    <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-                <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
+            <!--</exclusion>-->
             <!--</exclusions>-->
 
         </dependency>
@@ -55,7 +55,16 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>me.hao0</groupId>
+            <artifactId>wepay-core</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>me.hao0</groupId>
+            <artifactId>common</artifactId>
+            <version>1.1.2</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -76,7 +85,16 @@
             <artifactId>core</artifactId>
             <version>3.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.jdcps</groupId>
+            <artifactId>jdcpsjar</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+        <groupId>com.pdd</groupId>
+        <artifactId>pddsdk</artifactId>
+        <version>1.0.0</version>
+    </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -203,7 +221,19 @@
             <artifactId>tyrus-standalone-client</artifactId>
             <version>1.13.1</version>
         </dependency>
+
     </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Dalston.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -235,11 +265,11 @@
             <!--</dependency>-->
             <!--</dependencies>-->
             <!--</plugin>-->
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
 
-                    </plugin>
+            </plugin>
 
         </plugins>
 

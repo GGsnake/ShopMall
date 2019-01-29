@@ -1,41 +1,34 @@
 package com.superman.superman;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jd.open.api.sdk.DefaultJdClient;
+import com.jd.open.api.sdk.JdClient;
+import com.jd.open.api.sdk.JdException;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.dao.*;
-import com.superman.superman.model.*;
-import com.superman.superman.req.InvCode;
+import com.superman.superman.model.SysJhAdviceOder;
 import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.HttpDeal;
-import com.superman.superman.utils.PageParam;
-import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.domain.NTbkItem;
-import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.request.TbkUatmFavoritesGetRequest;
-import com.taobao.api.response.TbkItemGetResponse;
 import com.taobao.api.response.TbkUatmFavoritesGetResponse;
+import jd.union.open.goods.query.request.GoodsReq;
+import jd.union.open.goods.query.request.UnionOpenGoodsQueryRequest;
+import jd.union.open.goods.query.response.UnionOpenGoodsQueryResponse;
+import jd.union.open.order.query.request.OrderReq;
+import jd.union.open.order.query.request.UnionOpenOrderQueryRequest;
+import jd.union.open.order.query.response.UnionOpenOrderQueryResponse;
 import lombok.extern.java.Log;
 import lombok.var;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.ClassUtils;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageOutputStream;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +42,7 @@ import java.util.List;
 @SpringBootTest
 public class Supermaests {
 
-//    @Autowired
+    //    @Autowired
 //    ScoreService scoreService;
 //    @Autowired
 //    CollectService collectService;
@@ -68,13 +61,19 @@ public class Supermaests {
     @Autowired
     TaoBaoApiService taoBaoApiService;
     @Autowired
+    PddApiService pddApiService;
+    @Autowired
     OtherService otherService;
     @Autowired
     OderMapper oderMapper;
+
     @Autowired
-    UserDao userDao;
-//    @Autowired
+    SysAdviceDao sysAdviceDao;
+
+
+    //    @Autowired
 //    AgentDao agentDao;
+<<<<<<< HEAD
     public static void main(String[] args){
         int[] str=new int[]{6,3,7,32,21,1,2,65,43,33};
         for(int i=0;i<str.length-1;i++){
@@ -95,26 +94,33 @@ public class Supermaests {
 
     }
      System.out.println(String.valueOf(EveryUtils.getEnd()));
+=======
+    public static void main(String[] args) {
+        System.out.println(String.valueOf(EveryUtils.getEnd()));
+>>>>>>> 781e6937157f0553d3158938639597c42aadeb2e
     }
+
     @Test
     public void test() throws Exception {
-        final String url = "http://gw.api.taobao.com/router/rest";
-        final String appkey = "25338125";
-        final String secret = "c4d36be247e477a9d88704f022e1c514";
 
-//        var li=new ArrayList<>();
-//        li.add("4165519_37896294");
 //
-//        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
-//        log.warning(String.valueOf(integer));
-        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
-        TbkUatmFavoritesGetRequest req = new TbkUatmFavoritesGetRequest();
-        req.setPageNo(1L);
-        req.setPageSize(20L);
-        req.setFields("favorites_title,favorites_id,type");
-        req.setType(1l);
-        TbkUatmFavoritesGetResponse rsp = client.execute(req);
-        System.out.println(rsp.getBody());
+//        final String url = "http://gw.api.taobao.com/router/rest";
+//        final String appkey = "25338125";
+//        final String secret = "c4d36be247e477a9d88704f022e1c514";
+//
+////        var li=new ArrayList<>();
+////        li.add("4165519_37896294");
+////
+////        Integer integer = oderMapper.selectPidInOderTime(li, 1542435600l, 1542435710l);
+////        log.warning(String.valueOf(integer));
+//        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
+//        TbkUatmFavoritesGetRequest req = new TbkUatmFavoritesGetRequest();
+//        req.setPageNo(1L);
+//        req.setPageSize(20L);
+//        req.setFields("favorites_title,favorites_id,type");
+//        req.setType(1l);
+//        TbkUatmFavoritesGetResponse rsp = client.execute(req);
+//        System.out.println(rsp.getBody());
 //        JSONObject jsonObject = memberService.queryMemberDetail(4l);
 //        log.warning(jsonObject.toJSONString());
 //        var a=new ArrayList<>();
@@ -145,11 +151,13 @@ public class Supermaests {
 //        jdApiService.queryJdOder(scoreBean1);
 
     }
+
     @Test
-    public void pddoder(){
+    public void pddoder() {
 //        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"ab", null, null, 1l, 10l, null, null);
-//
-//        log.warning(jsonObject.toJSONString());
+        PddDdkGoodsSearchRequest pr=new PddDdkGoodsSearchRequest();
+        JSONObject data = pddApiService.serachGoodsAll(pr, 1l);
+        //        log.warning(jsonObject.toJSONString());
 //        String clientId = "bbc1737d63e44e278dbffa9e96a7eca3";
 //        String clientSecret = "5e1a03eb561bac0c63c5efc8c1472119fc3ad405";
 //        PopHttpClient client = new PopHttpClient("https://gw-api.pinduoduo.com/api/router", clientId, clientSecret);
@@ -175,8 +183,9 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
+
     @Test
-    public void sum(){
+    public void sum() {
 //        JSONObject jsonObject = memberService.getMyMoney(5l);
 //        log.warning(jsonObject.toJSONString());
 //        JSONObject jsonObject = taoBaoApiService.serachGoods(6l,"蛇皮", null, null, 1l, 20l, "tk_rate_des", null);
@@ -206,39 +215,63 @@ public class Supermaests {
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
 //        List<Oder> oders = oderService.queryPddOderListToId("4165519_37497333");
     }
-    @Autowired UserApiService userApiService;
+
+    @Autowired
+    UserApiService userApiService;
+
     @Test
-    public void queryFinishMoney(){
-        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null,6l,0,10);
+    public void queryFinishMoney() {
+        List<OderPdd> integer = allDevOderMapper.queryPddPageSize(null, 6l, 0, 10);
         log.warning(integer.toString());
     }
+
     @Test
-    public void conver(){
-        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l,583856228119l);
+    public void conver() {
+        JSONObject aLong = taoBaoApiService.convertTaobao(73613400232l, 583856228119l);
         log.warning(String.valueOf(aLong));
     }
+
     @Test
-    public void netthread(){
-        for (int i=243;i<1000;i++){
-            userDao.sqltest(String.valueOf(i));
-        }
-    }
-    @Test
-    public void count() throws IOException, URISyntaxException {
-//        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"/static/";
-//        BufferedImage img = otherService.crateQRCode("http://www.baidu.com");
-//        File writeName = new File(path+"/img/21321.jpg");
-//        FileImageOutputStream fileImageOutputStream=new FileImageOutputStream(writeName);
-//        ImageIO.write(img, "JPEG",fileImageOutputStream);
-//        ByteArrayOutputStream s = otherService.crateQRCode("http://www.baidu.com");
-//        ByteArrayOutputStream
-//        HttpDeal.saveImageToDisk(QRCODEURL + "app=qr.get&data=www.baidu.com",232l);
-//        log.warning(s.toString());
-//        List a=new ArrayList();
-//
-//        JSONObject aLong = taoBaoApiService.countWaitTb();
+    public void netthread() {
+//        List a = new ArrayList();
+//        a.add(537142696012l);
+//        a.add(570588089087l);
+//        a.add(577550833111l);
+//        a.add(578164687657l);
+//        List<String> strings = taoBaoApiService.deatilGoodList(a);
+//        log.warning(strings.toString());
     }
 
+    @Test
+    public void count() throws IOException, URISyntaxException {
+
+    }
+    @Test
+    public void counst() throws IOException, URISyntaxException {
+//        GoodsReq gd=new GoodsReq();
+//        JSONObject jsonObject = jdApiService.serachGoodsAllJd(gd, Long.valueOf(11));
+        JSONObject jsonObject = jdApiService.jdDetail(29676167239l);
+        log.warning(jsonObject.toJSONString());
+
+//        List va=new ArrayList();
+//        va.add(3);
+//        va.add(4);
+//        va.add(5);
+//        List<SysJhAdviceOder> sysJhAdviceOders = sysAdviceDao.querySysOderAdvice(va,0,1);
+//        log.warning(sysJhAdviceOders.get(0).getName());
+//        MemberDetail memberDetail = oderMapper.sumAllDevOderByOderCreateTimeForAgent(a);
+//        log.warning(memberDetail.toString());
+    }
+    @Autowired
+    private JdApiService jdApiService;
+    @Test
+    public void jdDeatiTest() {
+        var ja=new GoodsReq();
+        ja.setKeyword("手机");
+        JSONObject jsonObject = jdApiService.serachGoodsAllJd(ja, 6l);
+        log.warning(jsonObject.toJSONString());
+//        jdApiService.jdDetail(38412174396l);
+    }
 
 
 }

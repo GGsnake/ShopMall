@@ -49,15 +49,19 @@ spring:
       max-idle: 10      # 连接池中的最大空闲连接
       min-idle: 5       # 连接池中的最小空闲连接
     timeout: 20000
+  application:
+    name: ljp
 
+eureka:
+  client:
+    erviceUrl:
+      defaultZone: http://192.168.0.103:8761/eureka/
 
 logging:
   level:
     com.superman.superman: debug
   file: ./logs/core.log
   root: INFO
-
-
 server:
   port: 8080
 
@@ -67,7 +71,52 @@ mybatis:
 
 juanhuang:
   range: 90
+  look: "score_look"
+  sign: "score_sign"
+  signscore: 5
+  logo: "http://120.79.62.89:8087/jhlogo.jpg"
+  wx: "BBBBBBBBBBBBssssss1"
+  wxurl: "http://img1.imgtn.bdimg.com/it/u=2478181297,1978765048&fm=200&gp=0.jpg"
+  wxname: "AAAAAAA"
+  wxcontacturl: "http://img1.imgtn.bdimg.com/it/u=2525052895,2022901810&fm=200&gp=0.jpg"
+
 domain:
   url: "http://120.79.62.89/"
-  codeurl: "http://120.79.62.89"
+  codeurl: "http://120.79.62.89:8080"
+  localurl: "http://192.168.0.102"
+  jdimageurl: "http://img14.360buyimg.com/n1/"
+  jdUrl: "https://router.jd.com/api"
+  jdsecret: "909a02d9f2e845578f6333a3a13ea5cd"
+  jdkey: "1b2eadd4ad604021a9e48aa5726c503b"
+  jduid: "1001142862"
+  qnyurl: "http://qny.quanhuangmaoyi.com/"
 
+pdd_pro:
+  pdd-key: "bbc1737d63e44e278dbffa9e96a7eca3"
+  pdd-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
+  pdd-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
+  pdd-url: "https://wj.hxksky.com"
+  pdd-router-url: "https://gw-api.pinduoduo.com/api/router"
+tb:
+  appkey: "25377219"
+  secret: "4c3e6b9e6484ce2982bca63d524564c1"
+  adzoneid: "253650051"
+  api-url: "http://gw.api.taobao.com/router/rest"
+  pid: 73613300311
+
+miao:
+  apkey: "c003483d-fd72-c78a-72ec-1d0e6034919d"
+  tbname: "华众有个店"
+  url:  "https://api.open.21ds.cn/apiv1/"
+
+weixin:
+  wx-key: "bbc1737d63e44e278dbffa9e96a7eca3"
+  wx-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
+  wx-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
+  wx-url: "https://wj.hxksky.com"
+  wx-pay-url:  "https://api.mch.weixin.qq.com/pay/unifiedorder"
+  wx-pay-appid:  "wxc7df701f4d4f1eab"
+  wx-pay-partnerid:  "1521764621"
+  wx-pay-notify-url:  "http://120.79.62.89:8080/wx/wechatBySuccess"
+  wx-pay-money:  "2000"
+  wx-router-url: "https://gw-api.pinduoduo.com/api/router"

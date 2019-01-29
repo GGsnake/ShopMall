@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superman.superman.dao.SysDaygoodsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysDaygoods" id="daygoodsMap">
+        <result property="id" column="id"/>
+        <result property="titile" column="titile"/>
+        <result property="content" column="content"/>
+        <result property="image" column="image"/>
+        <result property="contentImages" column="content_images"/>
+        <result property="status" column="status"/>
+        <result property="createtime" column="createTime"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.superman.superman.model.SysDaygoods">
+		select * from daygoods where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.superman.superman.model.SysDaygoods">
+		select * from daygoods
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<insert id="save" parameterType="com.superman.superman.model.SysDaygoods" useGeneratedKeys="true" keyProperty="id">
+		insert into daygoods
+		(
+			`titile`,
+			`content`,
+			`image`,
+			`content_images`,
+			`status`,
+			`createTime`
+		)
+		values
+		(
+			#{titile},
+			#{content},
+			#{image},
+			#{contentImages},
+			#{status},
+			#{createtime}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.superman.superman.model.SysDaygoods">
+		update daygoods
+		<set>
+			<if test="titile != null">`titile` = #{titile}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="image != null">`image` = #{image}, </if>
+			<if test="contentImages != null">`content_images` = #{contentImages}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="createtime != null">`createTime` = #{createtime}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from daygoods where id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from daygoods where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+
+	<!--<select id="getImages" resultType="java.lang.String">-->
+		<!--select-->
+
+		<!--from tboder-->
+		<!--<if test="list!= null">-->
+			<!--WHERE adzone_id in-->
+			<!--<foreach item="item" index="index" collection="list" open="(" separator="," close=")">-->
+				<!--#{item}-->
+			<!--</foreach>-->
+		<!--</if>-->
+		<!--and tk_status =3-->
+	<!--</select>-->
+</mapper>

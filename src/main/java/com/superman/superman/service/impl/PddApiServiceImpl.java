@@ -1,12 +1,20 @@
 package com.superman.superman.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.pdd.pop.sdk.common.util.JsonUtil;
+import com.pdd.pop.sdk.http.PopClient;
+import com.pdd.pop.sdk.http.PopHttpClient;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsDetailRequest;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
+import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
+import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.req.PddSerachBean;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.service.UserApiService;
+import com.superman.superman.utils.ConvertUtils;
 import com.superman.superman.utils.EverySign;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.HttpRequest;
@@ -17,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -37,8 +46,6 @@ public class PddApiServiceImpl implements PddApiService {
     @Value("${juanhuang.range}")
     private Integer RANGE;
     @Autowired
-    private UserApiService userApiService;
-    @Autowired
     private UserinfoMapper userinfoMapper;
 
     //获得推广位订单明细
@@ -46,7 +53,6 @@ public class PddApiServiceImpl implements PddApiService {
     public String getBillList(String pid, Integer page, String pagesize) {
         String res = null;
 
-        log.info("sssssssssssssssssss");
         String type = "pdd.ddk.oauth.app.new.bill.list.get";
         String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
         SortedMap<String, String> urlSign = new TreeMap<>();
@@ -99,7 +105,7 @@ public class PddApiServiceImpl implements PddApiService {
     @Override
     public JSONObject convertPdd(@NonNull String pid, @NonNull Long goodId) {
         String res = null;
-        JSONObject pddTemp=new JSONObject();
+        JSONObject pddTemp = new JSONObject();
 
         StringBuilder str = new StringBuilder();
         str.append("[").append(goodId).append("]");
@@ -113,92 +119,75 @@ public class PddApiServiceImpl implements PddApiService {
         urlSign.put("goods_id_list", str.toString());
         urlSign.put("data_type", "JSON");
         urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
-        //        urlSign.put("access_token", ACCESS_TOKEN);
         try {
-            res = HttpRequest.sendPost("https://gw-api.pinduoduo.com/api/router", urlSign);
+            res = HttpRequest.sendPost(PDD_URL, urlSign);
 
         } catch (IOException e) {
             log.warning(e.getMessage());
             return pddTemp;
         }
-        JSONArray temp= JSONObject.parseObject(res).getJSONObject("goods_promotion_url_generate_response").getJSONArray("goods_promotion_url_list");
-        if (temp==null||temp.size()==0){
+        JSONArray temp = JSONObject.parseObject(res).getJSONObject("goods_promotion_url_generate_response").getJSONArray("goods_promotion_url_list");
+        if (temp == null || temp.size() == 0) {
             return pddTemp;
         }
         JSONObject tempJson = (JSONObject) temp.get(0);
-        pddTemp.put("uland_url",tempJson.getString("mobile_short_url"));
-        pddTemp.put("url",tempJson.getString("url"));
-        pddTemp.put("tkLink",null);
+        pddTemp.put("uland_url", tempJson.getString("mobile_short_url"));
+        pddTemp.put("url", tempJson.getString("url"));
+        pddTemp.put("tkLink", null);
         return pddTemp;
     }
 
     //查询拼多多商品详情
     @Override
-    public JSONObject pddDetail(Long goodIdList, String uid) {
-        Double rang = RANGE / 100d;
-        String res = null;
-        StringBuilder str = new StringBuilder();
-        str.append("[" + goodIdList);
-        str.append("]");
-        String type = "pdd.ddk.goods.detail";
-        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-        SortedMap<String, String> urlSign = new TreeMap<>();
-        urlSign.put("client_id", KEY);
-        urlSign.put("type", type);
-        urlSign.put("timestamp", timestamp);
-        urlSign.put("goods_id_list", str.toString());
-        urlSign.put("data_type", "JSON");
-        urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
-        //        urlSign.put("access_token", ACCESS_TOKEN);
+    public JSONObject pddDetail(Long goodIdList) {
+        PopClient client = new PopHttpClient(KEY, SECRET);
+        PddDdkGoodsDetailRequest request = new PddDdkGoodsDetailRequest();
+        List gd = new ArrayList();
+        gd.add(goodIdList);
+        request.setGoodsIdList(gd);
+        PddDdkGoodsDetailResponse response = null;
         try {
-            res = HttpRequest.sendPost("https://gw-api.pinduoduo.com/api/router", urlSign);
-        } catch (IOException e) {
+            response = client.syncInvoke(request);
+            JSONObject temp = new JSONObject();
+            JSONArray var1 = new JSONArray();
+            if (response.getGoodsDetailResponse().getGoodsDetails().size() == 0) {
+                temp.put("list", var1);
+                return temp;
+            }
+            List<String> goodsGalleryUrls = response.getGoodsDetailResponse().getGoodsDetails().get(0).getGoodsGalleryUrls();
+            if (goodsGalleryUrls == null) {
+                temp.put("list", var1);
+                return temp;
+            }
+            temp.clear();
+            temp.put("list", goodsGalleryUrls);
+            return temp;
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if (res == null) {
-            return null;
-        }
-        JSONObject jsonData = (JSONObject) JSON.parseObject(res).getJSONObject("goods_detail_response").getJSONArray("goods_details").get(0);
-        //佣金比率 千分比
-        Long promotion_rate = jsonData.getLong("promotion_rate");
-        //最低团购价 千分比
-        Long min_group_price = jsonData.getLong("min_group_price");
-        //优惠卷金额 千分比
-        Long coupon_discount = jsonData.getLong("coupon_discount");
+        return null;
 
-        Float comssion = (min_group_price - coupon_discount) * ((promotion_rate) / 1000f);
-        Integer rmb = (int) (comssion * rang);
-
-        Userinfo ufo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        if (ufo.getRoleId() == 1) {
-
-            Float bondList = (rmb * 1f);
-            jsonData.put("bond", bondList);
-            return jsonData;
-        }
-        if (ufo.getRoleId() == 2) {
-            Float bonus = Float.valueOf(ufo.getScore());
-
-            Float bondList = (rmb * bonus) / 100;
-            jsonData.put("bond", bondList);
-            return jsonData;
-        }
-        jsonData.put("bond", 0);
-        return jsonData;
     }
 
     /**
-     * @param uid         用户id
+     * @param uid      用户id
      * @param pagesize
      * @param page
-     * @param sort_type
-     * @param with_coupon
-     * @param keyword     商品类目ID
-     * @param opt_id      商品标签类目ID
      * @return
      */
     @Override
-    public JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, Integer sort_type, Boolean with_coupon, String keyword, Long opt_id, Integer merchant_type) {
+    public JSONObject getPddGoodList(Long uid, Integer pagesize, Integer page, PddSerachBean pddSerachBean) {
+        if (page == 0) {
+            page = 1;
+        }
+        if (pagesize == 0) {
+            pagesize = 10;
+        }
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
         //平台给运营商的分成 可调
         Double rang = RANGE / 100d;
         String res = null;
@@ -208,39 +197,40 @@ public class PddApiServiceImpl implements PddApiService {
         urlSign.put("client_id", KEY);
         urlSign.put("type", type);
         urlSign.put("timestamp", timestamp);
-        urlSign.put("sort_type", sort_type.toString());
         urlSign.put("page", page.toString());
         urlSign.put("page_size", pagesize.toString());
-        urlSign.put("with_coupon", with_coupon.toString());
-        if (keyword != null && !keyword.equals("")) {
-            urlSign.put("keyword", keyword);
-        }
-        if (opt_id != null && opt_id.equals(0)) {
-            urlSign.put("opt_id", opt_id.toString());
-        }
         urlSign.put("data_type", "JSON");
+        if (pddSerachBean.getSort_type() != null) {
+            urlSign.put("sort_type", pddSerachBean.getSort_type().toString());
+        }
+        if (pddSerachBean.getWith_coupon() != null) {
+            urlSign.put("with_coupon", pddSerachBean.getWith_coupon().toString());
+        }
+        if (pddSerachBean.getKeyword() != null && !pddSerachBean.getKeyword().equals("")) {
+            urlSign.put("keyword", pddSerachBean.getKeyword());
+        }
+        if (pddSerachBean.getOpt_id() != null && !pddSerachBean.getOpt_id().equals(0)) {
+            urlSign.put("opt_id", pddSerachBean.getOpt_id().toString());
+        }
+
         urlSign.put("sign", EverySign.pddSign(urlSign, SECRET));
         try {
             res = HttpRequest.sendPost(PDD_URL, urlSign);
         } catch (IOException e) {
-            log.warning("错误========" + e.toString());
+            log.warning("用户" + uid + "拼多多搜索错误 参数==" + e.toString());
             e.printStackTrace();
         }
-
+        JSONArray dataArray = new JSONArray();
         JSONObject data = new JSONObject();
 
-
-        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
-        if (ufo == null) {
+        Integer roleId = ufo.getRoleId();
+        JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
+        Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
+        if (total_count == 0)
             return null;
-        }
-        if (ufo.getRoleId() == 1) {
-            JSONArray dataArray = new JSONArray();
+        if (roleId == 1) {
             Float bonus = 1f;
-            JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
-            Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
             for (int i = 0; i < jsonArray.size(); i++) {
-
                 JSONObject o = (JSONObject) jsonArray.get(i);
                 //佣金比率 千分比
                 Long promotion_rate = o.getLong("promotion_rate");
@@ -254,15 +244,10 @@ public class PddApiServiceImpl implements PddApiService {
                 Float comssion = Float.valueOf(after * promoto);
                 Integer rmb = (int) (comssion * rang);
                 Float bondList = (rmb * bonus);
-                JSONObject dataJson = new JSONObject();
-                dataJson.put("imgUrl", o.getString("goods_image_url"));
-                dataJson.put("volume", o.getInteger("sold_quantity"));
-                dataJson.put("goodName", o.getString("goods_name"));
+                JSONObject dataJson = ConvertUtils.convertPddSearch(o);
                 dataJson.put("zk_money", coupon_discount);
                 dataJson.put("price", min_group_price);
                 dataJson.put("zk_price", min_group_price - coupon_discount);
-                dataJson.put("goodId", o.getLong("goods_id"));
-                dataJson.put("istmall", "false");
                 dataJson.put("agent", bondList);
                 dataArray.add(dataJson);
             }
@@ -270,43 +255,153 @@ public class PddApiServiceImpl implements PddApiService {
             data.put("count", total_count);
             return data;
         }
-        Float score = Float.valueOf(ufo.getScore()) / 100;
-        Float bonus = EveryUtils.getCommission(score);
-        JSONArray jsonArray = JSONObject.parseObject(res).getJSONObject("goods_search_response").getJSONArray("goods_list");
-        Integer total_count = JSONObject.parseObject(res).getJSONObject("goods_search_response").getInteger("total_count");
-        JSONArray dataArray = new JSONArray();
+        if (roleId == 2) {
+            Float score = Float.valueOf(ufo.getScore()) / 100;
+            Float bonus = EveryUtils.getCommission(score);
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject o = (JSONObject) jsonArray.get(i);
+                //佣金比率 千分比
+                Long promotion_rate = o.getLong("promotion_rate");
+                //最低团购价 千分比
+                Long min_group_price = o.getLong("min_group_price");
+                //优惠卷金额 千分比
+                Long coupon_discount = o.getLong("coupon_discount");
+                //佣金计算
+                Float after = Float.valueOf(min_group_price - coupon_discount);
+                Float promoto = Float.valueOf(promotion_rate) / 1000;
+                Float comssion = Float.valueOf(after * promoto);
+                Integer rmb = (int) (comssion * rang);
+                Float bondList = (rmb * bonus);
+                JSONObject dataJson = ConvertUtils.convertPddSearch(o);
+                dataJson.put("zk_money", coupon_discount);
+                dataJson.put("price", min_group_price);
+                dataJson.put("zk_price", min_group_price - coupon_discount);
+                dataJson.put("agent", bondList);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", total_count);
+            return data;
 
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject o = (JSONObject) jsonArray.get(i);
-            //佣金比率 千分比
-            Long promotion_rate = o.getLong("promotion_rate");
-            //最低团购价 千分比
-            Long min_group_price = o.getLong("min_group_price");
-            //优惠卷金额 千分比
-            Long coupon_discount = o.getLong("coupon_discount");
-            //佣金计算
-            Float after = Float.valueOf(min_group_price - coupon_discount);
-            Float promoto = Float.valueOf(promotion_rate) / 1000;
-            Float comssion = Float.valueOf(after * promoto);
-            Integer rmb = (int) (comssion * rang);
-            Float bondList = (rmb * bonus);
-            JSONObject dataJson = new JSONObject();
-            dataJson.put("imgUrl", o.getString("goods_image_url"));
-            dataJson.put("volume", o.getInteger("sold_quantity"));
-            dataJson.put("goodName", o.getString("goods_name"));
-            dataJson.put("zk_money", coupon_discount);
-            dataJson.put("price", min_group_price);
-            dataJson.put("zk_price", min_group_price - coupon_discount);
-            dataJson.put("goodId", o.getLong("goods_id"));
-            dataJson.put("istmall", "false");
-            dataJson.put("agent", bondList);
-            dataArray.add(dataJson);
         }
-        data.put("data", dataArray);
-        data.put("count", total_count);
+        if (roleId == 3) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject o = (JSONObject) jsonArray.get(i);
+                //佣金比率 千分比
+                Long promotion_rate = o.getLong("promotion_rate");
+                //最低团购价 千分比
+                Long min_group_price = o.getLong("min_group_price");
+                //优惠卷金额 千分比
+                Long coupon_discount = o.getLong("coupon_discount");
+                //佣金计算
+                JSONObject dataJson = ConvertUtils.convertPddSearch(o);
+                dataJson.put("zk_money", coupon_discount);
+                dataJson.put("price", min_group_price);
+                dataJson.put("zk_price", min_group_price - coupon_discount);
+                dataJson.put("agent", 0);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", total_count);
 
-        return data;
+            return data;
 
+        }
+        return null;
+
+    }
+
+    @Override
+    public JSONObject serachGoodsAll(PddDdkGoodsSearchRequest request, Long uid) {
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        PopClient client = new PopHttpClient(KEY, SECRET);
+        Double score = Double.valueOf(ufo.getScore());
+        Double scoreAfer = score / 100;
+        Double rang = RANGE / 100d;
+        PddDdkGoodsSearchResponse response = null;
+        try {
+            JSONArray dataArray = new JSONArray();
+            JSONObject data = new JSONObject();
+            Integer roleId = ufo.getRoleId();
+            response = client.syncInvoke(request);
+            if (response == null) {
+                data.put("data", dataArray);
+                data.put("count", 0);
+                return data;
+            }
+            Integer totalCount = response.getGoodsSearchResponse().getTotalCount();
+            if (totalCount == 0) {
+                data.put("data", dataArray);
+                data.put("count", 0);
+                return data;
+            }
+            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
+            if (roleId == 1) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long promotion_rate = item.getPromotionRate();
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    Float promoto = Float.valueOf(promotion_rate) / 1000;
+                    Float comssion = Float.valueOf(after * promoto);
+                    BigDecimal var1 = new BigDecimal(comssion);
+                    BigDecimal var2 = new BigDecimal(rang);
+                    BigDecimal rmb = var1.multiply(var2);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("zk_price", after);
+                    dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataArray.add(dataJson);
+                }
+            }
+            if (roleId == 2) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long promotion_rate = item.getPromotionRate();
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    Float promoto = Float.valueOf(promotion_rate) / 1000;
+                    Float comssion = Float.valueOf(after * promoto);
+                    BigDecimal var1 = new BigDecimal(comssion);
+                    BigDecimal var2 = new BigDecimal(rang);
+                    BigDecimal var3 = new BigDecimal(scoreAfer);
+                    BigDecimal rmb = var1.multiply(var2);
+                    BigDecimal agent = rmb.multiply(var3);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("zk_price", after);
+                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataArray.add(dataJson);
+                }
+            }
+            if (roleId == 3) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("zk_price", after);
+                    dataJson.put("agent", 0);
+                    dataArray.add(dataJson);
+                }
+            }
+            data.put("data", dataArray);
+            data.put("count", totalCount);
+            return data;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

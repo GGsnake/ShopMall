@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.utils.PageParam;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
 
@@ -11,21 +12,52 @@ import java.util.List;
  * Created by liujupeng on 2018/12/4.
  */
 public interface TaoBaoApiService {
-    JSONObject serachGoods(Long uid,String Keywords, String cat, Boolean isTmall,  Boolean HasCoupon, Long page_no, Long page_size, String sort, String itemloc);
-    JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request,Long uid);
-    JSONObject indexSearch(Long uid, TbkDgOptimusMaterialRequest req);
+    /**
+     * 淘宝搜索引擎
+     * @param request
+     * @param uid
+     * @return
+     */
+    JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
+
+    /**
+     * 淘宝搜索首页专用
+     * @param request
+     * @param req
+     * @return
+     */
+    JSONObject indexSearch(TbkDgMaterialOptionalRequest request, Long req);
+
+    /**
+     * 查询淘宝商品单个的缩略图
+     * @param goodId
+     * @return
+     */
+    String deatilGoodList(Long goodId);
 
     /**
      * 生成淘口令推广链接
+     *
      * @param pid
      * @param good_id
      * @return
      */
-    JSONObject convertTaobao(Long pid,Long good_id);
-    /**
-     * 统计订单
+    JSONObject convertTaobao(Long pid, Long good_id);
 
+
+    /**
+     * 解析淘口令
+     * @param tkl
      * @return
      */
-    Long countWaitTb(List list);
+    JSONObject convertTaobaoTkl(String tkl);
+
+
+
+    /**
+     * 查询淘宝的商品详情
+     *
+     * @return
+     */
+    JSONObject deatil(Long goodId);
 }

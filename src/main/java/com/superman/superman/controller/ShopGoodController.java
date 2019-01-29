@@ -3,24 +3,35 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
+import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.Userinfo;
+import com.superman.superman.redis.RedisUtil;
+import com.superman.superman.req.JdSerachReq;
+import com.superman.superman.req.PddSerachBean;
+import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.TaoBaoApiService;
+import com.superman.superman.service.UserApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
-import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.Result;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
+import com.superman.superman.utils.*;
+import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import jd.union.open.goods.query.request.GoodsReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * Created by liujupeng on 2018/11/8.
@@ -31,112 +42,96 @@ public class ShopGoodController {
     @Autowired
     private PddApiServiceImpl pddApiService;
     @Autowired
+    private JdApiService jdApiService;
+    @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
-    private MemberService memberService;
-    static final String SERVER_URL = "https://api.jd.com/routerjson";
-    static final String accessToken = "ed69acd6-dbc7-4fc5-a830-135e63d19692";
-    static final String appKey = "D4236C4D973B80F70F8B8929E2C226CB";
-    static final String appSecret = "2d0d4a0563e543dab280774a8b946db3";
-    //    public JdClient client = new DefaultJdClient(SERVER_URL, accessToken, appKey, appSecret);
-    private final static Logger logger = LoggerFactory.getLogger(ShopGoodController.class);
-
-
+    RestTemplate restTemplate;
     @Autowired
-    private RedisTemplate redisTemplate;
-
-    @GetMapping("/index")
-    public Result getIndex() {
-//        String pddGoodList = pddApiService.getPddGoodList();
-        long l = System.currentTimeMillis();
-        Object o = redisTemplate.opsForValue().get("Policy:1");
-        logger.info(String.valueOf(System.currentTimeMillis() - l));
-        return Result.ok(String.valueOf(System.currentTimeMillis() - l));
-    }
+    private RedisUtil redisUtil;
 
     /**
-     * @param page
-     * @param pagesize
-     * @param type     平台 0 淘宝 1 拼多多 2
+     * @param type    平台 0 拼多多 1 淘宝 2京东 3天猫
      * @param keyword
      * @param sort
      * @return
      */
-    @ApiOperation(value = "全局搜索", notes = "全局搜索")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "平台类型 0拼多多 1淘宝 2京东 3 唯品会", required = false, dataType = "Integer", paramType = "/Search"),
-            @ApiImplicitParam(name = "keyword", value = "关键词", required = false, dataType = "Integer"),
-            @ApiImplicitParam(name = "sort", value = "排序方式 ", required = false, dataType = "Integer")
-    })
+    @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(@RequestParam(value = "page", defaultValue = "1", required = false) Integer page, @RequestParam(value = "pagesize", defaultValue = "10", required = false) Integer pagesize, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "tbsort", required = false,defaultValue = "tk_rate_des") String tbsort
+    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "jd_coupon", defaultValue = "1", required = false) Integer jd_coupon, @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize, @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                                Integer cid, Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort, @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder, String tbcat
 
     ) {
-
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject data;
         if (type == 0) {
-            JSONObject pddGoodList = pddApiService.getPddGoodList(6l, pagesize, page, sort, with_coupon == 0 ? true : false, keyword, 2l, 1);
-            return WeikeResponseUtil.success(pddGoodList);
+            //拼多多搜索引擎
+            PddDdkGoodsSearchRequest pddSerachBean = new PddDdkGoodsSearchRequest();
+            pddSerachBean.setPage(pageNo);
+            pddSerachBean.setPageSize(pageSize);
+            pddSerachBean.setKeyword(keyword);
+            pddSerachBean.setWithCoupon(with_coupon == 0 ? true : false);
+            pddSerachBean.setOptId(opt);
+            pddSerachBean.setSortType(sort);
+            data = pddApiService.serachGoodsAll(pddSerachBean, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
         }
         if (type == 1) {
-
-            JSONObject jsonObject = taoBaoApiService.serachGoods(6l,keyword, null, true,true, page.longValue(), pagesize.longValue(), tbsort, null);
-            return WeikeResponseUtil.success(jsonObject);
-//
-//            UnionThemeGoodsServiceQueryCouponGoodsRequest request = new UnionThemeGoodsServiceQueryCouponGoodsRequest();
-//            UnionThemeGoodsServiceQueryCouponGoodsResponse response;
-//            request.setFrom(1);
-//            request.setPageSize(10);
-//            try {
-//                response = client.execute(request);
-//                logger.info(response.getQueryCouponGoodsResult());
-//            } catch (JdException e) {
-//                e.printStackTrace();
-//            }
-//
-
+            //淘宝搜索引擎
+            TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
+            req.setPageNo(Long.valueOf(pageNo));
+            req.setPageSize(Long.valueOf(pageSize));
+            req.setIsTmall(false);
+            req.setSort(tbsort);
+            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
+                req.setCat(tbcat);
+            }
+            if (keyword.equals("") || keyword == null) {
+                req.setQ("");
+            } else {
+                req.setQ(keyword);
+            }
+            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
         }
         if (type == 2) {
-            JSONObject re = pddApiService.pddDetail(3846603883l, String.valueOf(1));
-
-            return WeikeResponseUtil.success(re);
+            //京东搜索引擎
+            GoodsReq goodsReq = new GoodsReq();
+            goodsReq.setKeyword(keyword);
+            if (cid != null) {
+                goodsReq.setCid3(Long.valueOf(cid));
+            }
+            goodsReq.setSort(jdorder);
+            goodsReq.setSortName(jdsort);
+            goodsReq.setPageIndex(pageNo);
+            goodsReq.setPageSize(pageSize);
+            goodsReq.setIsCoupon(jd_coupon);
+            data = jdApiService.serachGoodsAllJd(goodsReq, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
         }
-//        if (type == 3) {
-//            UnionSearchGoodsParamQueryRequest request=new UnionSearchGoodsParamQueryRequest();
-//
-//            request.setPageIndex( 1 );
-//            request.setPageSize( 10 );
-//
-//            try {
-//
-//                UnionSearchGoodsParamQueryResponse response=client.execute(request);
-//                String queryResult = response.getQueryPromotionGoodsByParamResult();
-//
-//                JSONArray jsonObject = JSON.parseArray(queryResult);
-//                for (int i = 0; i < jsonObject.size(); i++) {
-//                    JSONObject o = (JSONObject) jsonObject.get(i);
-//                    //佣金比率 千分比
-//                    Long promotion_rate = o.getLong("promotion_rate");
-//                    //最低团购价 千分比
-//                    Long min_group_price = o.getLong("min_group_price");
-//                    //优惠卷金额 千分比
-//                    Long coupon_discount = o.getLong("coupon_discount");
-//                    //佣金计算
-//                    Float after = Float.valueOf(min_group_price - coupon_discount);
-//                    Float promoto = Float.valueOf(promotion_rate) / 1000;
-//                    Float comssion = Float.valueOf(after * promoto);
-//                    Integer rmb = (int) (comssion * rang);
-//                    Float bondList = (rmb * bonus);
-//                    o.put("bond",bondList);
-//                }
-//
-//                logger.info(response.getQueryPromotionGoodsByParamResult());
-//
-//            } catch (JdException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
+        if (type == 3) {
+            //天猫
+            TbkDgMaterialOptionalRequest req = new TbkDgMaterialOptionalRequest();
+            req.setPageNo(Long.valueOf(pageNo));
+            req.setPageSize(Long.valueOf(pageSize));
+            req.setIsTmall(true);
+            req.setSort(tbsort);
+            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
+                req.setCat(tbcat);
+            }
+            if (keyword.equals("") || keyword == null) {
+                req.setQ("");
+            } else {
+                req.setQ(keyword);
+            }
+            req.setQ(keyword);
+            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
+            return WeikeResponseUtil.success(data);
+        }
         return null;
     }
 
@@ -146,13 +141,32 @@ public class ShopGoodController {
      */
     @ApiOperation(value = "商品详情", notes = "单个ID")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodId", value = "商品Id", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "goodId", value = "商品Id", required = true, dataType = "Long")
     })
-    @PostMapping("/Detail")
-    public WeikeResponse Detail(@RequestParam(value = "goodId", required = true) Integer goodId
-    ) {
-        JSONObject jsonObject = pddApiService.pddDetail(goodId.longValue(), "7");
-        return WeikeResponseUtil.success(jsonObject);
+    @LoginRequired
+    @GetMapping("/Detail")
+    public WeikeResponse Detail(HttpServletRequest request, Long goodId, Integer type) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        String key = "Detail:" + type.toString() + uid + goodId;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
+        JSONObject var = new JSONObject();
+        if (type == 0) {
+            var = taoBaoApiService.deatil(goodId);
+        }
+        if (type == 1) {
+            var = pddApiService.pddDetail(goodId);
+        }
+        if (type == 2) {
+            var = jdApiService.jdDetail(goodId);
+        }
+        redisUtil.set(key, var.toJSONString());
+        redisUtil.expire(key, 20, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(var);
     }
 
 

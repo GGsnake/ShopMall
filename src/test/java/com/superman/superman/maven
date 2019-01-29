@@ -1,0 +1,2 @@
+mvn install:install-file -Dfile=D:\taobaosdk.jar -DgroupId=com.taobaosdk -DartifactId=taobaosdk -Dversion=1.0.0 -Dpackaging=jar
+

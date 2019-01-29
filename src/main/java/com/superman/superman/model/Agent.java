@@ -19,4 +19,5 @@ public class Agent {
     private String agentName;
     private String userName;
     private Date createTime;
+    private Date updateTime;
 }

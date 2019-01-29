@@ -2,12 +2,10 @@ package com.superman.superman.dao;
 
 import com.superman.superman.model.Agent;
 import com.superman.superman.model.Userinfo;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/23.
@@ -15,6 +13,8 @@ import java.util.List;
 public interface AgentDao {
     @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
     List<Agent> queryForUserId(Integer id);
+    @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
+    Agent queryForUserIdSimple(Integer id);
 
     @Select("SELECT userId FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
     List<Long> queryForUserIdLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
@@ -22,9 +22,21 @@ public interface AgentDao {
     @Select("SELECT userId,createTime FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
     List<Agent> queryForUserIdAgentLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
-
+    /**
+     * 统计我的一级粉丝或者代理
+     * @param id
+     * @return
+     */
     @Select("SELECT ifnull(count(userId),0) FROM agent WHERE agentId= #{id} and status=0")
     Integer queryForUserIdCount(@Param("id") Long id);
+
+    /**
+     * 统计我的一级粉丝或者代理
+     * @param id
+     * @return
+     */
+    @Select("SELECT ifnull(count(userId),0) FROM agent WHERE agentId= #{id} and status=0 and  to_days(createTime) = to_days(now())")
+    Integer queryForUserIdCountToday(@Param("id") Long id);
 
 
     @Select("SELECT count(agentId) FROM agent WHERE agentId= #{id}")
@@ -37,8 +49,20 @@ public interface AgentDao {
     @Select("SELECT userId,agentId FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
     List<Agent> countNoMyFans(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
-    @Select("SELECT count(userId) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id})  ")
+    /**
+     * 统计我的非直属粉丝
+     * @param id
+     * @return
+     */
+    @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id})  ")
     Integer countNoMyFansSum(@Param("id") Long id);
+    /**
+     * 统计我的非直属粉丝(按时间)
+     * @param id
+     * @return
+     */
+    @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) and  to_days(createTime) = to_days(now())")
+    Integer countNoMyFansSumToday(@Param("id") Long id);
 
 
     @Select("SELECT count(userId)FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
@@ -62,7 +86,28 @@ public interface AgentDao {
     @Select("SELECT score FROM userinfo WHERE pddPid=#{id}")
     Integer queryUserScore(String id);
 
+    @Select("SELECT score FROM userinfo WHERE tbPid=#{id}")
+    Integer queryUserScoreTb(Long id);
+
+    @Select("SELECT score FROM userinfo WHERE jdPid=#{id}")
+    Integer queryUserScoreJd(Long id);
+
 
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
     int insert(Agent agent);
+    @Update("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
+    Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
+
+    @Update("update agent set status=1,updateTime=now() where userId=#{id}")
+    Integer upbeComeBoss(Integer uid);
+
+
+    @Update("update userinfo set roleId=1 ,score=0,updateTime=now() where id=#{uid}")
+    Integer beComeBoss(Integer uid);
+
+
+    @Update("update agent set updateTime=now() where userId=#{uid}")
+    Integer upAgentTime(@Param("uid")Integer uid);
+    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
+    int insertAgLog(Agent agent);
 }

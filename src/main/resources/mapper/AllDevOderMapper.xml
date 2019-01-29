@@ -3,26 +3,18 @@
 <mapper namespace="com.superman.superman.dao.AllDevOderMapper">
 
     <sql id="Base_Column_Pdd">
-    goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn
+      goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn,p_id
   </sql>
-
-
-    <select id="selectInFans" resultType="com.superman.superman.model.Userinfo">
-        SELECT id,userName,userPhone,pddPid,tbPid,jdPid
-        FROM userinfo
-        <if test="list!= null">
-            WHERE id in
-            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        and status=0
-    </select>
-
+    <sql id="Base_Column_Jd">
+      skuId,estimateFee,skuName,orderTime,orderId,positionId
+  </sql>
+    <sql id="Base_Column_Tb">
+    income_rate,pub_share_pre_fee,odercreate_time as odercreateTime,num_iid as numIid ,commission,item_title as itemTitle,trade_id as tradeId,adzone_id as adzoneId
+  </sql>
 
     <select id="queryPddPageSize" resultType="com.superman.superman.req.OderPdd">
         SELECT
-        goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn,p_id
+        <include refid="Base_Column_Pdd"/>
         FROM oder
         WHERE p_id in (Select pddPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
         and status=0) and status=0 union Select pddPid from userinfo WHERE id =#{id})
@@ -46,5 +38,58 @@
             </foreach>
         </if>
     </select>
+    <select id="queryTbPageSizeCount" resultType="java.lang.Integer">
+        SELECT IFNULL(count(id),0)
+        FROM tboder
+        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and tk_status in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryTbPageSize" resultType="com.superman.superman.model.Tboder">
+        SELECT
+        <include refid="Base_Column_Tb"/>
+        FROM tboder
+        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and tk_status in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
+    <select id="queryJdPageSize" resultType="com.superman.superman.model.JdOder">
+        SELECT
+        <include refid="Base_Column_Jd"/>
+        FROM jdoder
+        WHERE positionId in (Select jdPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select jdPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and validCode in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
 
+
+    <select id="queryJdPageSizeCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM jdoder
+        WHERE positionId in (Select jdPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select jdPid from userinfo WHERE id =#{id})
+        <if test="validCode!= null">
+            and validCode in
+            <foreach item="item" index="index" collection="jd" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>
