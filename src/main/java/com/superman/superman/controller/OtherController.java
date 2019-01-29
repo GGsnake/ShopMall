@@ -152,7 +152,7 @@ public class OtherController {
         }
         Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
         Long add = redisTemplate.opsForSet().add(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
-        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/queryCodeUrl?code=" + code, uid);
+        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
 

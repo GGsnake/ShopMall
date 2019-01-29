@@ -137,11 +137,11 @@ public class MemberController {
         }
         JSONObject data = new JSONObject();
         Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        Long waitMoney = moneyService.queryCashMoney(Long.valueOf(uid), 0, user);
-        Long finishMoney = moneyService.queryCashMoney(Long.valueOf(uid), 1, user);
+        Long waitMoney = moneyService.queryCashMoney(0, user);
+        Long finishMoney = moneyService.queryCashMoney(1, user);
         data.put("waitMoney", waitMoney);
         data.put("finishMoney", finishMoney);
-        data.put("cash", user.getLoginsecret());
+        data.put("cash", user.getCash());
         return WeikeResponseUtil.success(data);
     }
 

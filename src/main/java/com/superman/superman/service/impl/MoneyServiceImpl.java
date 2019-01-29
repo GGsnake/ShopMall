@@ -29,21 +29,15 @@ public class MoneyServiceImpl implements MoneyService {
     private AgentDao agentDao;
     @Autowired
     private OderService oderService;
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
-    @Autowired
-    private OderMapper oderMapper;
-
     @Value("${juanhuang.range}")
     private Integer range;
 
-
     //获取已结算待结算
-    public Long queryCashMoney(@NonNull Long uid, @NonNull Integer status, Userinfo user) {
+    public Long queryCashMoney(@NonNull Integer status, Userinfo user) {
         if (user == null) {
             return null;
         }
+        Long uid = user.getId();
         var roleId = user.getRoleId();
         HashSet<Long> uidSet = new HashSet<>();
         uidSet.add(uid);
@@ -63,45 +57,143 @@ public class MoneyServiceImpl implements MoneyService {
                     }
                     uidSet.add(useId.getId());
                 }
-                Long allMoney =0l;
-                if (uidSet.size()!=0){
-                    allMoney=oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), status);
+                Long allMoney = 0l;
+                allMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), status);
+                if (allMoney != 0) {
+                    allMoney = allMoney * range / 100;
                 }
 
                 Long agentMoneyTemp = 0l;
                 for (Userinfo userio : agentIdList) {
                     HashSet<Long> agentUidSet = new HashSet<>();
-                    Long agentId = userio.getId();
-                    agentUidSet.add(agentId);
+                    agentUidSet.add(userio.getId());
                     //根据每个代理的不同佣金比率计算我的收入
                     Long myScore = 100l - userio.getScore();
-                    //计算拼多多收入
-
-                    List<Long> agentFansIdList = agentDao.queryForAgentIdNew(agentId.intValue());
-                    if (agentFansIdList != null || agentFansIdList.size() != 0) {
-                        agentUidSet.addAll(agentFansIdList);
+                    //先查询自己的订单预估收入
+                    Long isMyMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(agentUidSet),status);
+                    if (isMyMoney != 0) {
+                        //代理的收入经过平台扣费后再根据代理的佣金比率进行计算
+                        isMyMoney = isMyMoney * range / 100 * myScore / 100;
                     }
-                    Long temp = oderService.superQueryOderForUidList(EveryUtils.setToList(agentUidSet), status);
-                    agentMoneyTemp += temp == 0 ? 0l : temp * myScore / 100;
+                    agentMoneyTemp += isMyMoney;
+                    //查询自己的粉丝下级
+                    List<Long> fansIdList = agentDao.queryForAgentIdNew(userio.getId().intValue());
+                    agentUidSet.addAll(fansIdList);
+                    if (fansIdList == null || fansIdList.size() == 0) {
+                        continue;
+                    }
+                    agentUidSet.clear();
+                    agentUidSet.addAll(fansIdList);
+                    //代理的粉丝贡献的预估收入
+                    Long fansMoney =  oderService.superQueryOderForUidList(EveryUtils.setToList(agentUidSet),status);
+                    if (fansMoney != 0) {
+                        fansMoney = fansMoney * range / 100 * myScore / 100;
+                        agentMoneyTemp += fansMoney;
+                    }
                 }
                 return allMoney + agentMoneyTemp;
 
             //代理
             case 2:
-                Long meIncome = 0l;
-                //查询我的订单收入
-                Long agentScore = Long.valueOf(user.getScore());
-                //查询我的下级粉丝
-                List<Long> agentFansIdList = agentDao.queryForAgentIdNew(uid.intValue());
-                if (agentFansIdList != null || agentFansIdList.size() != 0) {
-                    uidSet.addAll(agentFansIdList);
+                // 佣金比率
+                int score = user.getScore();
+                //先查询自己的订单预估收入
+                Long isMyMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), status);
+                if (isMyMoney != 0) {
+                    //代理的收入经过平台扣费后再根据代理的佣金比率进行计算
+                    isMyMoney = isMyMoney * range / 100 * score / 100;
                 }
-                Long MyMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), status);
-                meIncome = MyMoney == 0 ? 0l : MyMoney * agentScore / 100;
-                return meIncome;
+                //查询自己的粉丝下级
+                List<Long> fansIdList = agentDao.queryForAgentIdNew(uid.intValue());
+                if (fansIdList != null || fansIdList.size() != 0) {
+                    uidSet.clear();
+                    uidSet.addAll(fansIdList);
+                }
+                Long fansMoney = oderService.superQueryOderForUidList(EveryUtils.setToList(uidSet), status);
+                if (fansMoney != 0) {
+                    fansMoney = fansMoney * range / 100 * score / 100;
+                }
+                return fansMoney + isMyMoney;
             //粉丝
             case 3:
                 return 0l;
+            default:
+                log.warning("switch穿透" + System.currentTimeMillis());
+                break;
+
+        }
+        return 0l;
+    }
+
+    /**
+     * 查询用户的预估收入
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public Long queryCashMoney(@NonNull Userinfo user) {
+        Long uid = user.getId();
+        var roleId = user.getRoleId();
+        HashSet<Long> uidSet = new HashSet<>();
+        Long bossFansMoney = 0l;
+        switch (roleId) {
+            case 1:
+                //查询代理或者直属粉丝
+                List<Userinfo> userInfosList = agentDao.superQueryFansUserInfo(uid.intValue());
+                //代理用户信息列表
+                ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
+                for (Userinfo useId : userInfosList) {
+                    if (useId == null) {
+                        continue;
+                    }
+                    if (useId.getRoleId() == 2) {
+                        agentIdList.add(useId);
+                        continue;
+                    }
+                    //将直属粉丝先添加至查询预估收入
+                    uidSet.add(useId.getId());
+                }
+                if (uidSet.size() != 0) {
+                    bossFansMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(uidSet));
+                    if (bossFansMoney != 0) {
+                        bossFansMoney = bossFansMoney * range / 100;
+                    }
+
+                }
+                //统计代理的收入
+                Long agentMoneyTemp = 0l;
+                for (Userinfo userio : agentIdList) {
+                    HashSet<Long> agentUidSet = new HashSet<>();
+                    agentUidSet.add(userio.getId());
+                    //根据每个代理的不同佣金比率计算我的收入
+                    Long myScore = 100l - userio.getScore();
+                    //先查询自己的订单预估收入
+                    Long isMyMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(agentUidSet));
+                    if (isMyMoney != 0) {
+                        //代理的收入经过平台扣费后再根据代理的佣金比率进行计算
+                        isMyMoney = isMyMoney * range / 100 * myScore / 100;
+                    }
+                    agentMoneyTemp += isMyMoney;
+
+                    //查询自己的粉丝下级
+                    List<Long> fansIdList = agentDao.queryForAgentIdNew(userio.getId().intValue());
+                    agentUidSet.addAll(fansIdList);
+                    if (fansIdList == null || fansIdList.size() == 0) {
+                        continue;
+                    }
+
+                    agentUidSet.clear();
+                    agentUidSet.addAll(fansIdList);
+
+                    //代理的粉丝贡献的预估收入
+                    Long fansMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(agentUidSet));
+                    if (fansMoney != 0) {
+                        fansMoney = fansMoney * range / 100 * myScore / 100;
+                        agentMoneyTemp += fansMoney;
+                    }
+                }
+                return bossFansMoney + agentMoneyTemp;
             default:
                 log.warning("switch穿透" + System.currentTimeMillis());
                 break;

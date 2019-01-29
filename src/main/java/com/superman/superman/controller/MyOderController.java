@@ -6,6 +6,7 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.OderManager;
 import com.superman.superman.model.Oder;
 import com.superman.superman.redis.RedisUtil;
+import com.superman.superman.service.MemberService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.*;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,6 +31,8 @@ public class MyOderController {
     private RedisUtil redisUtil;
     @Autowired
     private OderManager oderManager;
+    @Autowired
+    private MemberService memberService;
 
     @ApiOperation(value = "我的订单", notes = "灵活搜索")
     @ApiImplicitParams({
@@ -74,21 +77,7 @@ public class MyOderController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        JSONObject data = new JSONObject();
-        data.put("oderSum",100);
-        data.put("inCome",20000);
-        data.put("today", 1000);
-        data.put("todayOder", 20);
-        data.put("todaySettle", 300);
-        data.put("yesday", 200);
-        data.put("yesdayOder", 1200);
-        data.put("yesdaySettle", 2300);
-        data.put("yesMonday", 100);
-        data.put("yesMondayOder", 30);
-        data.put("yesMondaySettle", 600);
-        data.put("lastMonday",500);
-        data.put("lastMondayOder",40);
-        data.put("lastMondaySettle",500);
+        JSONObject data = memberService.queryMemberDetail(Long.valueOf(uid));
         return WeikeResponseUtil.success(data);
     }
 }

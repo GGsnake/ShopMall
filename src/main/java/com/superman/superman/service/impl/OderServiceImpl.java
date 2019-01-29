@@ -246,4 +246,9 @@ public class OderServiceImpl implements OderService {
         return money;
     }
 
+    @Override
+    public Long superQueryOderForUidListToEstimate(List<Long> uidList) {
+        return   oderMapper.superQueryOderForUidListToEstimate(uidList);
+    }
+
 }

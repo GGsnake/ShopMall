@@ -37,6 +37,12 @@ public interface MemberService {
      * @return
      */
     JSONObject queryMemberDetail(Long userId,Integer myid);
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    JSONObject queryMemberDetail(Long userId);
 
 
 

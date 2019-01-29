@@ -254,7 +254,7 @@ public class UserController {
         SmsSendResponse result = SmsSendDemo.getSms(phone, String.valueOf(code));
         if (result.getCode().equals("0")) {
             redisTemplate.opsForValue().set(vaild, code);
-            redisTemplate.expire(vaild, 10000, TimeUnit.SECONDS);
+            redisTemplate.expire(vaild, 120, TimeUnit.SECONDS);
             return WeikeResponseUtil.success("验证码发送成功");
         }
         return WeikeResponseUtil.fail("1000242", "短信商未知错误");

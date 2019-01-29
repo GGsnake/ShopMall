@@ -31,7 +31,6 @@
         <result column="p_id" property="pId" jdbcType="VARCHAR"/>
         <result column="promotion_amount" property="promotionAmount" jdbcType="BIGINT"/>
     </resultMap>
-
     <sql id="Base_Column_List">
         <!--
           WARNING - @mbggenerated
@@ -54,10 +53,11 @@
     </select>
 
     <select id="superQueryForListToWait" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as count from userinfo us
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(0,1,2,3)
-        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14)
-        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17)
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
+        count from userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(0,1,2,3) and pdd.settle=0
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14) and tb.settle=0
+        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17) and jd.settle=0
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -67,10 +67,24 @@
     </select>
 
     <select id="superQueryForListToFinsh" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as count from userinfo us
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5
-        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3
-        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode= 18
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
+        count from userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5 and pdd.settle=0
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3 and tb.settle=0
+        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode= 18 and jd.settle=0
+        <if test="list!= null">
+            WHERE us.id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="superQueryOderForUidListToEstimate" resultType="java.lang.Long">
+        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
+        count from userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in (0,1,2,3,5) and pdd.settle=0
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (3,12,14) and tb.settle=0
+        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17,18) and jd.settle=0
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -93,42 +107,140 @@
     </select>
 
     <select id="sumAllDevOderByOderCreateTimeForAgent" resultType="com.superman.superman.dto.MemberDetail">
-        select sum(s.money) as money, sum(s.counts) as sums FROM(SELECT IFNULL(SUM(tb.commission),0)*1000 as money,count(tb.id)
+        select sum(s.money) as money, sum(s.counts) as sums
+        FROM (SELECT IFNULL(SUM(tb.pub_share_pre_fee),0)*100 as money,count(tb.id) as counts FROM tboder tb
+        left join userinfo u on tb.adzone_id=u.tbPid
+        WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tb.odercreate_time between #{tbstartTime} and #{tbendTime} and tb.tk_status in (3,12,14)  and tb.settle=0
+
+        UNION
+        SELECT IFNULL(SUM(pdd.promotion_amount),0) as money ,count(pdd.id) as counts FROM oder pdd
+        left join userinfo u on pdd.p_id=u.pddPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and pdd.order_create_time between #{pddstartTime} and #{pddendTime}
+        and pdd.order_status in (0,1,2,3,5) and pdd.settle=0
+
+        UNION
+        SELECT IFNULL(SUM(jd.estimateFee),0)*100 as money ,count(jd.id) as counts FROM jdoder jd
+        left join userinfo u on jd.positionId=u.jdPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and jd.orderTime between #{jdstartTime} and #{jdendTime} and jd.settle=0
+        and jd.validCode in (16,17,18))as s
+    </select>
+
+  <select id="sumAllDevOderByOderCreateTimeForAgentToSettle" resultType="com.superman.superman.dto.MemberDetail">
+        select sum(s.money) as money
+        FROM (SELECT IFNULL(SUM(tb.pub_share_pre_fee),0)*100 as money,count(tb.id) as counts FROM tboder tb
+        left join userinfo u on tb.adzone_id=u.tbPid
+        WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tb.odercreate_time between #{tbstartTime} and #{tbendTime} and tb.tk_status in (3,12,14)  and tb.settle=1
+
+        UNION
+        SELECT IFNULL(SUM(pdd.promotion_amount),0) as money ,count(pdd.id) as counts FROM oder pdd
+        left join userinfo u on pdd.p_id=u.pddPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and pdd.order_create_time between #{pddstartTime} and #{pddendTime}
+        and pdd.order_status in (0,1,2,3,5) and pdd.settle=1
+
+        UNION
+        SELECT IFNULL(SUM(jd.estimateFee),0)*100 as money ,count(jd.id) as counts FROM jdoder jd
+        left join userinfo u on jd.positionId=u.jdPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and jd.orderTime between #{jdstartTime} and #{jdendTime} and jd.settle=1
+        and jd.validCode in (16,17,18))as s
+    </select>
+  <select id="sumAllDevAllOder" resultType="com.superman.superman.dto.MemberDetail">
+        select sum(s.money) as money , sum(s.counts) as sums
+        FROM (SELECT IFNULL(SUM(tb.pub_share_pre_fee),0)*100 as money,count(tb.id) as counts FROM tboder tb
+        left join userinfo u on tb.adzone_id=u.tbPid
+        WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+         and tb.tk_status in (3,12,14)  and tb.settle=0
+
+        UNION
+        SELECT IFNULL(SUM(pdd.promotion_amount),0) as money ,count(pdd.id) as counts FROM oder pdd
+        left join userinfo u on pdd.p_id=u.pddPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        and pdd.order_status in (0,1,2,3,5) and pdd.settle=0
+
+        UNION
+        SELECT IFNULL(SUM(jd.estimateFee),0)*100 as money ,count(jd.id) as counts FROM jdoder jd
+        left join userinfo u on jd.positionId=u.jdPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+       and jd.settle=0
+        and jd.validCode in (16,17,18))as s
+    </select>
+
+
+
+
+    <select id="sumAllDevOderByOderCreateTimeForAgentGroup">
+        select sum(s.money) as money, sum(s.counts) as sums FROM(
+        SELECT IFNULL(SUM(tb.commission),0)*1000 as money,count(tb.id)
         as counts FROM
         tboder tb left join userinfo u on tb.adzone_id=u.tbPid
         WHERE u.id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and tb.odercreate_time between #{tbstartTime} and #{tbendTime}  and tb.tk_status in ('3','12','14')
+        and tb.odercreate_time between #{tbstartTime} and #{tbendTime} and tb.tk_status in ('3','12','14')
         UNION
         SELECT IFNULL(SUM(tb.promotion_amount),0) as money ,count(tb.id) as counts FROM
         oder tb left join userinfo u on tb.p_id=u.pddPid WHERE u.id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and tb.order_create_time between #{pddstartTime} and #{pddendTime}   and tb.order_status in (0,1,2,3,5)) as s
+        and tb.order_create_time between #{pddstartTime} and #{pddendTime} and tb.order_status in (0,1,2,3,5)) as s
     </select>
 
-
-    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.superman.superman.model.Oder">
-        <!--
-          WARNING - @mbggenerated
-          This element is automatically generated by MyBatis Generator, do not modify.
-        -->
-        select
-        <include refid="Base_Column_List"/>
-        from oder
-        <where>
-            <if test="oder.pId != null">
-                And p_id = #{oder.pId}
-            </if>
-            <if test="oder.orderStatus != null">
-                And order_status = #{oder.orderStatus}
-            </if>
-        </where>
+    <select id="countOpenOderForAgentGroupCreateTime" resultType="java.lang.Integer">
+        select IFNULL(sum(s.open),0)
+        FROM (SELECT count(tb.adzone_id) as open FROM tboder tb
+        left join userinfo u on tb.adzone_id=u.tbPid
+        WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and tb.odercreate_time between #{tbstartTime} and #{tbendTime}  and tb.settle=0  and tb.tk_status in (3,12,14) group by tb.adzone_id
+        UNION
+        SELECT Count(pdd.p_id)  as open FROM oder pdd
+        left join userinfo u on pdd.p_id=u.pddPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and pdd.order_create_time between #{pddstartTime} and #{pddendTime}
+        and pdd.order_status in (0,1,2,3,5) and pdd.settle=0 group by pdd.p_id
+        UNION
+        SELECT  count(jd.positionId) as open FROM jdoder jd
+        left join userinfo u on jd.positionId=u.jdPid WHERE u.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and jd.orderTime between #{jdstartTime} and #{jdendTime}
+        and jd.validCode in (16,17,18) and jd.settle=0   group by jd.positionId
+        )as s
     </select>
-
 
 
 </mapper>
