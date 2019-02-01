@@ -1,7 +1,7 @@
 package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.dto.UpdateWxOpenId;
+import com.superman.superman.req.UpdateWxOpenId;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.TokenModel;
@@ -13,9 +13,9 @@ import com.superman.superman.service.LogService;
 import com.superman.superman.service.TokenService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
+import com.superman.superman.utils.sms.SmsSendResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by liujupeng on 2018/11/6.
  */
+@CrossOrigin(origins = "*")
 @RestController
 public class UserController {
 
@@ -44,11 +45,9 @@ public class UserController {
     @PostMapping("/index")
     public User redisIndex(HttpServletRequest request) {
         request.getHeader("token");
-
         return null;
     }
 
-//
 //    @PostMapping(value = "/createUser")
 //    public Result createUser(@RequestParam(value = "mobile") String mobile,
 //                             @RequestParam(value = "pwd") String pwd,
@@ -99,18 +98,18 @@ public class UserController {
         if (phone == null || validate == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        Integer code = (Integer) redisTemplate.opsForValue().get("login:" + phone);
+        Integer code = (Integer) redisTemplate.opsForValue().get(Constants.SMS_LOGIN + phone);
 
-        if (code==null||!validate.equals(code.toString())) {
+        if (code == null || !validate.equals(code.toString())) {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
         Userinfo user = userinfoMapper.selectByPhone(phone);
         if (user == null) {
-            UserRegiser re=new UserRegiser();
+            UserRegiser re = new UserRegiser();
             re.setRoleId(3);
             re.setUserphone(phone);
             Boolean flag = userServiceApi.createUser(re);
-            if (!flag){
+            if (!flag) {
                 return WeikeResponseUtil.fail("1000142", "创建用户失败 请重试");
             }
             user = userinfoMapper.selectByPhone(phone);
@@ -121,12 +120,12 @@ public class UserController {
         Long id = user.getId();
         String wxopenid = user.getWxopenid();
         if (wxopenid == null) {
-            JSONObject data=new JSONObject();
+            JSONObject data = new JSONObject();
             String vai = "phone_token:" + UUID.randomUUID();
-            redisTemplate.opsForValue().set(vai,phone);
-            redisTemplate.expire(vai,600, TimeUnit.SECONDS);
-            data.put("message","未绑定微信号 请绑定");
-            data.put("phone_token",vai);
+            redisTemplate.opsForValue().set(vai, phone);
+            redisTemplate.expire(vai, 600, TimeUnit.SECONDS);
+            data.put("message", "未绑定微信号 请绑定");
+            data.put("phone_token", vai);
             return WeikeResponseUtil.success(data);
         }
         //异步上报登录记录
@@ -242,28 +241,23 @@ public class UserController {
         return WeikeResponseUtil.success(model);
     }
 
-
     @PostMapping("/sendSMS")
     public WeikeResponse sendSMS(String phone) {
-        if (phone==null||!EveryUtils.isMobile(phone)){
-            return WeikeResponseUtil.fail("1000240","请输入正确的手机号");
-
+        if (phone == null || !EveryUtils.isMobile(phone)) {
+            return WeikeResponseUtil.fail("1000240", "请输入正确的手机号");
         }
-        String vaild = "login:" + phone;
-        Boolean aBoolean = redisTemplate.hasKey(vaild);
-        if (aBoolean){
-            return WeikeResponseUtil.fail("1000241","短信发送间隔太快，请稍后");
-
+        String vaild = Constants.SMS_LOGIN + phone;
+        if (redisTemplate.hasKey(vaild)) {
+            return WeikeResponseUtil.fail("1000241", "短信发送间隔太快，请稍后");
         }
         int code = (int) ((Math.random() * 9 + 1) * 100000);
-        String content = "此次登录验证码" + code + "，验证码五分钟过期【券皇】";
-        int result = SmsUtil.sendSmsLogin(phone, content);
-        if (result == 200) {
+        SmsSendResponse result = SmsSendDemo.getSms(phone, String.valueOf(code));
+        if (result.getCode().equals("0")) {
             redisTemplate.opsForValue().set(vaild, code);
-            redisTemplate.expire(vaild,60, TimeUnit.SECONDS);
-            return  WeikeResponseUtil.success("验证码发送成功");
+            redisTemplate.expire(vaild, 120, TimeUnit.SECONDS);
+            return WeikeResponseUtil.success("验证码发送成功");
         }
-        return WeikeResponseUtil.fail("1000242","短信商发送间隔太快，请稍后");
+        return WeikeResponseUtil.fail("1000242", "短信商未知错误");
     }
 
 

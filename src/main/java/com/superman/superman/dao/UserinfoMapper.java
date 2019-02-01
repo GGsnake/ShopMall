@@ -1,10 +1,9 @@
 package com.superman.superman.dao;
 
-import com.superman.superman.dto.UpdateWxOpenId;
+import com.superman.superman.req.UpdateWxOpenId;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.UserRegiser;
 import org.apache.ibatis.annotations.*;
-
 import java.util.List;
 
 @Mapper

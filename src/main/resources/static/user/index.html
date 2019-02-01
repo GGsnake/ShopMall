@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>券皇登录注册</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background-color:#DFEBFF;
+			width: 100%;
+			height: 100%;
+		}
+		.register-container{
+			width: 100%;
+			height: 100%;
+		}
+		img{
+			width: 100%;
+			height: 20%;
+		}
+		.register-container .item{
+			width: 84%;
+			margin: 15px auto;
+		}
+		
+		.register-container input{
+			width: 98%;
+			height: 45px;
+			border-radius: 8px;
+			border: 1px solid #DBA5C8;
+			margin-top: 15px;
+			padding-left: 1%;
+			margin: 0 auto;
+			background-color: #DFEBFF;
+			outline: none;
+			font-size: 17px;
+		}
+		.register-container input:focus{
+			outline-offset: 0;
+            outline: -webkit-focus-ring-color auto -2px;
+            background-color: #fefffe;
+            outline: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 5px rgba(226,25,69,.3);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 5px rgba(226,25,69,0.3);
+			color: #000;
+		}
+		.register-container .item .verificationcode{
+			width: 65%;
+		}
+		.register-container .item .verificodebtn{
+			width: 30%;
+			height: 40px;
+			background-color: #e21945;
+			border: none;
+			border-radius:10px;
+			color: #fff; 
+			outline: none;
+		}
+		.register-container .item .verificodebtn:disabled{
+			background-color: #DBA5C8;
+			color: #000;
+		}
+		.register-container .invitation{
+			display: none;
+		}
+		.register-container .register{
+			width: 100%;
+			height: 45px;
+			border: none;
+			border-radius: 45px;
+			background-color: #e21945;
+			color: #fff;
+			margin-top: 25px;
+			margin-bottom: 25px;
+			outline: none;
+			font-size: 20px;
+		}
+		
+		.register-container .register:focus{
+			color: #000;
+		}
+	</style>
+	<script src="jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="layer.mobile-v2.0/layer_mobile/layer.js"></script>
+	<script>
+		var smsphonenumber;
+
+		$(document).ready(function(){
+			var vaildBtn=$('.verificodebtn');
+			// 点击获取验证码
+			$(".verificodebtn").click(function() {
+					
+				var phone=$('.phonenumber').val();
+				var vaild =$('.verificationcode').val();
+				var phoneFormat=/^[1][34578][0-9]{9}$/;
+				if (!phoneFormat.test(phone)) {
+					layer.open({
+						content:'请输入正确的手机号码',
+						skin:'',
+						time:2,
+					});
+					$('.phonenumber').focus();
+					return false;
+				}
+
+				if (phone.length>0 && vaild.length>0) {
+					layer.open({
+						content:'您已经有验证码',
+						skin:'',
+						time:2,
+					});
+					vaildBtn.html("重新获取");
+					return false;
+				}
+				getVerificode();
+
+			});
+			// 获取验证码方法
+			function getVerificode() {
+				var phone=$('.phonenumber').val();
+				// var vaildBtn=$('.verificodebtn');
+				smsphonenumber=phone;
+				$.ajax({
+					type: "POST",
+					url: "http://www.quanhuangmaoyi.com:8080/sendSMS",
+					data:"phone="+phone,
+					dataType: 'json',
+					success: function(data) {
+						if(data.success==true){
+							layer.open({
+								content:'验证码发送成功',
+								skin:'',
+								time:2
+							});
+							var times = 120;
+							vaildBtn.prop('disabled',true);
+							var t = setInterval(function() {
+								times--;
+								vaildBtn.html('验证码('+times + ")s");
+								if (times == 0) {
+									clearInterval(t);
+									vaildBtn.html("重新获取");
+									// verificode = true;
+									vaildBtn.prop('disabled',false);
+								}
+								
+							}, 1000);
+									
+						}else{
+							layer.open({
+								content: ""+data.error.errMsg,
+								skin:'',
+								time:2
+							});
+							vaildBtn.html("重新获取");
+							return false;
+						}
+					}
+				});
+			
+			}
+			// 注册方法
+			function register(){
+				var phone=$('.phonenumber').val();
+				var vaild =$('.verificationcode').val();
+
+				if(phone.length==0){
+					layer.open({
+						content:"请输入手机号码",
+						skin: '',
+						time:2//2秒后自动关闭
+					});
+					return false;
+				}
+				if(vaild.length==0){
+					layer.open({
+						content:"请输入验证码",
+						skin: '',
+						time:2//2秒后自动关闭
+					});
+					return false;
+				}
+				
+				if(phone!=smsphonenumber){
+					layer.open({
+						content:"手机号码跟获取验证码的号码不一致",
+						skin: '',
+						time:2//2秒后自动关闭
+					});
+					return false;
+					
+				}
+				var param={
+					"phone":phone,
+					"vaild":vaild,
+					"code":100021
+				}
+				$.ajax({
+					type:"POST",
+					url:"http://www.quanhuangmaoyi.com:8080/other/createUser",
+					data:param,
+					dataType:'json',
+					success:function(data){
+						if(data.success==true){
+							layer.open({
+								content:"注册成功！",
+								skin: '',
+								time:2//2秒后自动关闭
+							});
+
+						}else{
+							layer.open({
+								content:""+data.error.errMsg,
+								skin: '',
+								time:2//2秒后自动关闭
+							});
+							return false;
+							
+						}
+					}
+				})
+
+			}
+			// 邀请码
+			var code=GetQueryString("code");
+			console.log(code);
+		    function GetQueryString(name) {		
+		        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
+		        var r = window.location.search.substr(1).match(reg);
+		        if (r!=null) return (r[2]); return null;
+		    }
+		    // 点击注册
+			$('.register').on('click',function(){
+				var phone=$('.phonenumber').val();
+				var verificationcode=$('.verificationcode').val();
+				var phoneFormat=/^[1][34578][0-9]{9}$/;
+				
+				if (!phoneFormat.test(phone)) {
+					layer.open({
+						content:'请输入正确的手机号码',
+						skin:'',
+						time:2
+					});
+					$('.phonenumber').focus();
+					return;
+				}
+				if (!verificationcode) {
+					$('.verificationcode').focus();
+					document.querySelector('.verificationcode').placeholder='请填写您的验证码';
+					return false;
+				}
+				register();
+			});
+		})
+	</script>
+</head>
+<body>
+	<div class="register-container">
+		<img src="zhuche_bg@2x.png">
+		<form>
+			<div class="item">
+				<input type="text" name="phonenumber" id="phonenumber" class="phonenumber" placeholder="手机号码" oninput="if(value.length>11)value=value.slice(0,11)">
+			</div>
+			<div class="item">
+				<input type="text" name="verificationacode" id="verificationcode" class="verificationcode" placeholder="验证码" oninput="if(value.length>6)value=value.slice(0,6)">
+				<button type="button" class="verificodebtn">发送验证码</button>
+			</div>
+			<div class="item">
+				<button type="button" class="register">注册</button>
+			</div>
+		</form>
+	</div>
+	
+
+    
+</body>
+</html>

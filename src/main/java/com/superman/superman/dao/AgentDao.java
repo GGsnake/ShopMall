@@ -46,11 +46,12 @@ public interface AgentDao {
     List<Agent> countRecommdToSum(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
 
-    @Select("SELECT userId,agentId FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
+    @Select("SELECT userId,agentId FROM agent WHERE agentId IN (SELECT userId FROM agent WHERE agentId= #{id}) " +
+            "ORDER BY createTime limit #{star},#{end}")
     List<Agent> countNoMyFans(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
     /**
-     * 统计我的非直属粉丝
+     * 统计我的非直属粉丝数量
      * @param id
      * @return
      */
@@ -80,6 +81,11 @@ public interface AgentDao {
     @Select("Select u.Id,u.roleId,u.score from agent a left join userinfo u on a.userId=u.id and a.status=0 WHERE a.agentId=#{id}  and a.status=0")
     List<Userinfo> superQueryFansUserInfo(Integer id);
 
+    /**
+     * 根据代理id查询粉丝id
+     * @param id
+     * @return
+     */
     @Select("SELECT userId FROM agent WHERE agentId = #{id} and status=0")
     List<Long> queryForAgentIdNew(Integer id);
 

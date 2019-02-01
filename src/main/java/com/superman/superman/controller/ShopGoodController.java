@@ -1,37 +1,21 @@
 package com.superman.superman.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
-import com.superman.superman.req.JdSerachReq;
-import com.superman.superman.req.PddSerachBean;
 import com.superman.superman.service.JdApiService;
-import com.superman.superman.service.MemberService;
 import com.superman.superman.service.TaoBaoApiService;
-import com.superman.superman.service.UserApiService;
 import com.superman.superman.service.impl.PddApiServiceImpl;
 import com.superman.superman.utils.*;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import jd.union.open.goods.query.request.GoodsReq;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 /**
  * Created by liujupeng on 2018/11/8.
@@ -51,18 +35,25 @@ public class ShopGoodController {
     private RedisUtil redisUtil;
 
     /**
+     * 超级搜索引擎
+     *
      * @param type    平台 0 拼多多 1 淘宝 2京东 3天猫
-     * @param keyword
-     * @param sort
+     * @param  //具体参数和第三方平台api文档的一直
      * @return
      */
     @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type, @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword, @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon, @RequestParam(value = "jd_coupon", defaultValue = "1", required = false) Integer jd_coupon, @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize, @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
-                                Integer cid, Long opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort, @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder, String tbcat
-
-    ) {
+    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
+                                @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
+                                @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,
+                                @RequestParam(value = "jd_coupon", defaultValue = "1", required = false) Integer jd_coupon,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                                @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort,
+                                @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort,
+                                @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder,
+                                String tbcat, Integer cid, Long opt) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -136,13 +127,12 @@ public class ShopGoodController {
     }
 
     /**
-     * @param goodId
+     * 商品详情接口
+     *
+     * @param goodId 商品Id
+     * @param type   平台类型 0 淘宝天猫 1 拼多多 2 京东
      * @return
      */
-    @ApiOperation(value = "商品详情", notes = "单个ID")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodId", value = "商品Id", required = true, dataType = "Long")
-    })
     @LoginRequired
     @GetMapping("/Detail")
     public WeikeResponse Detail(HttpServletRequest request, Long goodId, Integer type) {
@@ -154,19 +144,19 @@ public class ShopGoodController {
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
-        JSONObject var = new JSONObject();
+        JSONObject data = new JSONObject();
         if (type == 0) {
-            var = taoBaoApiService.deatil(goodId);
+            data = taoBaoApiService.deatil(goodId);
         }
         if (type == 1) {
-            var = pddApiService.pddDetail(goodId);
+            data = pddApiService.pddDetail(goodId);
         }
         if (type == 2) {
-            var = jdApiService.jdDetail(goodId);
+            data = jdApiService.jdDetail(goodId);
         }
-        redisUtil.set(key, var.toJSONString());
+        redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, 20, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(var);
+        return WeikeResponseUtil.success(data);
     }
 
 

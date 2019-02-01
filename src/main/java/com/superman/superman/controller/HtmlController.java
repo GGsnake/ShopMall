@@ -22,7 +22,7 @@ public class HtmlController {
      */
     @RequestMapping("/queryCodeUrl")
     public String queryUserUrl() {
-        return "register";
+        return "index";
     }
 
 }

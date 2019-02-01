@@ -50,5 +50,9 @@ public class Constants {
      * 邀请记录
      */
     public static final String INV_LOG="inv_log";
+    /**
+     * 邀请记录
+     */
+    public static final String SMS_LOGIN="login:";
 
 }

@@ -1,36 +1,23 @@
 package com.superman.superman.controller;
-
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.AgentDao;
-import com.superman.superman.dao.SysAdviceDao;
+import com.superman.superman.dao.SettingDao;
 import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.model.*;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
-import io.swagger.models.Model;
-import io.swagger.models.properties.Property;
+import com.superman.superman.utils.sign.EverySign;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by liujupeng on 2018/12/17.
  */
+@CrossOrigin(origins = "*")
 @Log
 @RestController
 @RequestMapping("other")
@@ -46,6 +34,8 @@ public class OtherController {
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     private OtherService otherService;
+    @Autowired
+    private SettingDao settingDao;
     @Autowired
     private AgentDao agentDao;
     @Autowired
@@ -67,6 +57,8 @@ public class OtherController {
 
     @Autowired
     private SysDaygoodsService daygoodsService;
+    @Autowired
+    private SysFriendDtoService sysFriendDtoService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -91,18 +83,19 @@ public class OtherController {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        if (goodId == null && jdurl == null)
+        if (goodId == null && jdurl == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        Long tbpid = userinfo.getTbpid();
-        String jdpid = userinfo.getJdpid();
         JSONObject data = new JSONObject();
+        //缓存
         String key = "convert:" + devId.toString() + uid + goodId + jdurl;
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
+
         if (devId == 0) {
-            data = taoBaoApiService.convertTaobao(tbpid, goodId);
+            data = taoBaoApiService.convertTaobao( userinfo.getTbpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -114,8 +107,7 @@ public class OtherController {
         }
 
         if (devId == 1) {
-            String pddpid = userinfo.getPddpid();
-            data = pddApiService.convertPdd(pddpid, goodId);
+            data = pddApiService.convertPdd( userinfo.getPddpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -126,7 +118,7 @@ public class OtherController {
             data.put("qrcode", QINIUURL + uland_url);
         }
         if (devId == 2) {
-            data = jdApiService.convertJd(jdpid, jdurl);
+            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -140,16 +132,6 @@ public class OtherController {
         redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, 500, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
-    }
-
-
-    @GetMapping("/qrcode")
-    public WeikeResponse qrcode(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        ByteArrayOutputStream img = otherService.crateQRCode("http://www.baidu.com");
-        String upload = EveryUtils.upload(img.toByteArray(), "qrcode/", ".png");
-        log.warning(upload);
-        return null;
-
     }
 
     /**
@@ -170,47 +152,49 @@ public class OtherController {
         }
         Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
         Long add = redisTemplate.opsForSet().add(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
-        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/queryCodeUrl?code=" + code, uid);
+        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
 
     /**
-     * 处理二维码
+     * 处理二维码进来的注册用户
      *
-     * @param user
      * @param code
      * @return
      */
-    @PostMapping("/queryCode")
-    public String queryCode(User user, Integer code) {
-        String userPhone = user.getUserPhone();
-
-        String loginPwd = user.getLoginPwd();
-        if (loginPwd == null || userPhone == null) {
-            return "addUserError";
-        }
+    @PostMapping("/createUser")
+    public WeikeResponse createUser(@RequestParam(value = "phone") String userPhone,
+                                    @RequestParam(value = "vaild") String vaild,
+                                        @RequestParam(value = "code") String code) {
         Map phone = EverySign.isPhone(userPhone);
         Boolean flag = (Boolean) phone.get("flag");
         if (!flag) {
-            return "addUserError";
+            return WeikeResponseUtil.fail("1000199","请填写正确的手机号");
+        }
+        String key = Constants.SMS_LOGIN + userPhone;
+        Integer isVaild = (Integer) redisTemplate.opsForValue().get(key);
+        if (isVaild==null||!isVaild.toString().equals(vaild)) {
+            return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
         UserRegiser userinfo = new UserRegiser();
         userinfo.setUserphone(userPhone);
-        userinfo.setLoginpwd(loginPwd);
-        Boolean userByPhone = userApiService.createUserByPhone(userinfo);
-        if (userByPhone == false) {
-            return "addUserError";
+        userinfo.setLoginpwd(code);
+        Integer status = userApiService.createUserByPhone(userinfo);
+        if (status == 2) {
+            return WeikeResponseUtil.fail("1000200","该手机号已经注册过");
+        }
+        if (status == 4) {
+            return WeikeResponseUtil.fail("1000201","未知错误 请重试");
         }
         //获取用户Id
         Userinfo data = userinfoMapper.selectByPhone(userPhone);
         //根据邀请码查询代理的Id
-        Integer agentId = userinfoMapper.queryUserCode(code.longValue());
+        Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
         Agent agent = new Agent();
         agent.setUserId(data.getId().intValue());
         agent.setAgentId(agentId);
         agentDao.insert(agent);
-        return "addUserSuccess";
-
+        return WeikeResponseUtil.success("注册成功");
     }
 
     @PostMapping("/dayGoods")
@@ -222,8 +206,21 @@ public class OtherController {
         }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = daygoodsService.queryList(param);
-        redisUtil.set(key,data.toJSONString());
-        redisUtil.expire(key,260, TimeUnit.SECONDS);
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 300, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(data);
+    }
+    @PostMapping("/friend")
+    public WeikeResponse friend(PageParam pageParam) {
+        //查询列表数据
+        String key = "friend:" + pageParam.getPageNo();
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
+        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
+        JSONObject data = sysFriendDtoService.queryList(param);
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 300, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -249,6 +246,21 @@ public class OtherController {
         data.put("pageCount", sum);
         redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, 5, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(data);
+    }
+
+    /**
+     * 首页轮播图
+     */
+    @GetMapping("/banner")
+    public WeikeResponse banner() {
+        String key = "banner";
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(redisUtil.get(key));
+        }
+        List<String> data =settingDao.queryBanner();
+        redisUtil.set(key, data.toString());
+        redisUtil.expire(key, 100, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

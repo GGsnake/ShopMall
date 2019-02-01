@@ -43,5 +43,11 @@ public interface OderService {
      * @return
      */
     Long superQueryOderForUidList(List<Long> uidList, Integer status);
+    /**
+     * 统计我的预估收入（未结算和已经结算混合一起）
+     * @param uidList
+     * @return
+     */
+    Long superQueryOderForUidListToEstimate(List<Long> uidList);
 
 }

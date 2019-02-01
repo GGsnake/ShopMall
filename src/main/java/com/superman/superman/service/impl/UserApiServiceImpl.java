@@ -5,18 +5,16 @@ import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
 import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.UserApiService;
+import com.superman.superman.utils.EveryUtils;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
+
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/6.
@@ -24,56 +22,58 @@ import org.springframework.util.DigestUtils;
 @Log
 @Service("userServiceApi")
 public class UserApiServiceImpl implements UserApiService {
-    private String REDIS_PRIFEX = "token:";
-    private Long EXPRESS_TIME = 36000l;
     @Autowired
     private AgentDao agentDao;
     @Autowired
     private HotUserMapper hotUserMapper;
-
     @Autowired
     private UserinfoMapper userinfoMapper;
-
-
-    @Override
-    public void query() {
-
-
-    }
-
-
     /**
      * 创建新用户
-     * @param usr
+     *
+     * @param regiser
      * @return
      */
     @Override
-    public Boolean createUser(UserRegiser usr) {
-        JSONObject data = createPid();
-        if (data == null || data.size() == 0) {
-            log.warning("警告PId不足"+System.currentTimeMillis()/1000);
-            return false;
+    @Transactional
+    public Boolean createUser(UserRegiser regiser) {
+        JSONObject data = (JSONObject) createPid();
+        Long tb = data.getLong("tb");
+        String pdd = data.getString("pdd");
+        String jd = data.getString("jd");
+        if (data == null || tb == null|| pdd == null || jd == null) {
+            log.warning("警告PId不足" + EveryUtils.getNowday());
+            throw  new RuntimeException("新增用户失败原因 PID不足");
         }
-        usr.setTbpid(data.getLong("tb"));
-        usr.setPddpid(data.getString("pdd"));
-        int flag = userinfoMapper.insert(usr);
-        createInvCode(usr.getUserphone());
-        return flag == 0 ? false : true;
+        regiser.setTbpid(tb);
+        regiser.setPddpid(pdd);
+        regiser.setJdpid(jd);
+        int flag = userinfoMapper.insert(regiser);
+        if (flag==0){
+            throw  new RuntimeException("新增用户失败");
+        }
+        createInvCode(regiser.getUserphone());
+        return true;
     }
 
     @Override
-    public Boolean createUserByPhone(UserRegiser userinfo) {
-        Userinfo info = queryUserByPhone(userinfo.getUserphone());
+    public Integer createUserByPhone(UserRegiser regiser) {
+        String userphone = regiser.getUserphone();
+        if ( userphone== null) {
+            return 1;
+        }
+        Userinfo info = queryUserByPhone(userphone);
+        //查询手机号是否注册过
         if (info != null) {
-            return false;
+            return 2;
         }
-        userinfo.setRoleId(3);
-        userinfo.setScore(0);
-        Boolean oprear = createUser(userinfo);
+        regiser.setRoleId(3);
+        regiser.setScore(0);
+        Boolean oprear = createUser(regiser);
         if (oprear) {
-            return true;
+            return 0;
         }
-        return false;
+        return 4;
     }
 
 
@@ -98,6 +98,7 @@ public class UserApiServiceImpl implements UserApiService {
 
     /**
      * 异步创建邀请码
+     *
      * @param phone
      * @return
      */
@@ -106,18 +107,18 @@ public class UserApiServiceImpl implements UserApiService {
     public Integer createInvCode(String phone) {
         try {
             Userinfo userinfo = userinfoMapper.selectByPhone(phone);
-            if (userinfo==null){
+            if (userinfo == null) {
                 log.warning("用户不存在 所以创建邀请码失败 手机号===" + phone);
                 return 0;
             }
 
             Integer flag = userinfoMapper.insertCode(userinfo.getId());
             if (flag == null) {
-                log.warning("用户创建邀请码表 失败 手机号==="+phone);
+                log.warning("用户创建邀请码表 失败 手机号===" + phone);
                 return 0;
             }
         } catch (Exception e) {
-            log.warning("用户创建邀请码失败 手机号==="+phone+"异常信息"+e.getMessage());
+            log.warning("用户创建邀请码失败 手机号===" + phone + "异常信息" + e.getMessage());
             return 0;
         }
         return 1;
@@ -129,23 +130,30 @@ public class UserApiServiceImpl implements UserApiService {
      * @return
      */
     @Override
-    public synchronized JSONObject createPid() {
+    @Transactional
+    public synchronized Map<String, Object> createPid() {
         Long tbpid = hotUserMapper.createTbPid();
         String pddpid = hotUserMapper.createPddPid();
-        if (tbpid == null || pddpid == null) {
-            return null;
+        String jdPid = hotUserMapper.createJdPid();
+        if (tbpid == null || pddpid == null || jdPid == null) {
+            throw new RuntimeException("pid不足");
         }
-        String substring = pddpid.substring(2, pddpid.length());
-        hotUserMapper.deleteTbPid(tbpid);
-        hotUserMapper.deletePddPid(pddpid);
+        Integer deleteTbPid = hotUserMapper.deleteTbPid(tbpid);
+        Integer deleteJdPid = hotUserMapper.deleteJdPid(jdPid);
+        Integer deletePddPid = hotUserMapper.deletePddPid(pddpid);
+        if (deleteJdPid == 0 || deletePddPid == 0 || deleteTbPid == 0) {
+            throw new RuntimeException("pid删除失败");
+        }
         JSONObject temp = new JSONObject();
         temp.put("tb", tbpid);
-        temp.put("pdd", substring);
+        temp.put("pdd", pddpid);
+        temp.put("jd", jdPid);
         return temp;
     }
 
     /**
      * 粉丝升级到代理
+     *
      * @param uid
      * @param agentId
      * @param score
@@ -156,17 +164,19 @@ public class UserApiServiceImpl implements UserApiService {
     public Boolean upAgent(Integer uid, Integer agentId, Integer score) {
         Userinfo godUser = userinfoMapper.selectByPrimaryKey(Long.valueOf(agentId));
         if (godUser.getRoleId() != 1) {
+            log.warning("该用户不是运营商,无权限升级" + uid);
             return false;
         }
         Userinfo agent = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         if (agent == null || agent.getRoleId() != 3) {
+            log.warning("被升级的用户应该是粉丝" + uid);
             return false;
         }
         Agent temp = agentDao.queryForUserIdSimple(uid);
         if (temp == null || temp.getAgentId() != agentId) {
+            log.warning("该用户不是您的粉丝" + uid);
             return false;
         }
-
         try {
             Integer flag = agentDao.upAgent(score, uid);
             Integer flag1 = agentDao.upAgentTime(uid);
