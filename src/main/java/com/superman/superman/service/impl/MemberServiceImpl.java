@@ -31,8 +31,6 @@ import java.util.*;
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
     private final static Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
-
-
     @Autowired
     private AgentDao agentDao;
     @Autowired
@@ -298,6 +296,7 @@ public class MemberServiceImpl implements MemberService {
         Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myid));
         Integer myrole = my.getRoleId();
         Integer mySc = my.getScore();
+        double ranger=range / 100d;
 
         //判断是粉丝
         if (userinfo.getRoleId() == 3) {
@@ -305,11 +304,11 @@ public class MemberServiceImpl implements MemberService {
             String tbe = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
             MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
             if (myrole == 1) {
-                todayMoneyCount = (var1.getMoney() * range / 100d);
+                todayMoneyCount = (var1.getMoney() * ranger);
 
             }
             if (myrole == 2) {
-                todayMoneyCount = (var1.getMoney() * range / 100d) * (mySc / 100d);
+                todayMoneyCount = (var1.getMoney() *ranger) * (mySc / 100d);
             }
             todayCount = var1.getSums();
 
@@ -317,10 +316,10 @@ public class MemberServiceImpl implements MemberService {
             String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
             MemberDetail var2 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
             if (myrole == 1) {
-                yesDayMoneyCount = (var2.getMoney() * range / 100d);
+                yesDayMoneyCount = (var2.getMoney() *ranger);
             }
             if (myrole == 2) {
-                yesDayMoneyCount = (var2.getMoney() * range / 100d) * (mySc / 100d);
+                yesDayMoneyCount = (var2.getMoney() * ranger) * (mySc / 100d);
             }
             yesDayCount = var2.getSums();
 
@@ -329,7 +328,7 @@ public class MemberServiceImpl implements MemberService {
             String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
             MemberDetail var3 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
             if (myrole == 1) {
-                yesMonthMoneyvarCount = (var3.getMoney() * range / 100d);
+                yesMonthMoneyvarCount = (var3.getMoney() *ranger);
 
             }
             if (myrole == 2) {

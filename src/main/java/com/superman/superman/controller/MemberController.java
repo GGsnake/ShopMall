@@ -224,7 +224,7 @@ public class MemberController {
         }
         var = memberService.queryMemberDetail(id, userinfo.getId().intValue());
         redisUtil.set(key, var.toJSONString());
-        redisUtil.expire(key, 50, TimeUnit.SECONDS);
+        redisUtil.expire(key, 20, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(var);
     }   //
 
