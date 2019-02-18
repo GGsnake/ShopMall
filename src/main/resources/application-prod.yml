@@ -98,11 +98,11 @@ pdd_pro:
   pdd-url: "http://quanhuangmaoyi.com"
   pdd-router-url: "https://gw-api.pinduoduo.com/api/router"
 tb:
-  appkey: "25377219"
-  secret: "4c3e6b9e6484ce2982bca63d524564c1"
-  adzoneid: "253650051"
+  appkey: "25645650"
+  secret: "8a9d6928c954bbf4052d2a2c8841f754"
+  adzoneid: "328000440"
   api-url: "http://gw.api.taobao.com/router/rest"
-  pid: 73613300311
+  pid: 92706150203
 
 miao:
   apkey: "c003483d-fd72-c78a-72ec-1d0e6034919d"

@@ -70,6 +70,12 @@ public class MyOderController {
         redisUtil.expire(key,10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(allOder);
     }
+
+    /**
+     * 我的收益报表接口
+     * @param request
+     * @return
+     */
     @LoginRequired
     @PostMapping("/InCome")
     public WeikeResponse queryInCome(HttpServletRequest request) {
