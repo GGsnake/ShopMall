@@ -14,8 +14,7 @@ import java.util.Iterator;
 public class GoodUtils {
     public static JSONObject convertTaobao(TbkDgMaterialOptionalResponse.MapData dataObj) {
         JSONObject dataJson = new JSONObject();
-        dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);
-        dataJson.put("price", Double.valueOf(dataObj.getReservePrice())*100);
+        dataJson.put("price", Double.valueOf(dataObj.getZkFinalPrice())*100);
         dataJson.put("volume", dataObj.getVolume());
         dataJson.put("goodId", dataObj.getNumIid());
         dataJson.put("imgUrl", dataObj.getPictUrl());

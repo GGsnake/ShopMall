@@ -38,7 +38,7 @@ public class ShopGoodController {
      * 超级搜索引擎
      *
      * @param type    平台 0 拼多多 1 淘宝 2京东 3天猫
-     * @param  //具体参数和第三方平台api文档的一直
+     * @param  //具体请求参数和第三方平台api文档的一致
      * @return
      */
     @LoginRequired
@@ -47,11 +47,11 @@ public class ShopGoodController {
                                 @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
                                 @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
                                 @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,
-                                @RequestParam(value = "jd_coupon", defaultValue = "1", required = false) Integer jd_coupon,
+                                @RequestParam(value = "jd_coupon", defaultValue = "0", required = false) Integer jd_coupon,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
                                 @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
-                                @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort,
-                                @RequestParam(value = "jdsort", required = false, defaultValue = "commissionShare") String jdsort,
+                                @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort,
+                                @RequestParam(value = "jdsort", required = false, defaultValue = "inOrderCount30Days") String jdsort,
                                 @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder,
                                 String tbcat, Integer cid, Long opt) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
