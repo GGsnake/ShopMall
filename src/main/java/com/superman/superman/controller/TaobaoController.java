@@ -58,7 +58,7 @@ public class TaobaoController {
      */
     @LoginRequired
     @GetMapping("/opt")
-    public WeikeResponse optIndex(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, PageParam pageParam) {
+    public WeikeResponse optIndex(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -100,7 +100,7 @@ public class TaobaoController {
      */
     @LoginRequired
     @GetMapping("/hotGoods")
-    public WeikeResponse hotGoods(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "tk_rate_des") String tbsort, PageParam pageParam) {
+    public WeikeResponse hotGoods(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);

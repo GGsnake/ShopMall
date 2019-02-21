@@ -551,9 +551,6 @@ public class MemberServiceImpl implements MemberService {
                 }
                 uidlist.add(useId.getId());
             }
-            if (agents != null && agents.size() != 0) {
-                uidlist.addAll(agents);
-            }
             //今日
             String tbs = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
             String tbe = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
@@ -569,7 +566,7 @@ public class MemberServiceImpl implements MemberService {
             for (Userinfo userio : agentIdList) {
                 Integer agentSc = 100-userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
-                uidlist.add(userId);
+                uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
                 if (agents1 != null && agents1.size() != 0) {
                     uidlist1.addAll(agents1);
@@ -584,8 +581,8 @@ public class MemberServiceImpl implements MemberService {
             todayCount=todayBossCount+todayAgentCount.intValue();
             Double s1=bossTodaymb1Settlex+settlex;
             //今日
-            String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
-            String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayTime), null);
+            String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
             MemberDetail bossToday2 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
             MemberDetail bossTodaymb2 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbe1, tbe, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
             Double  bossTodaymb1Settlex2 =  bossTodaymb2.getMoney() * range / 100d;
@@ -598,7 +595,7 @@ public class MemberServiceImpl implements MemberService {
             for (Userinfo userio : agentIdList) {
                 Integer agentSc = 100-userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
-                uidlist.add(userId);
+                uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
                 if (agents1 != null && agents1.size() != 0) {
                     uidlist1.addAll(agents1);
@@ -614,8 +611,8 @@ public class MemberServiceImpl implements MemberService {
             Double s2=bossTodaymb1Settlex2+settlex2;
 
             //今日
-            String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
-            String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorning), null);
+            String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
             MemberDetail bossToday3 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
             MemberDetail bossTodaymb3 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
             Double  bossTodaymb1Settlex3 =  bossTodaymb3.getMoney() * range / 100d;
@@ -628,7 +625,7 @@ public class MemberServiceImpl implements MemberService {
             for (Userinfo userio : agentIdList) {
                 Integer agentSc = 100-userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
-                uidlist.add(userId);
+                uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
                 if (agents1 != null && agents1.size() != 0) {
                     uidlist1.addAll(agents1);
@@ -643,8 +640,8 @@ public class MemberServiceImpl implements MemberService {
             yesMonthCount=todayBossCount3+todayAgentCount3.intValue();  //今日
             Double s3=bossTodaymb1Settlex3+settlex3;
 
-            String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
-            String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
+            String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTime), null);
+            String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTimeEnd), null);
             MemberDetail bossToday4 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
             MemberDetail bossTodaymb4 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
             Double  bossTodaymb1Settlex4 =  bossTodaymb4.getMoney() * range / 100d;
@@ -657,7 +654,7 @@ public class MemberServiceImpl implements MemberService {
             for (Userinfo userio : agentIdList) {
                 Integer agentSc = 100-userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
-                uidlist.add(userId);
+                uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
                 if (agents1 != null && agents1.size() != 0) {
                     uidlist1.addAll(agents1);

@@ -7,6 +7,7 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
+import com.superman.superman.utils.WeikeResponseUtil;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,8 +93,21 @@ public class ScoreServiceImpl implements ScoreService {
         SetOperations setOperations = redisTemplate.opsForSet();
         String kv = read_key + uid + EveryUtils.getToday();
         if (redisTemplate.hasKey(kv)) {
-            if (setOperations.size(kv) == 10) {
-
+            long number = setOperations.size(kv);
+            if (number<11){
+                return null;
+            }
+            if (number == 10) {
+                ScoreBean scoreBean=new ScoreBean();
+                scoreBean.setUserId(Long.valueOf(uid));
+                scoreBean.setScore(10l);
+                scoreBean.setScoreType(1);
+                //积分来源
+                scoreBean.setDataSrc(2);
+                Boolean flag = addScore(scoreBean);
+                if (!flag){
+                    log.warning("用户id为"+uid+"=浏览商品积分增增加失败");
+                }
                 return null;
             }
             setOperations.add(kv, goodId.toString());
@@ -137,7 +151,6 @@ public class ScoreServiceImpl implements ScoreService {
         String kv = sign_key + id;
         if (redisTemplate.hasKey(kv)) {
             return false;
-
         }
         v.set(kv, "");
         redisTemplate.boundValueOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));

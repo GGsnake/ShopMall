@@ -194,6 +194,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         JSONArray dataArray = new JSONArray();
         TaobaoClient client = new DefaultTaobaoClient(TAOBAOURL, APPKEY, SECRET);
         request.setAdzoneId(PID);
+        request.setHasCoupon(true);
         Double score = Double.valueOf(ufo.getScore());
         TbkDgMaterialOptionalResponse rsp = null;
         try {
@@ -215,9 +216,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                         Integer couple = Integer.parseInt(coupon_info) * 100;
                         dataJson.put("zk_money", couple);
+                        dataJson.put("hasCoupon", 1);
                         dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100-couple);
                     } else {
                         dataJson.put("zk_money", 0);
+                        dataJson.put("hasCoupon",0);
+
                         dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
@@ -243,9 +247,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                         coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                         Integer couple = Integer.parseInt(coupon_info) * 100;
                         dataJson.put("zk_money", couple);
+                        dataJson.put("hasCoupon",1);
+
                         dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100-couple);
                     } else {
                         dataJson.put("zk_money", 0);
+                        dataJson.put("hasCoupon",0);
                         dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);
                     }
                     Long commissionRate = Long.valueOf(dataObj.getCommissionRate());
@@ -273,8 +280,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
                     Integer couple = Integer.parseInt(coupon_info) * 100;
                     dataJson.put("zk_money", couple);
+                    dataJson.put("hasCoupon",1);
                     dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100-couple);
                 } else {
+                    dataJson.put("hasCoupon",0);
                     dataJson.put("zk_money", 0);
                     dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);
                 }
