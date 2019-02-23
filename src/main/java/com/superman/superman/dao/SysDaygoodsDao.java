@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface SysDaygoodsDao extends BaseDao<SysDaygoods> {
-    @Select("select * from jh_day_goods limit #{page}, #{pageSize}")
+    @Select("select * from jh_day_goods order by createtime desc  limit #{page}, #{pageSize} ")
     List<SysDaygoods> queryListGod(@Param("page")Integer page, @Param("pageSize")Integer pageSize);
 
     @Select("select IFNULL(count(*),0) from jh_day_goods")

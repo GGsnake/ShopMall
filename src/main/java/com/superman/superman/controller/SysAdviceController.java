@@ -43,6 +43,12 @@ public class SysAdviceController{
 	private String wxurl;
 	@Value("${juanhuang.wxcontacturl}")
 	private String wxcontacturl;
+	@Value("${update.version}")
+	private String version;
+	@Value("${update.ios}")
+	private String ios;
+	@Value("${update.android}")
+	private String android;
 	/**
 	 * 列表
 	 */
@@ -109,6 +115,19 @@ public class SysAdviceController{
 		var1.put("pageData", total);
 		var1.put("pageCount", sum);
 		return WeikeResponseUtil.success(var1);
+	}
+
+
+	/**
+	 * 查询视频教程
+	 */
+	@GetMapping("/version")
+	public WeikeResponse getVersion(){
+		JSONObject data=new JSONObject();
+		data.put("version", version);
+		data.put("ios", ios);
+		data.put("android",android);
+		return WeikeResponseUtil.success(data);
 	}
 
 

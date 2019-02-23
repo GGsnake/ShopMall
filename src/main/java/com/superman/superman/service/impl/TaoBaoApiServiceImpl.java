@@ -287,7 +287,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     dataJson.put("zk_money", 0);
                     dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);
                 }
-                dataJson.put("zk_money", coupon_info);
                 dataJson.put("istmall", dataObj.getUserType() == 1 ? true : false);
                 dataJson.put("agent", 0l);
                 dataJson.put("commissionRate", commissionRate);

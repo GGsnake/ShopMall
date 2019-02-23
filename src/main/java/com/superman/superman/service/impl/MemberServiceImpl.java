@@ -466,7 +466,21 @@ public class MemberServiceImpl implements MemberService {
         Double settle4 = 0d;
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
         if (userinfo.getRoleId() == 3) {
-            return null;
+            data.put("oderSum",yesMonthCount);
+            data.put("inCome", 0);
+            data.put("today", 0);
+            data.put("todayOder", todayCount);
+            data.put("todaySettle", 0);
+            data.put("yesday", yesDayMoneyCount);
+            data.put("yesdayOder", yesDayCount);
+            data.put("yesdaySettle", 0);
+            data.put("yesMonday", yesMonthMoneyvarCount);
+            data.put("yesMondayOder", yesMonthCount);
+            data.put("yesMondaySettle", 0);
+            data.put("lastMonday", yesLastMonthMoneyCount);
+            data.put("lastMondayOder", yesLastMonthCount);
+            data.put("lastMondaySettle", 0);
+            return data;
         }
         //如果是代理
         if (userinfo.getRoleId() == 2) {

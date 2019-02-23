@@ -121,7 +121,6 @@ public class MemberController {
         redisUtil.expire(key, 10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
-
     /**
      * 个人佣金提现接口
      *

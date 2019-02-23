@@ -115,7 +115,6 @@ public class TaobaoController {
         }
         if (opt == 3) {
             taoBaoSerachBean.setQ("9.9包邮");
-
         }
         if (opt == 4) {
             taoBaoSerachBean.setQ("生活家居");
