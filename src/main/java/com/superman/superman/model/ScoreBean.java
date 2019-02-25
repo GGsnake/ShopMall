@@ -20,4 +20,5 @@ public class ScoreBean  extends BaseBean implements Serializable {
     private Integer dataId;
     private String dataRemarks;
     private Integer scoreType;
+    private String day;
 }

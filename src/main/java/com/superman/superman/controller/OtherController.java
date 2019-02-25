@@ -64,6 +64,8 @@ public class OtherController {
     private RedisTemplate redisTemplate;
     @Autowired
     private UserApiService userApiService;
+    @Autowired
+    private MemberService memberService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -261,6 +263,34 @@ public class OtherController {
         List<String> data =settingDao.queryBanner();
         redisUtil.set(key, data.toString());
         redisUtil.expire(key, 100, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(data);
+    }
+    /**
+     * show
+     */
+    @GetMapping("/show/{name}")
+    public WeikeResponse show(@PathVariable("name") Integer id) {
+        String sufix = "show:"+id;
+        if (redisUtil.hasKey(sufix)) {
+            return WeikeResponseUtil.success(redisUtil.get(sufix));
+        }
+        JSONObject data = memberService.queryMemberDetail(Long.valueOf(id));
+        redisUtil.set(sufix, data.toString());
+        redisUtil.expire(sufix, 10, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(data);
+    }
+    /**
+     * money
+     */
+    @GetMapping("/money/{name}")
+    public WeikeResponse money(@PathVariable("name") Integer id) {
+        String sufix = "money:"+id;
+        if (redisUtil.hasKey(sufix)) {
+            return WeikeResponseUtil.success(redisUtil.get(sufix));
+        }
+        JSONObject data = memberService.getMyMoney(Long.valueOf(id));
+        redisUtil.set(sufix, data.toString());
+        redisUtil.expire(sufix, 6, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

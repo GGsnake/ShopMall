@@ -15,6 +15,7 @@ import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,10 +40,6 @@ public class PayController {
     private OtherService otherService;
     @Autowired
     private PayDao payDao;
-    @Autowired
-    private AgentDao agentDao;
-    private UserinfoMapper userinfoMapper;
-
     /**
      * 微信预支付（技能开通支付）
      *
@@ -66,6 +63,7 @@ public class PayController {
 
     /**
      * 微信付款成功！（开通技能服务）
+     *
      * @throws IOException
      * @throws DocumentException
      */
@@ -110,4 +108,6 @@ public class PayController {
 
 
     }
+
+
 }

@@ -10,6 +10,7 @@ import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,11 @@ public class ScoreController {
     @Autowired
     private ScoreService scoreService;
     @Autowired
+    private ScoreDao scoreDao;
+    @Autowired
     RedisUtil redisUtil;
-
+    @Value("${juanhuang.signscore}")
+    private Integer signscore;
     //浏览商品积分上报
     @LoginRequired
     @GetMapping("/upVis")
@@ -47,6 +51,16 @@ public class ScoreController {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid==null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        ScoreBean scoreBean = new ScoreBean();
+        scoreBean.setDataSrc(3);
+        scoreBean.setUserId(Long.valueOf(uid));
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(Long.valueOf(signscore));
+        ScoreBean exit = scoreDao.isExit(scoreBean);
+        if (exit != null) {
+            return WeikeResponseUtil.fail("1000322","已签到过");
         }
         Boolean sign = scoreService.sign(Long.valueOf(uid));
         if (sign){
@@ -78,7 +92,7 @@ public class ScoreController {
         return WeikeResponseUtil.success(data);
     }
     /**
-     * 积分全部提现
+     * 积分提现
      * @param request
      * @return
      */

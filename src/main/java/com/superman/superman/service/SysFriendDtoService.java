@@ -8,11 +8,4 @@ import com.superman.superman.utils.PageParam;
 
 public interface SysFriendDtoService{
     public JSONObject queryList(PageParam pageParam);
-    int insert(SysFriendDto sysFriendDto);
-
-    int insertSelective(SysFriendDto sysFriendDto);
-
-    int insertList(List<SysFriendDto> sysFriendDtos);
-
-    int updateByPrimaryKeySelective(SysFriendDto sysFriendDto);
 }

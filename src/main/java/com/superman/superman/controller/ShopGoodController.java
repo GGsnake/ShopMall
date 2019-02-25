@@ -78,7 +78,7 @@ public class ShopGoodController {
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(false);
             req.setSort(tbsort);
-            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
+            if (tbcat != null) {
                 req.setCat(tbcat);
             }
             if (keyword.equals("") || keyword == null) {
@@ -111,7 +111,7 @@ public class ShopGoodController {
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(true);
             req.setSort(tbsort);
-            if (tbcat != null && Integer.valueOf(tbcat) != 0) {
+            if (tbcat != null ) {
                 req.setCat(tbcat);
             }
             if (keyword.equals("") || keyword == null) {

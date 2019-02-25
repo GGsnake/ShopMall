@@ -94,19 +94,19 @@ public class ScoreServiceImpl implements ScoreService {
         String kv = read_key + uid + EveryUtils.getToday();
         if (redisTemplate.hasKey(kv)) {
             long number = setOperations.size(kv);
-            if (number<11){
+            if (number < 11) {
                 return null;
             }
             if (number == 10) {
-                ScoreBean scoreBean=new ScoreBean();
+                ScoreBean scoreBean = new ScoreBean();
                 scoreBean.setUserId(Long.valueOf(uid));
                 scoreBean.setScore(10l);
                 scoreBean.setScoreType(1);
                 //积分来源
                 scoreBean.setDataSrc(2);
                 Boolean flag = addScore(scoreBean);
-                if (!flag){
-                    log.warning("用户id为"+uid+"=浏览商品积分增增加失败");
+                if (!flag) {
+                    log.warning("用户id为" + uid + "=浏览商品积分增增加失败");
                 }
                 return null;
             }
@@ -147,32 +147,25 @@ public class ScoreServiceImpl implements ScoreService {
 
     @Transactional
     public Boolean sign(Long id) {
-        ValueOperations v = redisTemplate.opsForValue();
-        String kv = sign_key + id;
-        if (redisTemplate.hasKey(kv)) {
-            return false;
-        }
-        v.set(kv, "");
-        redisTemplate.boundValueOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
         try {
+
             Userinfo user = new Userinfo();
             ScoreBean scoreBean = new ScoreBean();
             scoreBean.setDataSrc(3);
             scoreBean.setUserId(id);
             scoreBean.setScoreType(1);
+            scoreBean.setDay(EveryUtils.getNowday());
             scoreBean.setScore(Long.valueOf(signscore));
             scoreDao.addScore(scoreBean);
             user.setId(scoreBean.getUserId());
             user.setUserscore(scoreBean.getScore().intValue());
             Integer flag = scoreDao.updateUserScore(user);
             if (flag == 0) {
-                redisTemplate.delete(kv);
                 log.warning("用户积分增加错误 UID=" + user.getId());
                 throw new RuntimeException();
             }
             return true;
         } catch (Exception e) {
-            redisTemplate.delete(kv);
             log.warning("用户积分增加错误 ID=" + id + "----异常信息=" + e.getMessage());
             throw new RuntimeException();
         }

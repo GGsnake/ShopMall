@@ -129,9 +129,6 @@ public class SysAdviceController{
 		data.put("android",android);
 		return WeikeResponseUtil.success(data);
 	}
-
-
-
 	/**
 	 * 客服接口
 	 */
@@ -143,12 +140,13 @@ public class SysAdviceController{
 		var1.put("account", wx);
 		var1.put("name", wxname);
 		return WeikeResponseUtil.success(var1);
-	}/**
+	}
+	/**
 	 * 联系我们
 	 */
 	@GetMapping("/contact")
 	public WeikeResponse contactWe(){
-		return WeikeResponseUtil.success(wxcontacturl);
+		return WeikeResponseUtil.success(wxurl);
 	}
 
 

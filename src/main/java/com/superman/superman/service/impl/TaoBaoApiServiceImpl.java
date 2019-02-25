@@ -76,6 +76,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             if (resultList == null || resultList.size() == 0) {
                 return data;
             }
+
             Long count = rsp.getTotalResults();
             if (count == 0) {
                 return data;
@@ -83,19 +84,19 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             JSONArray dataArray = new JSONArray();
             if (ufo.getRoleId() == 1) {
                 for (int i = 0; i < resultList.size(); i++) {
-                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
-                    String coupon_info1 = dataObj.getCouponInfo();
-                    String coupon_info = null;
-                    JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
-                    //查找指定字符第一次出现的位置
-                    if (coupon_info1 != null && !coupon_info1.equals("")) {
-                        int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
-                        coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
-                        Integer couple = Integer.parseInt(coupon_info) * 100;
-                        dataJson.put("zk_money",couple);
-                        dataJson.put("hasCoupon", 1);
-                        dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100-couple);
-                    } else {
+                        TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                        String coupon_info1 = dataObj.getCouponInfo();
+                        String coupon_info = null;
+                        JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
+                        //查找指定字符第一次出现的位置
+                        if (coupon_info1 != null && !coupon_info1.equals("")) {
+                            int star = coupon_info1.indexOf(20943);//参数为字符的ascii码
+                            coupon_info = coupon_info1.substring(star + 1, coupon_info1.length() - 1);
+                            Integer couple = Integer.parseInt(coupon_info) * 100;
+                            dataJson.put("zk_money",couple);
+                            dataJson.put("hasCoupon", 1);
+                            dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100-couple);
+                        } else {
                         dataJson.put("zk_money", 0);
                         dataJson.put("hasCoupon", 0);
                         dataJson.put("zk_price", Double.valueOf(dataObj.getZkFinalPrice())*100);

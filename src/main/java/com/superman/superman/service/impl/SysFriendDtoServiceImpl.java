@@ -22,10 +22,6 @@ public class SysFriendDtoServiceImpl implements SysFriendDtoService{
 //    private SysFriendDtoMapper sysFriendDtoMapper;
 
     @Override
-    public int insert(SysFriendDto sysFriendDto){
-        return sysFriendDtoMapper.insert(sysFriendDto);
-    }
-    @Override
     public JSONObject queryList(PageParam pageParam){
         PageParam temp =new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
         List<SysFriendDto> sysFriendDtos = sysFriendDtoMapper.queryListGod(temp.getStartRow(), temp.getPageSize());
@@ -49,18 +45,4 @@ public class SysFriendDtoServiceImpl implements SysFriendDtoService{
         return var;
     }
 
-    @Override
-    public int insertSelective(SysFriendDto sysFriendDto){
-        return sysFriendDtoMapper.insertSelective(sysFriendDto);
-    }
-
-    @Override
-    public int insertList(List<SysFriendDto> sysFriendDtos){
-        return sysFriendDtoMapper.insertList(sysFriendDtos);
-    }
-
-    @Override
-    public int updateByPrimaryKeySelective(SysFriendDto sysFriendDto){
-        return sysFriendDtoMapper.updateByPrimaryKeySelective(sysFriendDto);
-    }
 }
