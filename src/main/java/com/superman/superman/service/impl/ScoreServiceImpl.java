@@ -38,46 +38,46 @@ public class ScoreServiceImpl implements ScoreService {
     @Value("${juanhuang.signscore}")
     private Integer signscore;
 
+    @Value("${juanhuang.sharescore}")
+    private Integer sharescore;
+
+    @Value("${juanhuang.lookscore}")
+    private Integer lookscore;
+
     //查询今天是否已经领取 过每日浏览积分
     public Boolean isExitSign(ScoreBean scoreBean) {
         ScoreBean exit = scoreDao.isExit(scoreBean);
         return exit != null ? true : false;
     }
 
+    /**
+     * 查询当天积分
+     *
+     * @param
+     * @return
+     */
     @Override
     public JSONObject myScore(Integer uid) {
         JSONObject var = new JSONObject();
+        //查询积分
         Integer score = scoreDao.countScore(Long.valueOf(uid));
-        var.put("score", score);
+        //查询今日商品浏览次数
         Long looks = countLooks(uid.longValue());
+        var.put("score", score);
         var.put("looks", looks);
-        Boolean var1 = countShare(uid.longValue());
-        String kv = sign_key + uid;
-        if (redisTemplate.hasKey(kv)) {
+        //是否已签到
+        if (isSign(uid.longValue())) {
             var.put("sign", 1);
         } else {
             var.put("sign", 0);
         }
-        if (var1 == false) {
-            var.put("share", 0);
-        } else {
+        //查询今日是否已分享
+        if (isShare(uid.longValue())) {
             var.put("share", 1);
+        } else {
+            var.put("share", 0);
         }
         return var;
-    }
-
-    //查询今天每日浏览商品次数
-    @Override
-    public Long countLooks(Long uid) {
-        String kv = read_key + uid.toString() + EveryUtils.getToday();
-        Long size = redisTemplate.opsForSet().size(kv);
-        return size > 10 ? 10 : size;
-    }
-
-    //今日是否分享
-    @Override
-    public Boolean countShare(Long uid) {
-        return redisTemplate.opsForSet().isMember(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
     }
 
 
@@ -94,24 +94,28 @@ public class ScoreServiceImpl implements ScoreService {
         String kv = read_key + uid + EveryUtils.getToday();
         if (redisTemplate.hasKey(kv)) {
             long number = setOperations.size(kv);
-            if (number < 11) {
-                return null;
-            }
             if (number == 10) {
                 ScoreBean scoreBean = new ScoreBean();
-                scoreBean.setUserId(Long.valueOf(uid));
-                scoreBean.setScore(10l);
-                scoreBean.setScoreType(1);
-                //积分来源
                 scoreBean.setDataSrc(2);
-                Boolean flag = addScore(scoreBean);
-                if (!flag) {
-                    log.warning("用户id为" + uid + "=浏览商品积分增增加失败");
+                scoreBean.setUserId(Long.valueOf(uid));
+                scoreBean.setScoreType(1);
+                scoreBean.setDay(EveryUtils.getNowday());
+                scoreBean.setScore(lookscore.longValue());
+                ScoreBean flag = scoreDao.isExit(scoreBean);
+                if (flag == null) {
+                    Userinfo user = new Userinfo();
+                    scoreDao.addScore(scoreBean);
+                    user.setId(Long.valueOf(uid));
+                    user.setUserscore(lookscore);
+                    scoreDao.updateUserScore(user);
                 }
                 return null;
             }
-            setOperations.add(kv, goodId.toString());
-            redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
+            if (number < 11) {
+                setOperations.add(kv, goodId.toString());
+//                redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
+                return null;
+            }
             return null;
         }
         setOperations.add(kv, goodId.toString());
@@ -145,30 +149,48 @@ public class ScoreServiceImpl implements ScoreService {
 
     }
 
-    @Transactional
-    public Boolean sign(Long id) {
-        try {
-
-            Userinfo user = new Userinfo();
-            ScoreBean scoreBean = new ScoreBean();
-            scoreBean.setDataSrc(3);
-            scoreBean.setUserId(id);
-            scoreBean.setScoreType(1);
-            scoreBean.setDay(EveryUtils.getNowday());
-            scoreBean.setScore(Long.valueOf(signscore));
-            scoreDao.addScore(scoreBean);
-            user.setId(scoreBean.getUserId());
-            user.setUserscore(scoreBean.getScore().intValue());
-            Integer flag = scoreDao.updateUserScore(user);
-            if (flag == 0) {
-                log.warning("用户积分增加错误 UID=" + user.getId());
-                throw new RuntimeException();
-            }
+    /**
+     * 判断是否已签到
+     *
+     * @param id
+     * @return
+     */
+    public Boolean isSign(Long id) {
+        ScoreBean scoreBean = new ScoreBean();
+        scoreBean.setDataSrc(3);
+        scoreBean.setUserId(id);
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(signscore.longValue());
+        ScoreBean flag = scoreDao.isExit(scoreBean);
+        if (flag != null) {
             return true;
-        } catch (Exception e) {
-            log.warning("用户积分增加错误 ID=" + id + "----异常信息=" + e.getMessage());
-            throw new RuntimeException();
         }
+        return false;
+    }
+
+    //查询今天每日浏览商品次数
+    @Override
+    public Long countLooks(Long uid) {
+        String kv = read_key + uid.toString() + EveryUtils.getToday();
+        Long size = redisTemplate.opsForSet().size(kv);
+        return size > 10 ? 10 : size;
+    }
+
+    //判断今日是否分享
+    @Override
+    public Boolean isShare(Long uid) {
+        ScoreBean scoreBean = new ScoreBean();
+        scoreBean.setDataSrc(4);
+        scoreBean.setUserId(uid);
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(sharescore.longValue());
+        ScoreBean flag = scoreDao.isExit(scoreBean);
+        if (flag != null) {
+            return true;
+        }
+        return false;
     }
 
     @Transactional

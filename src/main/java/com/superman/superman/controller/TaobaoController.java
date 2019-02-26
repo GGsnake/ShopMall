@@ -67,12 +67,11 @@ public class TaobaoController {
         TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
         if (opt == 1) {
             taoBaoSerachBean.setStartPrice(100l);
-            taoBaoSerachBean.setCat("50016348,50025705,21,30,14,50012164,29,50010404,16,50002766");
+            taoBaoSerachBean.setCat("8,20,21,30,14,50012164,29,5,16,50002766");
 
         }
         if (opt == 2) {
             taoBaoSerachBean.setQ("聚划算");
-
         }
         if (opt == 3) {
             taoBaoSerachBean.setEndPrice(10l);
@@ -128,7 +127,6 @@ public class TaobaoController {
         }
         if (opt == 2) {
             taoBaoSerachBean.setQ("聚划算");
-
         }
         if (opt == 3) {
             taoBaoSerachBean.setEndPrice(10l);
@@ -153,6 +151,27 @@ public class TaobaoController {
     @LoginRequired
     @GetMapping("/convertTb")
     public WeikeResponse convertTKl(HttpServletRequest request, String tkl) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null || tkl == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject jsonObject = taoBaoApiServicel.convertTaobaoTkl(tkl);
+        if (jsonObject == null) {
+            return WeikeResponseUtil.fail("100088", "淘口令不正确");
+        }
+        return WeikeResponseUtil.success(jsonObject);
+    }
+
+    /**
+     * 店铺接口
+     *
+     * @param request
+     * @param tkl
+     * @return
+     */
+    @LoginRequired
+    @GetMapping("/shop")
+    public WeikeResponse shop(HttpServletRequest request, String tkl) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null || tkl == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);

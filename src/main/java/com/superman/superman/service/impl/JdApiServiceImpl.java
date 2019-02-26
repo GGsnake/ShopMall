@@ -178,6 +178,7 @@ public class JdApiServiceImpl implements JdApiService {
             if (roleId == 3) {
                 jdData.put("agent", 0);
             }
+            jdData.put("shopName",  jdJson.getJSONObject("shopInfo").getString("shopName"));
             jdData.put("commissionRate", coms.intValue() * 10);
             jdData.put("volume", jdJson.getInteger("inOrderCount30Days"));
             jdData.put("goodId", jdJson.getLong("skuId"));

@@ -3,6 +3,8 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.annotation.LoginRequired;
+import com.superman.superman.dao.SysJhTaobaoHotDao;
+import com.superman.superman.model.SysJhTaobaoHot;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.TaoBaoApiService;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,12 +37,15 @@ public class ShopGoodController {
     RestTemplate restTemplate;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private SysJhTaobaoHotDao
+            sysJhTaobaoHotDao;
 
     /**
      * 超级搜索引擎
      *
-     * @param type    平台 0 拼多多 1 淘宝 2京东 3天猫
-     * @param  //具体请求参数和第三方平台api文档的一致
+     * @param type                   平台 0 拼多多 1 淘宝 2京东 3天猫
+     * @param //具体请求参数和第三方平台api文档的一致
      * @return
      */
     @LoginRequired
@@ -111,7 +118,7 @@ public class ShopGoodController {
             req.setPageSize(Long.valueOf(pageSize));
             req.setIsTmall(true);
             req.setSort(tbsort);
-            if (tbcat != null ) {
+            if (tbcat != null) {
                 req.setCat(tbcat);
             }
             if (keyword.equals("") || keyword == null) {
@@ -123,6 +130,38 @@ public class ShopGoodController {
             data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
             return WeikeResponseUtil.success(data);
         }
+        return null;
+    }
+
+    /**
+     * 本地搜索引擎
+     *
+     * @param type 平台 0 拼多多 1 淘宝
+     * @param
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/good")
+    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
+                                @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
+    ) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        JSONObject data;
+        if (type == 0) {
+            PageParam pageParam=new PageParam(pageNo,pageSize);
+            JSONObject param=new JSONObject();
+            param.put("start",pageParam.getStartRow()) ;
+            param.put("end",pageParam.getPageSize()) ;
+            List<SysJhTaobaoHot> sysJhTaobaoHots = sysJhTaobaoHotDao.queryPage(param);
+
+            return WeikeResponseUtil.success(sysJhTaobaoHots);
+        }
+
         return null;
     }
 

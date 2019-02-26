@@ -140,7 +140,7 @@ public class MemberController {
         Long finishMoney = moneyService.queryCashMoney(1, user);
         data.put("waitMoney", waitMoney);
         data.put("finishMoney", finishMoney);
-        data.put("cash", user.getCash());
+        data.put("cash", user.getCash()*100);
         return WeikeResponseUtil.success(data);
     }
 

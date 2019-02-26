@@ -21,6 +21,12 @@ public interface TaoBaoApiService {
     JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
 
     /**
+     * 本地淘宝搜索引擎
+     * @return
+     */
+    JSONObject goodLocal(PageParam pageParam);
+
+    /**
      * 淘宝搜索首页专用
      * @param request
      * @param req
@@ -60,4 +66,11 @@ public interface TaoBaoApiService {
      * @return
      */
     JSONObject deatil(Long goodId);
+
+    /**
+     * 查询淘宝的店铺详情
+     *
+     * @return
+     */
+    JSONObject shopDeatil(Long shopId);
 }

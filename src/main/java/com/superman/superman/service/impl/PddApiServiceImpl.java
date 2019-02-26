@@ -155,6 +155,7 @@ public class PddApiServiceImpl implements PddApiService {
                     JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
+                    dataJson.put("shopName", item.getMallName());
                     dataJson.put("zk_price", after);
                     dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataArray.add(dataJson);
@@ -177,6 +178,8 @@ public class PddApiServiceImpl implements PddApiService {
                     JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
+                    dataJson.put("shopName", item.getMallName());
+
                     dataJson.put("zk_price", after);
                     dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataArray.add(dataJson);
@@ -192,6 +195,8 @@ public class PddApiServiceImpl implements PddApiService {
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
                     dataJson.put("zk_price", after);
+                    dataJson.put("shopName", item.getMallName());
+
                     dataJson.put("agent", 0);
                     dataArray.add(dataJson);
                 }

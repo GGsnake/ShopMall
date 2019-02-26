@@ -1,7 +1,9 @@
 package com.superman.superman.controller;
+
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.AgentDao;
+import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.dao.SettingDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.*;
@@ -35,6 +37,8 @@ public class OtherController {
     @Autowired
     private OtherService otherService;
     @Autowired
+    private ScoreService scoreService;
+    @Autowired
     private SettingDao settingDao;
     @Autowired
     private AgentDao agentDao;
@@ -44,6 +48,8 @@ public class OtherController {
     private String DOMAINURL;
     @Value("${domain.codeurl}")
     private String QINIUURLLAST;
+    @Value("${juanhuang.sharescore}")
+    private Integer sharescore;
     @Value("${domain.qnyurl}")
     private String QINIUURL;
     @Value("${server.port}")
@@ -54,6 +60,8 @@ public class OtherController {
     private UserinfoMapper userinfoMapper;
     @Autowired
     private SysAdviceService adviceService;
+    @Autowired
+    private ScoreDao scoreDao;
 
     @Autowired
     private SysDaygoodsService daygoodsService;
@@ -97,7 +105,7 @@ public class OtherController {
         }
 
         if (devId == 0) {
-            data = taoBaoApiService.convertTaobao( userinfo.getTbpid(), goodId);
+            data = taoBaoApiService.convertTaobao(userinfo.getTbpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -109,7 +117,7 @@ public class OtherController {
         }
 
         if (devId == 1) {
-            data = pddApiService.convertPdd( userinfo.getPddpid(), goodId);
+            data = pddApiService.convertPdd(userinfo.getPddpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -152,8 +160,18 @@ public class OtherController {
         if (userinfo == null || userinfo.getRoleId() == 3) {
             return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
         }
-        Integer code = userinfoMapper.queryCodeId(Long.valueOf(uid));
-        Long add = redisTemplate.opsForSet().add(Constants.INV_LOG, Constants.INV_LOG + EveryUtils.getNowday() + ":" + uid);
+        Integer code = userinfoMapper.queryCodeId(userinfo.getId());
+        ScoreBean scoreBean = new ScoreBean();
+        scoreBean.setDataSrc(4);
+        scoreBean.setUserId(userinfo.getId());
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(sharescore.longValue());
+        if (!scoreService.isShare(userinfo.getId())) {
+            scoreDao.addScore(scoreBean);
+            userinfo.setUserscore(sharescore);
+            scoreDao.updateUserScore(userinfo);
+        }
         String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
@@ -167,15 +185,15 @@ public class OtherController {
     @PostMapping("/createUser")
     public WeikeResponse createUser(@RequestParam(value = "phone") String userPhone,
                                     @RequestParam(value = "vaild") String vaild,
-                                        @RequestParam(value = "code") String code) {
+                                    @RequestParam(value = "code") String code) {
         Map phone = EverySign.isPhone(userPhone);
         Boolean flag = (Boolean) phone.get("flag");
         if (!flag) {
-            return WeikeResponseUtil.fail("1000199","请填写正确的手机号");
+            return WeikeResponseUtil.fail("1000199", "请填写正确的手机号");
         }
         String key = Constants.SMS_LOGIN + userPhone;
         Integer isVaild = (Integer) redisTemplate.opsForValue().get(key);
-        if (isVaild==null||!isVaild.toString().equals(vaild)) {
+        if (isVaild == null || !isVaild.toString().equals(vaild)) {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
         UserRegiser userinfo = new UserRegiser();
@@ -183,10 +201,10 @@ public class OtherController {
         userinfo.setLoginpwd(code);
         Integer status = userApiService.createUserByPhone(userinfo);
         if (status == 2) {
-            return WeikeResponseUtil.fail("1000200","该手机号已经注册过");
+            return WeikeResponseUtil.fail("1000200", "该手机号已经注册过");
         }
         if (status == 4) {
-            return WeikeResponseUtil.fail("1000201","未知错误 请重试");
+            return WeikeResponseUtil.fail("1000201", "未知错误 请重试");
         }
         //获取用户Id
         Userinfo data = userinfoMapper.selectByPhone(userPhone);
@@ -199,6 +217,7 @@ public class OtherController {
         return WeikeResponseUtil.success("注册成功");
     }
 
+    //每日爆款
     @PostMapping("/dayGoods")
     public WeikeResponse dayGoods(PageParam pageParam) {
         //查询列表数据
@@ -209,9 +228,10 @@ public class OtherController {
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = daygoodsService.queryList(param);
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 300, TimeUnit.SECONDS);
+        redisUtil.expire(key, 50, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
+
     @PostMapping("/friend")
     public WeikeResponse friend(PageParam pageParam) {
         //查询列表数据
@@ -222,7 +242,7 @@ public class OtherController {
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = sysFriendDtoService.queryList(param);
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 300, TimeUnit.SECONDS);
+        redisUtil.expire(key, 50, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -256,21 +276,16 @@ public class OtherController {
      */
     @GetMapping("/banner")
     public WeikeResponse banner() {
-        String key = "banner";
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(redisUtil.get(key));
-        }
-        List<String> data =settingDao.queryBanner();
-        redisUtil.set(key, data.toString());
-        redisUtil.expire(key, 100, TimeUnit.SECONDS);
+        List<String> data = settingDao.queryBanner();
         return WeikeResponseUtil.success(data);
     }
+
     /**
      * show
      */
     @GetMapping("/show/{name}")
     public WeikeResponse show(@PathVariable("name") Integer id) {
-        String sufix = "show:"+id;
+        String sufix = "show:" + id;
         if (redisUtil.hasKey(sufix)) {
             return WeikeResponseUtil.success(redisUtil.get(sufix));
         }
@@ -279,12 +294,13 @@ public class OtherController {
         redisUtil.expire(sufix, 10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
+
     /**
      * money
      */
     @GetMapping("/money/{name}")
     public WeikeResponse money(@PathVariable("name") Integer id) {
-        String sufix = "money:"+id;
+        String sufix = "money:" + id;
         if (redisUtil.hasKey(sufix)) {
             return WeikeResponseUtil.success(redisUtil.get(sufix));
         }

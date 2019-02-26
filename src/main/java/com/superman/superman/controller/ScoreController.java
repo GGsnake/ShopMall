@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.model.ScoreBean;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.ScoreService;
@@ -33,6 +34,7 @@ public class ScoreController {
     RedisUtil redisUtil;
     @Value("${juanhuang.signscore}")
     private Integer signscore;
+
     //浏览商品积分上报
     @LoginRequired
     @GetMapping("/upVis")
@@ -44,12 +46,13 @@ public class ScoreController {
         }
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
     }
+
     //每日签到
     @LoginRequired
     @GetMapping("/sign")
     public WeikeResponse sign(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid==null) {
+        if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         ScoreBean scoreBean = new ScoreBean();
@@ -60,17 +63,22 @@ public class ScoreController {
         scoreBean.setScore(Long.valueOf(signscore));
         ScoreBean exit = scoreDao.isExit(scoreBean);
         if (exit != null) {
-            return WeikeResponseUtil.fail("1000322","已签到过");
+            return WeikeResponseUtil.fail("1000322", "已签到过");
         }
-        Boolean sign = scoreService.sign(Long.valueOf(uid));
-        if (sign){
-            return WeikeResponseUtil.success();
+        Userinfo user = new Userinfo();
+        scoreDao.addScore(scoreBean);
+        user.setId(Long.valueOf(uid));
+        user.setUserscore(scoreBean.getScore().intValue());
+        Integer flag = scoreDao.updateUserScore(user);
+        if (flag == 0) {
+            return WeikeResponseUtil.fail("1000322", "签到失败请稍后重试");
         }
-        return WeikeResponseUtil.fail("1000322","已签到");
+        return WeikeResponseUtil.success();
     }
 
     /**
      * 积分查询
+     *
      * @param request
      * @return
      */
@@ -81,7 +89,7 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        String key = "myScore:" + uid ;
+        String key = "myScore:" + uid;
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
@@ -91,8 +99,10 @@ public class ScoreController {
         redisUtil.expire(key, 4, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
+
     /**
      * 积分提现
+     *
      * @param request
      * @return
      */
@@ -136,32 +146,5 @@ public class ScoreController {
 
     }
 
-    //每日分享积分领取
-    @LoginRequired
-    @PostMapping("/shareScore")
-    public WeikeResponse shareScore(HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        }
-        Boolean exit = scoreService.countShare(Long.valueOf(uid));
-        if (!exit) {
-            return WeikeResponseUtil.fail("100042", "今日未分享");
-        }
-        //签到分享
-        ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setUserId(Long.valueOf(uid));
-        scoreBean.setScore(5l);
-        scoreBean.setScoreType(0);
-        scoreBean.setDataSrc(1);
 
-        if (scoreService.isExitSign(scoreBean)) {
-            return WeikeResponseUtil.fail("100042", "今日已经签到");
-        }
-        Boolean flag = scoreService.addScore(scoreBean);
-        if (flag) {
-            return WeikeResponseUtil.success();
-        }
-        return WeikeResponseUtil.fail("100089", "签到失败 请重试");
-    }
 }

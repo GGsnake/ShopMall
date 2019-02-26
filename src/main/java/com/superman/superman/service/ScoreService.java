@@ -32,7 +32,7 @@ public interface ScoreService {
      * @param uid
      * @return
      */
-    Boolean countShare(Long uid);
+    Boolean isShare(Long uid);
 
     /**
      * 记录浏览商品次数
@@ -54,7 +54,7 @@ public interface ScoreService {
      * @param id
      * @return
      */
-     Boolean sign(Long id);
+     Boolean isSign(Long id);
     /**
      * 积分提现
      * @param id
