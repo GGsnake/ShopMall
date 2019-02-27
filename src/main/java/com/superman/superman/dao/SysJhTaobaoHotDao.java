@@ -25,4 +25,6 @@ public interface SysJhTaobaoHotDao extends BaseDao<SysJhTaobaoHot> {
 
 
     List<SysJhTaobaoHot>  queryPage(Map<String,Object> map);
+    List<SysJhTaobaoHot>  queryPageTmall(Map<String,Object> map);
+    List<SysJhTaobaoHot>  queryForGod(Map<String,Object> map);
 }

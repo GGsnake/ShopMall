@@ -59,7 +59,7 @@ public class CollectServiceImpl implements CollectService {
                 temp.put("price", collectBean.getPrice());
                 temp.put("volume", collectBean.getVolume());
                 temp.put("coupon", collectBean.getCoupon());
-                BigDecimal agent = GoodUtils.commissonAritTaobao(collectBean.getCoupon_price().toString(), promotion_rate.toString(), rangeaa);
+                BigDecimal agent = GoodUtils.commissonAritTaobao(collectBean.getCoupon_price().toString(), promotion_rate.toString());
                 temp.put("agent", agent.doubleValue());
                 temp.put("coupon_price", collectBean.getCoupon_price());
                 data.add(temp);
@@ -78,7 +78,7 @@ public class CollectServiceImpl implements CollectService {
                 temp.put("price", collectBean.getPrice());
                 temp.put("volume", collectBean.getVolume());
                 temp.put("coupon", collectBean.getCoupon());
-                BigDecimal agent = GoodUtils.commissonAritTaobao(collectBean.getCoupon_price().toString(), promotion_rate.toString(), rangeaa);
+                BigDecimal agent = GoodUtils.commissonAritTaobao(collectBean.getCoupon_price().toString(), promotion_rate.toString());
                 Double v = agent.doubleValue() * sc / 100;
                 temp.put("agent", new BigDecimal(v).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                 temp.put("coupon_price", collectBean.getCoupon_price());

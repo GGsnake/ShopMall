@@ -111,13 +111,11 @@ public class JdApiServiceImpl implements JdApiService {
         if (goodsReq.getSort() != null) {
             urlSign.put("sort", goodsReq.getSort());
         }
-        if (goodsReq.getIsCoupon() != null) {
-            urlSign.put("isCoupon", goodsReq.getIsCoupon().toString());
-        }
+//        if (goodsReq.getIsCoupon() != null) {
+//            urlSign.put("isCoupon", goodsReq.getIsCoupon().toString());
+//        }
         if (goodsReq.getKeyword() != null) {
             urlSign.put("keyword", goodsReq.getKeyword());
-        } else {
-            urlSign.put("keyword", "女装");
         }
         String linkStringByGet = null;
         try {
@@ -131,7 +129,7 @@ public class JdApiServiceImpl implements JdApiService {
         Integer totalCount = JSON.parseObject(res).getJSONObject("data").getInteger("totalCount");
         if (totalCount == null || totalCount == 0) {
             temp.put("data", dataArray);
-            temp.put("count", totalCount);
+            temp.put("count", 0);
             return temp;
         }
         dataArray = JSON.parseObject(res).getJSONObject("data").getJSONArray("lists");

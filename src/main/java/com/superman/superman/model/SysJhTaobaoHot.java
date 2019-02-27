@@ -46,6 +46,17 @@ public class SysJhTaobaoHot implements Serializable  {
 
 	//佣金权重
 	private Integer orderCommiss;
+
+    public Integer getComssion() {
+        return comssion;
+    }
+
+    public void setComssion(Integer comssion) {
+        this.comssion = comssion;
+    }
+
+    //佣金权重
+	private Integer comssion;
 	//销量权重
 	private Integer orderVolume;
 	//创建时间

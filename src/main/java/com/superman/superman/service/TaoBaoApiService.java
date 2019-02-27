@@ -24,7 +24,7 @@ public interface TaoBaoApiService {
      * 本地淘宝搜索引擎
      * @return
      */
-    JSONObject goodLocal(PageParam pageParam);
+    JSONObject goodLocal(PageParam pageParam,Long uid,Integer status);
 
     /**
      * 淘宝搜索首页专用

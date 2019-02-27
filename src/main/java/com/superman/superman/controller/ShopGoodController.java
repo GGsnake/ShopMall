@@ -151,15 +151,21 @@ public class ShopGoodController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        JSONObject data;
         if (type == 0) {
-            PageParam pageParam=new PageParam(pageNo,pageSize);
-            JSONObject param=new JSONObject();
-            param.put("start",pageParam.getStartRow()) ;
-            param.put("end",pageParam.getPageSize()) ;
-            List<SysJhTaobaoHot> sysJhTaobaoHots = sysJhTaobaoHotDao.queryPage(param);
+            PageParam pageParam = new PageParam(pageNo, pageSize);
+            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
+            return WeikeResponseUtil.success(data);
+        }
+        if (type == 1) {
+            PageParam pageParam = new PageParam(pageNo, pageSize);
+            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 2);
+            return WeikeResponseUtil.success(data);
+        }
 
-            return WeikeResponseUtil.success(sysJhTaobaoHots);
+        if (type == 2) {
+            PageParam pageParam = new PageParam(pageNo, pageSize);
+            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
+            return WeikeResponseUtil.success(data);
         }
 
         return null;
