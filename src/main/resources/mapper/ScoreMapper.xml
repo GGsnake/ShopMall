@@ -3,7 +3,7 @@
 <!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
 <mapper namespace="com.superman.superman.dao.ScoreDao">
     <select id="isExit" resultType="com.superman.superman.model.ScoreBean">
-        SELECT userId,score,scoreType,createTime FROM score_user
+        SELECT userId,day,score,scoreType,createTime FROM score_user
         <where>
             to_days(createTime) = to_days(now()) and userId=#{score.userId} and status=0
             <if test="score.score != null">
@@ -17,6 +17,9 @@
             </if>
             <if test="score.scoreType != null">
                 And scoreType = #{score.scoreType}
+            </if>
+            <if test="score.day != null">
+                And day = #{score.day}
             </if>
             limit 0,1
         </where>
@@ -37,6 +40,9 @@
             <if test="score.scoreType != null">
                 scoreType,
             </if>
+            <if test="score.day != null">
+                day,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{score.userId},now(),
@@ -51,6 +57,9 @@
             </if>
             <if test="score.scoreType != null">
                 #{score.scoreType},
+            </if>
+            <if test="score.day != null">
+                #{score.day},
             </if>
         </trim>
     </insert>

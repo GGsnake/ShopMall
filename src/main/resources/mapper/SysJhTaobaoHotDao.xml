@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.sbed.modules.sys.dao.SysJhTaobaoHotDao">
+<mapper namespace="com.superman.superman.dao.SysJhTaobaoHotDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.sbed.modules.sys.entity.SysJhTaobaoHot" id="jhTaobaoHotMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysJhTaobaoHot" id="jhTaobaoHotMap">
         <result property="id" column="id"/>
         <result property="picturl" column="pictUrl"/>
         <result property="shoptitle" column="shopTitle"/>
@@ -14,36 +14,45 @@
         <result property="volume" column="volume"/>
         <result property="numiid" column="numIid"/>
         <result property="status" column="status"/>
+        <result property="istamll" column="istamll"/>
+        <result property="comssion" column="commission"/>
         <result property="orderCoupon" column="order_coupon"/>
         <result property="orderCommiss" column="order_commiss"/>
         <result property="orderVolume" column="order_volume"/>
         <result property="createtime" column="createTime"/>
     </resultMap>
 
-	<select id="queryObject" resultType="io.sbed.modules.sys.entity.SysJhTaobaoHot">
-		select * from jh_taobao_hot where id = #{value}
-	</select>
+    <!--<select id="queryObject" resultType="io.sbed.modules.sys.entity.SysJhTaobaoHot">-->
+    <!--select * from jh_taobao_hot where id = #{value}-->
+    <!--</select>-->
 
-	<select id="queryList" resultType="io.sbed.modules.sys.entity.SysJhTaobaoHot">
-		select * from jh_taobao_hot
-        <choose>
-            <when test="sidx != null and sidx.trim() != ''">
-                order by ${sidx} ${order}
-            </when>
-			<otherwise>
-                order by id desc
-			</otherwise>
-        </choose>
-		<if test="offset != null and limit != null">
-			limit #{offset}, #{limit}
-		</if>
-	</select>
-	
- 	<select id="queryTotal" resultType="int">
-		select count(*) from jh_taobao_hot 
-	</select>
-	 
-	<insert id="save" parameterType="io.sbed.modules.sys.entity.SysJhTaobaoHot" useGeneratedKeys="true" keyProperty="id">
+    <select id="queryPage" resultMap="jhTaobaoHotMap">
+		select *,sum(commissionRate+coupon+volume) math from jh_taobao_hot
+		where istamll=0 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
+    </select>
+    <select id="queryPageTmall" resultMap="jhTaobaoHotMap">
+		select *,sum(commissionRate+coupon+volume) math from jh_taobao_hot
+		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
+    </select>
+
+
+    <select id="queryForGod" resultMap="jhTaobaoHotMap">
+		select *,sum(commissionRate+coupon) math from jh_taobao_hot
+		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
+    </select>
+
+    <select id="queryTotal" resultType="int">
+    select count(*) from jh_taobao_hot 	where istamll=0
+    </select>
+    <select id="queryTotalTmall" resultType="int">
+    select count(*) from jh_taobao_hot	where istamll=1
+    </select>
+    <select id="queryTotalGod" resultType="int">
+    select count(*) from jh_taobao_hot
+    </select>
+
+    <insert id="save" useGeneratedKeys="true"
+            keyProperty="id">
 		insert into jh_taobao_hot
 		(
 			`pictUrl`, 
@@ -55,58 +64,56 @@
 			`volume`, 
 			`numIid`, 
 			`status`, 
-			`order_coupon`, 
-			`order_commiss`, 
-			`order_volume`, 
+			`istamll`,
+			`commission`,
 			`createTime`
 		)
 		values
 		(
-			#{picturl}, 
-			#{shoptitle}, 
+			#{pictUrl},
+			#{shopTitle},
 			#{title}, 
-			#{commissionrate}, 
+			#{commissionRate},
 			#{coupon}, 
-			#{zkfinalprice}, 
+			#{zkFinalPrice},
 			#{volume}, 
-			#{numiid}, 
-			#{status}, 
-			#{orderCoupon}, 
-			#{orderCommiss}, 
-			#{orderVolume}, 
-			#{createtime}
+			#{numIid},
+			0,
+			#{istamll},
+			#{comssion},
+			now()
 		)
 	</insert>
-	 
-	<update id="update" parameterType="io.sbed.modules.sys.entity.SysJhTaobaoHot">
-		update jh_taobao_hot 
-		<set>
-			<if test="picturl != null">`pictUrl` = #{picturl}, </if>
-			<if test="shoptitle != null">`shopTitle` = #{shoptitle}, </if>
-			<if test="title != null">`title` = #{title}, </if>
-			<if test="commissionrate != null">`commissionRate` = #{commissionrate}, </if>
-			<if test="coupon != null">`coupon` = #{coupon}, </if>
-			<if test="zkfinalprice != null">`zkFinalPrice` = #{zkfinalprice}, </if>
-			<if test="volume != null">`volume` = #{volume}, </if>
-			<if test="numiid != null">`numIid` = #{numiid}, </if>
-			<if test="status != null">`status` = #{status}, </if>
-			<if test="orderCoupon != null">`order_coupon` = #{orderCoupon}, </if>
-			<if test="orderCommiss != null">`order_commiss` = #{orderCommiss}, </if>
-			<if test="orderVolume != null">`order_volume` = #{orderVolume}, </if>
-			<if test="createtime != null">`createTime` = #{createtime}</if>
-		</set>
-		where id = #{id}
-	</update>
-	
-	<delete id="delete">
-		delete from jh_taobao_hot where id = #{value}
-	</delete>
-	
-	<delete id="deleteBatch">
-		delete from jh_taobao_hot where id in 
-		<foreach item="id" collection="array" open="(" separator="," close=")">
-			#{id}
-		</foreach>
-	</delete>
+
+    <!--<update id="update" parameterType="io.sbed.modules.sys.entity.SysJhTaobaoHot">-->
+    <!--update jh_taobao_hot -->
+    <!--<set>-->
+    <!--<if test="picturl != null">`pictUrl` = #{picturl}, </if>-->
+    <!--<if test="shoptitle != null">`shopTitle` = #{shoptitle}, </if>-->
+    <!--<if test="title != null">`title` = #{title}, </if>-->
+    <!--<if test="commissionrate != null">`commissionRate` = #{commissionrate}, </if>-->
+    <!--<if test="coupon != null">`coupon` = #{coupon}, </if>-->
+    <!--<if test="zkfinalprice != null">`zkFinalPrice` = #{zkfinalprice}, </if>-->
+    <!--<if test="volume != null">`volume` = #{volume}, </if>-->
+    <!--<if test="numiid != null">`numIid` = #{numiid}, </if>-->
+    <!--<if test="status != null">`status` = #{status}, </if>-->
+    <!--<if test="orderCoupon != null">`order_coupon` = #{orderCoupon}, </if>-->
+    <!--<if test="orderCommiss != null">`order_commiss` = #{orderCommiss}, </if>-->
+    <!--<if test="orderVolume != null">`order_volume` = #{orderVolume}, </if>-->
+    <!--<if test="createtime != null">`createTime` = #{createtime}</if>-->
+    <!--</set>-->
+    <!--where id = #{id}-->
+    <!--</update>-->
+    <!---->
+    <!--<delete id="delete">-->
+    <!--delete from jh_taobao_hot where id = #{value}-->
+    <!--</delete>-->
+    <!---->
+    <!--<delete id="deleteBatch">-->
+    <!--delete from jh_taobao_hot where id in -->
+    <!--<foreach item="id" collection="array" open="(" separator="," close=")">-->
+    <!--#{id}-->
+    <!--</foreach>-->
+    <!--</delete>-->
 
 </mapper>

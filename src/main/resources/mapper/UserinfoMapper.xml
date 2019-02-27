@@ -25,6 +25,7 @@
         <result column="roleId" property="roleId" jdbcType="INTEGER"/>
 
         <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="cash" property="cash" jdbcType="DOUBLE"/>
 
         <result column="userPhone" property="userphone" jdbcType="VARCHAR"/>
         <result column="wxOpenId" property="wxopenid" jdbcType="VARCHAR"/>
@@ -36,7 +37,7 @@
         -->
         id, userName, loginName, loginPwd, loginSecret, userSex, userScore, userPhoto, userStatus,
         userTotalScore, jdPid, pddPid, tbPid, wphPid, createTime, updateTime, status, userPhone,roleId,score,
-        wxOpenId
+        wxOpenId,cash
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
