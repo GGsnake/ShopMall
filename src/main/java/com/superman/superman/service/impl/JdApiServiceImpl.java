@@ -3,9 +3,14 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.SysJhJdHot;
+import com.superman.superman.model.SysJhTaobaoHot;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.JdApiService;
+import com.superman.superman.utils.GoodUtils;
+import com.superman.superman.utils.PageParam;
 import com.superman.superman.utils.net.NetUtils;
 import jd.union.open.goods.query.request.GoodsReq;
 import lombok.NonNull;
@@ -17,7 +22,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +35,8 @@ import java.util.Map;
 public class JdApiServiceImpl implements JdApiService {
     @Autowired
     private UserinfoMapper userinfoMapper;
+    @Autowired
+    private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Autowired
     private  RestTemplate restTemplate;
     @Value("${domain.jdimageurl}")
@@ -97,7 +106,7 @@ public class JdApiServiceImpl implements JdApiService {
         Map<String, String> urlSign = new HashMap<>();
         urlSign.put("apkey", apkey);
         if (goodsReq.getCid3() != null) {
-            urlSign.put("cid3", goodsReq.getCid3().toString());
+            urlSign.put("cid1", goodsReq.getCid3().toString());
         }
         if (goodsReq.getPageSize() != null) {
             urlSign.put("pageSize", String.valueOf(goodsReq.getPageSize()));
@@ -106,17 +115,17 @@ public class JdApiServiceImpl implements JdApiService {
             urlSign.put("pageIndex", goodsReq.getPageIndex().toString());
         }
         if (goodsReq.getSortName() != null) {
-            urlSign.put("sortName", String.valueOf(goodsReq.getSortName()));
+            urlSign.put("sortName", "inOrderCount30Days");
         }
         if (goodsReq.getSort() != null) {
             urlSign.put("sort", goodsReq.getSort());
         }
-//        if (goodsReq.getIsCoupon() != null) {
-//            urlSign.put("isCoupon", goodsReq.getIsCoupon().toString());
-//        }
+
         if (goodsReq.getKeyword() != null) {
             urlSign.put("keyword", goodsReq.getKeyword());
         }
+        urlSign.put("isCoupon", "1");
+//        urlSign.put("isHot", "1");
         String linkStringByGet = null;
         try {
             linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
@@ -126,18 +135,19 @@ public class JdApiServiceImpl implements JdApiService {
         JSONObject temp = new JSONObject();
         JSONArray dataArray = new JSONArray();
         String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
-        Integer totalCount = JSON.parseObject(res).getJSONObject("data").getInteger("totalCount");
+        JSONObject allData = JSON.parseObject(res).getJSONObject("data");
+        Integer totalCount =allData.getInteger("totalCount");
         if (totalCount == null || totalCount == 0) {
             temp.put("data", dataArray);
             temp.put("count", 0);
             return temp;
         }
-        dataArray = JSON.parseObject(res).getJSONObject("data").getJSONArray("lists");
+        dataArray = allData.getJSONArray("lists");
         JSONArray templist = new JSONArray();
         for (int i = 0; i < dataArray.size(); i++) {
             JSONObject jdJson = (JSONObject) dataArray.get(i);
             JSONObject jdData = new JSONObject();
-            //单价
+            //单价2*
             Double price = jdJson.getJSONObject("priceInfo").getDouble("price");
             //佣金金额
             Double commissionA = jdJson.getJSONObject("commissionInfo").getDouble("commission");
@@ -191,6 +201,226 @@ public class JdApiServiceImpl implements JdApiService {
         temp.put("count", totalCount);
         return temp;
     }
+
+    @Override
+    public JSONObject goodLocal(PageParam pageParam, Long uid, Integer status) {
+        JSONObject param = new JSONObject();
+        param.put("start", pageParam.getStartRow());
+        param.put("end", pageParam.getPageSize());
+        Boolean isTmall = false;
+        List<SysJhJdHot> sysJhTaobaoHots = new ArrayList<>(10);
+        Integer count = 0;
+        if (status == 1) {
+            sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageJd(param);
+            count = sysJhTaobaoHotDao.countMaxJd();
+        }
+        JSONObject data = new JSONObject();
+
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        Double score = Double.valueOf(ufo.getScore());
+        if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
+            return data;
+        }
+
+        JSONArray dataArray = new JSONArray();
+        if (ufo.getRoleId() == 1) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+                dataJson.put("hasCoupon", 1);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+                dataJson.put("commissionRate", dataObj.getComssion() *100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", isTmall);
+                dataJson.put("agent",dataObj.getCommissionrate().doubleValue()*100);
+                dataJson.put("jdurl", dataObj.getJdurl());
+                if (dataObj.getCoupon()!=0){
+                    dataJson.put("hasCoupon", 1);
+
+                }
+                else {
+                    dataJson.put("hasCoupon", 0);
+
+                }
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", count);
+            return data;
+
+        }
+        if (ufo.getRoleId() == 2) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+                if (dataObj.getCoupon()!=0){
+                    dataJson.put("hasCoupon", 1);
+
+                }
+                else {
+                    dataJson.put("hasCoupon", 0);
+
+                }
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+                dataJson.put("commissionRate", dataObj.getComssion()*100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", isTmall);
+                dataJson.put("jdurl", dataObj.getJdurl());
+
+                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100 * score / 100);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", count);
+            return data;
+        }
+        for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+            SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+            JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+            //查找指定字符第一次出现的位置
+            dataJson.put("zk_money", dataObj.getCoupon() * 100);
+            dataJson.put("hasCoupon", 1);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+            dataJson.put("commissionRate", dataObj.getComssion() *100);
+            dataJson.put("shopName", dataObj.getShoptitle());
+            dataJson.put("istmall", isTmall);
+            dataJson.put("jdurl", dataObj.getJdurl());
+            if (dataObj.getCoupon()!=0){
+                dataJson.put("hasCoupon", 1);
+
+            }
+            else {
+                dataJson.put("hasCoupon", 0);
+
+            }
+            dataJson.put("agent", 0);
+            dataArray.add(dataJson);
+        }
+        data.put("data", dataArray);
+        data.put("count", count);
+//        return
+        return data;
+    }
+
+    @Override
+    public JSONObject goodLocal(PageParam pageParam, Long uid, Integer status, Integer cid) {
+        JSONObject param = new JSONObject();
+        param.put("start", pageParam.getStartRow());
+        param.put("end", pageParam.getPageSize());
+        param.put("cid", cid);
+        Boolean isTmall = false;
+        List<SysJhJdHot> sysJhTaobaoHots = new ArrayList<>(10);
+        Integer count = 0;
+        if (status == 1) {
+            sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageJd(param);
+            count = sysJhTaobaoHotDao.countMaxJdCid(cid);
+        }
+        JSONObject data = new JSONObject();
+
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        Double score = Double.valueOf(ufo.getScore());
+        if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
+            return data;
+        }
+
+        JSONArray dataArray = new JSONArray();
+        if (ufo.getRoleId() == 1) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+                dataJson.put("hasCoupon", 1);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+                dataJson.put("commissionRate", dataObj.getComssion() *100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", isTmall);
+                dataJson.put("agent",dataObj.getCommissionrate().doubleValue()*100);
+                dataJson.put("jdurl", dataObj.getJdurl());
+                if (dataObj.getCoupon()!=0){
+                    dataJson.put("hasCoupon", 1);
+
+                }
+                else {
+                    dataJson.put("hasCoupon", 0);
+
+                }
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", count);
+            return data;
+
+        }
+        if (ufo.getRoleId() == 2) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+                if (dataObj.getCoupon()!=0){
+                    dataJson.put("hasCoupon", 1);
+
+                }
+                else {
+                    dataJson.put("hasCoupon", 0);
+
+                }
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+                dataJson.put("commissionRate", dataObj.getComssion()*100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", isTmall);
+                dataJson.put("jdurl", dataObj.getJdurl());
+
+                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100 * score / 100);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", count);
+            return data;
+        }
+        for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+            SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
+            JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+            //查找指定字符第一次出现的位置
+            dataJson.put("zk_money", dataObj.getCoupon() * 100);
+            dataJson.put("hasCoupon", 1);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
+            dataJson.put("commissionRate", dataObj.getComssion() *100);
+            dataJson.put("shopName", dataObj.getShoptitle());
+            dataJson.put("istmall", isTmall);
+            dataJson.put("jdurl", dataObj.getJdurl());
+            if (dataObj.getCoupon()!=0){
+                dataJson.put("hasCoupon", 1);
+
+            }
+            else {
+                dataJson.put("hasCoupon", 0);
+
+            }
+            dataJson.put("agent", 0);
+            dataArray.add(dataJson);
+        }
+        data.put("data", dataArray);
+        data.put("count", count);
+//        return
+        return data;
+    }
+
     /** 京东商品详情
      * 商品ID
      * @param goodId

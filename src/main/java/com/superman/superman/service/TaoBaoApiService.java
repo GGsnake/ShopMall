@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.req.OptReq;
 import com.superman.superman.utils.PageParam;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
@@ -14,6 +15,7 @@ import java.util.List;
 public interface TaoBaoApiService {
     /**
      * 淘宝搜索引擎
+     *
      * @param request
      * @param uid
      * @return
@@ -21,13 +23,24 @@ public interface TaoBaoApiService {
     JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
 
     /**
-     * 本地淘宝搜索引擎
+     * 淘宝搜索引擎 擎天柱
+     *
+     * @param request
+     * @param uid
      * @return
      */
-    JSONObject goodLocal(PageParam pageParam,Long uid,Integer status);
+    JSONObject serachGoodsMater(TbkDgOptimusMaterialRequest request, Long uid);
+
+    /**
+     * 本地淘宝搜索引擎
+     *
+     * @return
+     */
+    JSONObject goodLocal(PageParam pageParam, Long uid, Integer status);
 
     /**
      * 淘宝搜索首页专用
+     *
      * @param request
      * @param req
      * @return
@@ -36,6 +49,7 @@ public interface TaoBaoApiService {
 
     /**
      * 查询淘宝商品单个的缩略图
+     *
      * @param goodId
      * @return
      */
@@ -53,12 +67,21 @@ public interface TaoBaoApiService {
 
     /**
      * 解析淘口令
+     *
      * @param tkl
      * @return
      */
     JSONObject convertTaobaoTkl(String tkl);
 
 
+    /**
+     * 类目入口引擎
+     *
+     * @param optReq
+     * @param uid
+     * @return
+     */
+    JSONObject serachOpt(OptReq optReq, String uid);
 
     /**
      * 查询淘宝的商品详情

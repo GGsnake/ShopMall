@@ -166,9 +166,41 @@ public class ShopGoodController {
             PageParam pageParam = new PageParam(pageNo, pageSize);
             JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
             return WeikeResponseUtil.success(data);
+
+        }
+
+        if (type == 3) {
+            PageParam pageParam = new PageParam(pageNo, pageSize);
+            JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
+            return WeikeResponseUtil.success(data);
+
         }
 
         return null;
+    }
+
+    /**
+     * 京东本地搜索引擎
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/jd")
+    public WeikeResponse Search(HttpServletRequest request,
+                                Integer cid,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
+    ) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        PageParam pageParam = new PageParam(pageNo, pageSize);
+        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1,cid);
+        return WeikeResponseUtil.success(data);
+
     }
 
     /**

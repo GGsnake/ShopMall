@@ -1,5 +1,6 @@
 package com.superman.superman.dao;
 
+import com.superman.superman.model.SysJhJdHot;
 import com.superman.superman.model.SysJhTaobaoHot;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -23,8 +24,41 @@ public interface SysJhTaobaoHotDao extends BaseDao<SysJhTaobaoHot> {
 	@Update("update jh_taobao_hot set order_coupon=#{orderCoupon} where id=#{id}")
     void  updateorderCoupon(Map<String,Object> map);
 
+    void saveopt(Map<String, Object> map);
+    void saveJd(Map<String, Object> map);
+    /**
+     * 上百券
+     * @return
+     */
+
+    List<SysJhJdHot> queryPageJd(Map<String,Object> map);
+    /**
+     * 上百券
+     * @return
+     */
+
+    List<SysJhTaobaoHot> queryMaxGood(Map<String,Object> map);
+    /**
+     * 上百券
+     * @return
+     */
+    Integer countMaxGood();
+    Integer countJu();
+    /**
+     * 京东统计
+     * @return
+     */
+    Integer countMaxJd();
+    /**
+     * 京东统计
+     * @return
+     */
+    Integer countMaxJdCid(Integer cid);
+
 
     List<SysJhTaobaoHot>  queryPage(Map<String,Object> map);
     List<SysJhTaobaoHot>  queryPageTmall(Map<String,Object> map);
     List<SysJhTaobaoHot>  queryForGod(Map<String,Object> map);
+    List<SysJhTaobaoHot>  queryForBao(Map<String,Object> map);
+    List<SysJhTaobaoHot>  queryForJu(Map<String,Object> map);
 }
