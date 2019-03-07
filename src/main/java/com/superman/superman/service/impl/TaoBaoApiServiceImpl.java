@@ -231,16 +231,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                     JSONObject dataJson = new JSONObject();
                     Integer couple = coupon_info1.intValue() * 100;
                     dataJson.put("zk_money", couple);
-                    if (couple!=0){
+                    if (couple != 0) {
                         log.warning(dataObj.getItemId().toString());
                         BigDecimal agent = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate(), coupon_info1.intValue());
                         dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 10);
-                    }
-                    else{
+                    } else {
                         BigDecimal var4 = GoodUtils.commissonAritTaobao(dataObj.getZkFinalPrice(), dataObj.getCommissionRate());
                         dataJson.put("agent", var4.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 10);
                     }
-                    dataJson.put("price", Double.valueOf(dataObj.getZkFinalPrice())*100);
+                    dataJson.put("price", Double.valueOf(dataObj.getZkFinalPrice()) * 100);
                     dataJson.put("volume", dataObj.getVolume());
                     dataJson.put("goodId", dataObj.getItemId());
                     dataJson.put("imgUrl", dataObj.getPictUrl());
@@ -380,7 +379,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
             return data;
         }
-
+        if (false)
+            return null;
         JSONArray dataArray = new JSONArray();
         if (ufo.getRoleId() == 1) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {

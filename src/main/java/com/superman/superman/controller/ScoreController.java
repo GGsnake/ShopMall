@@ -3,10 +3,12 @@ package com.superman.superman.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.ScoreDao;
+import com.superman.superman.dao.SettingDao;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
+import com.superman.superman.service.OtherService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
 import lombok.var;
@@ -29,6 +31,8 @@ public class ScoreController {
     @Autowired
     private ScoreService scoreService;
     @Autowired
+    private OtherService otherService;
+    @Autowired
     private ScoreDao scoreDao;
     @Autowired
     RedisUtil redisUtil;
@@ -47,7 +51,35 @@ public class ScoreController {
         return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
     }
 
-    //每日签到
+    // 每日浏览商品 积分领取
+    @LoginRequired
+    @PostMapping("/dayScore")
+    public WeikeResponse dayScore(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        Long sum = scoreService.countLooks(Long.valueOf(uid));
+        if (sum == 9) {
+            Long signScore = Long.valueOf(otherService.querySetting("LookScore").getConfigValue());
+            ScoreBean scoreBean = new ScoreBean();
+            scoreBean.setUserId(Long.valueOf(uid));
+            scoreBean.setScore(signScore);
+            scoreBean.setScoreType(1);
+            scoreBean.setDataSrc(2);
+            if (scoreService.isExitSign(scoreBean)) {
+                return WeikeResponseUtil.fail("100042", "今日已经签到");
+            }
+            Boolean flag = scoreService.addScore(scoreBean);
+            if (flag) {
+                return WeikeResponseUtil.success();
+            }
+        }
+        return WeikeResponseUtil.fail("100041", "浏览次数不足");
+
+
+    }
+    //每日签到 积分领取
     @LoginRequired
     @GetMapping("/sign")
     public WeikeResponse sign(HttpServletRequest request) {
@@ -55,12 +87,14 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
+
+        Long signScore = Long.valueOf(otherService.querySetting("SignScore").getConfigValue());
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(3);
         scoreBean.setUserId(Long.valueOf(uid));
         scoreBean.setScoreType(1);
         scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(Long.valueOf(signscore));
+        scoreBean.setScore(signScore);
         ScoreBean exit = scoreDao.isExit(scoreBean);
         if (exit != null) {
             return WeikeResponseUtil.fail("1000322", "已签到过");
@@ -96,7 +130,7 @@ public class ScoreController {
         JSONObject data = scoreService.myScore(Integer.valueOf(uid));
 
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 4, TimeUnit.SECONDS);
+        redisUtil.expire(key, 5, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -118,33 +152,6 @@ public class ScoreController {
     }
 
 
-    // 每日浏览商品积分领取
-    @LoginRequired
-    @PostMapping("/dayScore")
-    public WeikeResponse dayScore(HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        }
-        Long sum = scoreService.countLooks(Long.valueOf(uid));
-        if (sum == 10) {
-            ScoreBean scoreBean = new ScoreBean();
-            scoreBean.setUserId(Long.valueOf(uid));
-            scoreBean.setScore(10l);
-            scoreBean.setScoreType(0);
-            scoreBean.setDataSrc(2);
-            if (scoreService.isExitSign(scoreBean)) {
-                return WeikeResponseUtil.fail("100042", "今日已经签到");
-            }
-            Boolean flag = scoreService.addScore(scoreBean);
-            if (flag) {
-                return WeikeResponseUtil.success();
-            }
-        }
-        return WeikeResponseUtil.fail("100041", "浏览次数不足");
-
-
-    }
 
 
 }

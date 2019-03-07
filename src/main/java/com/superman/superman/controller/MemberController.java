@@ -166,6 +166,7 @@ public class MemberController {
         }
         ApplyCash applyCash = new ApplyCash();
         applyCash.setUserid(user.getId().intValue());
+        applyCash.setRoleid(user.getRoleId());
         applyCash.setMoney(money);
         applyCash.setAccount(account);
         applyCash.setName(name);

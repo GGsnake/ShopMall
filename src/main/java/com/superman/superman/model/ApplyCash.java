@@ -16,6 +16,16 @@ public class ApplyCash implements Serializable {
     private Long money;
     //处理状态 0处理中 1提现完成 2提现失败
     private Integer audit;
+
+    public Integer getRoleid() {
+        return roleid;
+    }
+
+    public void setRoleid(Integer roleid) {
+        this.roleid = roleid;
+    }
+
+    private Integer roleid;
     //删除状态
     private Integer status;
     //创建时间

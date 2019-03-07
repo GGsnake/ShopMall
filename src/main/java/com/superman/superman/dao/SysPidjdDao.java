@@ -9,7 +9,7 @@ public interface SysPidjdDao  {
     Integer addPidJd(Long pid);
     @Insert("insert ignore jh_pid_pdd(pid) value(#{pid})")
     Integer addPidPdd(String pid);
-    @Insert("insert into jh_pid_tb(pid) value(#{pid})")
+    @Insert("insert ignore jh_pid_tb(pid) value(#{pid})")
     Integer addPidTb(Long pid);
 
 }

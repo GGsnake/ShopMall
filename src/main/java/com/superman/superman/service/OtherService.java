@@ -2,6 +2,7 @@ package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.model.Config;
 import com.superman.superman.utils.PageParam;
 
 import java.io.ByteArrayOutputStream;
@@ -46,4 +47,11 @@ public interface OtherService {
      * @return
      */
     JSONObject payMoney(String uid, String ip);
+    /**
+     * 微信预付款
+     *
+     * @param no
+     * @return
+     */
+    Config querySetting(String no);
 }

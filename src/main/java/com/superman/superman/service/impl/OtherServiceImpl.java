@@ -8,8 +8,11 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.superman.superman.dao.SettingDao;
 import com.superman.superman.dao.SysAdviceDao;
+import com.superman.superman.model.Config;
 import com.superman.superman.model.SysJhAdviceDev;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.utils.*;
 import com.superman.superman.utils.net.HttpUtil;
@@ -28,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/20.
@@ -37,7 +41,11 @@ import java.util.*;
 public class OtherServiceImpl implements OtherService {
     @Autowired
     private SysAdviceDao sysAdviceDao;
+    @Autowired
+    private SettingDao settingDao;
 
+    @Autowired
+    private RedisUtil redisUtil;
     @Value("${weixin.wx-pay-url}")
     private String pay_url;
     @Value("${weixin.wx-pay-appid}")
@@ -144,22 +152,18 @@ public class OtherServiceImpl implements OtherService {
 
     @Override
     public JSONObject payMoney(String uid, String ip) {
-        //        微信支付商户号 1521764621
-//        应用APPID wxc7df701f4d4f1eab
-//        API秘钥：hzshop12345678912345678912345678
-        String url2 = pay_url;
-        //TODO
-        String appid = pay_appid;
-        String body = "升级成为运营商";
-        String partnerid = partner_id;
         String noncestr = Util.getRandomString(30);
-        String notifyurl = notify_url;
-        double money=2188;
+        String body = "升级成为运营商";
+        String url2 =  settingDao.querySetting("WxPayUrl").getConfigValue();
+        String appid =  settingDao.querySetting("WxPayAppId").getConfigValue();
+        String partnerid = settingDao.querySetting("WxPartNerId").getConfigValue();
+        String notifyurl = settingDao.querySetting("WxPayNotifUrl").getConfigValue();
+        Double money= Double.valueOf(settingDao.querySetting("AgentMoney").getConfigValue());
+        String key = settingDao.querySetting("WxApplyKey").getConfigValue();
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
         String prepayid;
-        String key = "hzshop12345678912345678912345678";
         // 时间戳
         Long times = System.currentTimeMillis();
         String outtradeno = "hj" + times + "" + attach;
@@ -217,5 +221,17 @@ public class OtherServiceImpl implements OtherService {
         map.put("ordersNo", outtradeno);
         map.put("attach", attach);
         return map;
+    }
+
+    @Override
+    public Config querySetting(String no) {
+        if (redisUtil.hasKey(no)) {
+            return JSONObject.parseObject(redisUtil.get(no),Config.class);
+        }
+        Config config = settingDao.querySetting(no);
+        redisUtil.set(no,JSONObject.toJSONString(config));
+        redisUtil.expire(no, 5, TimeUnit.SECONDS);
+        return config;
+
     }
 }

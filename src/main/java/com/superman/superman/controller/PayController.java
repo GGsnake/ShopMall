@@ -45,14 +45,12 @@ public class PayController {
      *
      * @param request
      * @throws IOException
-     * @throws DocumentException
      */
     @LoginRequired
     @RequestMapping("/wechatOrderPay")
-    public WeikeResponse wechatOrderPay(HttpServletRequest request) throws IOException, DocumentException {
+    public WeikeResponse wechatOrderPay(HttpServletRequest request) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid != null) {
-            /* 设置格式为text/html */
             request.setCharacterEncoding("utf-8");
             JSONObject data = otherService.payMoney(uid, request.getRemoteAddr());
             return WeikeResponseUtil.success(data);

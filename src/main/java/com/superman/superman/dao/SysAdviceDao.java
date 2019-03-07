@@ -22,7 +22,7 @@ public interface SysAdviceDao extends BaseDao<SysAdvice> {
      * @param applyCash
      * @return
      */
-    @Insert("insert into jh_cash_apply (`userId`, `money`,  `audit`,  `createtime` )value(#{userid},#{money}, 0,now()) ")
+    @Insert("insert into jh_cash_apply (`userId`, `money`,  `audit`,  `createtime`,  `roleid` )value(#{userid},#{money}, 0,now(),#{roleid}) ")
     Integer applyCash(ApplyCash applyCash);
 
 

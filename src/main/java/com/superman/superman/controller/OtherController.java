@@ -266,8 +266,13 @@ public class OtherController {
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
+        int expire=6;
+        Config wxAccount = otherService.querySetting("OrderAdvice");
+        if(wxAccount!=null){
+            expire= Integer.parseInt(wxAccount.getConfigValue());
+        }
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 5, TimeUnit.SECONDS);
+        redisUtil.expire(key, expire, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.dao.SysAdviceDao;
+import com.superman.superman.model.Config;
 import com.superman.superman.model.SysAdvice;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
@@ -49,6 +50,7 @@ public class SysAdviceController{
 	private String ios;
 	@Value("${update.android}")
 	private String android;
+
 	/**
 	 * 列表
 	 */
@@ -119,14 +121,14 @@ public class SysAdviceController{
 
 
 	/**
-	 * 查询视频教程
+	 * 版本号检测
 	 */
 	@GetMapping("/version")
 	public WeikeResponse getVersion(){
 		JSONObject data=new JSONObject();
-		data.put("version", version);
-		data.put("ios", ios);
-		data.put("android",android);
+		data.put("version", otherService.querySetting("Version").getConfigValue());
+		data.put("ios", otherService.querySetting("Ios").getConfigValue());
+		data.put("android",otherService.querySetting("Android").getConfigValue());
 		return WeikeResponseUtil.success(data);
 	}
 	/**
@@ -136,9 +138,9 @@ public class SysAdviceController{
 	public WeikeResponse customer(){
 		//查询列表数据
 		JSONObject var1=new JSONObject();
-		var1.put("image", wxurl);
-		var1.put("account", wx);
-		var1.put("name", wxname);
+		var1.put("image", otherService.querySetting("WxImage").getConfigValue());
+		var1.put("account", otherService.querySetting("Account").getConfigValue());
+		var1.put("name",otherService.querySetting("Name").getConfigValue());
 		return WeikeResponseUtil.success(var1);
 	}
 	/**
@@ -146,10 +148,11 @@ public class SysAdviceController{
 	 */
 	@GetMapping("/contact")
 	public WeikeResponse contactWe(){
-		return WeikeResponseUtil.success(wxurl);
+		Config wxAccount = otherService.querySetting("WxImage");
+		return WeikeResponseUtil.success(wxAccount.getConfigValue());
 	}
 
 
 
-	
+
 }
