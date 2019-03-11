@@ -36,8 +36,6 @@ public class ScoreController {
     private ScoreDao scoreDao;
     @Autowired
     RedisUtil redisUtil;
-    @Value("${juanhuang.signscore}")
-    private Integer signscore;
 
     //浏览商品积分上报
     @LoginRequired
@@ -123,14 +121,14 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        String key = "myScore:" + uid;
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
+//        String key = "myScore:" + uid;
+//        if (redisUtil.hasKey(key)) {
+//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+//        }
         JSONObject data = scoreService.myScore(Integer.valueOf(uid));
 
-        redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 5, TimeUnit.SECONDS);
+//        redisUtil.set(key, data.toJSONString());
+//        redisUtil.expire(key, 5, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

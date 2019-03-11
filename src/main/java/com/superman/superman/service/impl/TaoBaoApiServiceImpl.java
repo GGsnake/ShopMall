@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dao.TboderMapper;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.model.SysJhTaobaoHot;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.OptReq;
@@ -47,8 +48,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     private UserinfoMapper userinfoMapper;
     @Autowired
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
-    @Autowired
-    private TboderMapper tboderMapper;
     @Value("${juanhuang.range}")
     private Double RANGE;
     @Value("${miao.apkey}")
@@ -331,70 +330,36 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     }
 
     @Override
-    public JSONObject goodLocal(PageParam pageParam, Long uid, Integer status) {
-        JSONObject param = new JSONObject();
-        param.put("start", pageParam.getStartRow());
-        param.put("end", pageParam.getPageSize());
-        Boolean isTmall = false;
-        List<SysJhTaobaoHot> sysJhTaobaoHots = new ArrayList<>(10);
-        Integer count = 0;
-        if (status == 1) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryPage(param);
-            count = sysJhTaobaoHotDao.queryTotal();
-        }
-        if (status == 2) {
-            isTmall = true;
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageTmall(param);
-            count = sysJhTaobaoHotDao.queryTotalTmall();
-        }
-        if (status == 3) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForGod(param);
-            count = sysJhTaobaoHotDao.queryTotalGod();
-        }
-
-        if (status == 4) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryMaxGood(param);
-            count = sysJhTaobaoHotDao.countMaxGood();
-        }
-        if (status == 5) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForBao(param);
-            count = sysJhTaobaoHotDao.queryTotalGod();
-        }
-        if (status == 6) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForJu(param);
-            count = sysJhTaobaoHotDao.countJu();
-        }
-        if (status == 8) {
-            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForJu(param);
-            count = sysJhTaobaoHotDao.countJu();
-        }
-
-        JSONObject data = new JSONObject();
-
+    public JSONObject goodLocalSuperForOpt(JSONObject param, Long uid, Integer status) {
         Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
         if (ufo == null) {
             return null;
         }
         Double score = Double.valueOf(ufo.getScore());
+        JSONArray dataArray = new JSONArray();
+
+        //默认降序
+        param.put("order", "desc");
+        List<SysJhTaobaoAll> sysJhTaobaoHots = sysJhTaobaoHotDao.queryLocalAllOpt(param);
+        Integer count = sysJhTaobaoHotDao.countLocalAllOpt(param);
+        param.clear();
+        JSONObject data = param;
         if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
             return data;
         }
-        if (false)
-            return null;
-        JSONArray dataArray = new JSONArray();
         if (ufo.getRoleId() == 1) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-                SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+                SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
-                dataJson.put("commissionRate", dataObj.getComssion() / 10);
-                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
-                dataJson.put("istmall", isTmall);
-                dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 100);
+                dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
+                dataJson.put("agent", agent.doubleValue() * 100);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -404,17 +369,17 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
         if (ufo.getRoleId() == 2) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-                SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+                SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
-                dataJson.put("commissionRate", dataObj.getComssion() / 10);
-                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
-                dataJson.put("istmall", isTmall);
-                dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 100 * score / 100);
+                dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
+                dataJson.put("agent", agent.doubleValue() * score );
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -422,15 +387,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             return data;
         }
         for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-            SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+            SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
             JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
             //查找指定字符第一次出现的位置
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
-            dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
-            dataJson.put("commissionRate", dataObj.getComssion() / 10);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
             dataJson.put("shopName", dataObj.getShoptitle());
-            dataJson.put("istmall", isTmall);
+            dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
             dataJson.put("agent", 0);
             dataArray.add(dataJson);
         }
@@ -438,6 +403,116 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         data.put("count", count);
 //        return
         return data;
+    }
+
+    @Override
+    public JSONObject goodLocal(PageParam pageParam, Long uid, Integer opt) {
+//        JSONObject param = new JSONObject();
+//        param.put("start", pageParam.getStartRow());
+//        param.put("end", pageParam.getPageSize());
+//        Boolean isTmall = false;
+//        List<SysJhTaobaoHot> sysJhTaobaoHots = new ArrayList<>(10);
+//        Integer count = 0;
+//        if (opt == 0) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryLocalAllOpt(param);
+//            count = sysJhTaobaoHotDao.queryTotal();
+//        }
+//        if (opt == 2) {
+//            isTmall = true;
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageTmall(param);
+//            count = sysJhTaobaoHotDao.queryTotalTmall();
+//        }
+//        if (opt == 3) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForGod(param);
+//            count = sysJhTaobaoHotDao.queryTotalGod();
+//        }
+//
+//        if (opt == 4) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryMaxGood(param);
+//            count = sysJhTaobaoHotDao.countMaxGood();
+//        }
+//        if (opt == 5) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForBao(param);
+//            count = sysJhTaobaoHotDao.queryTotalGod();
+//        }
+//        if (opt == 6) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForJu(param);
+//            count = sysJhTaobaoHotDao.countJu();
+//        }
+//        if (opt == 8) {
+//            sysJhTaobaoHots = sysJhTaobaoHotDao.queryForJu(param);
+//            count = sysJhTaobaoHotDao.countJu();
+//        }
+//
+//        JSONObject data = new JSONObject();
+//
+//        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+//        if (ufo == null) {
+//            return null;
+//        }
+//        Double score = Double.valueOf(ufo.getScore());
+//        if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
+//            return data;
+//        }
+//        if (false)
+//            return null;
+//        JSONArray dataArray = new JSONArray();
+//        if (ufo.getRoleId() == 1) {
+//            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+//                SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+//                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+//                //查找指定字符第一次出现的位置
+//                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+//                dataJson.put("hasCoupon", 1);
+//                dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
+//                dataJson.put("commissionRate", dataObj.getComssion() / 10);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+//                dataJson.put("shopName", dataObj.getShoptitle());
+//                dataJson.put("istmall", isTmall);
+//                dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 100);
+//                dataArray.add(dataJson);
+//            }
+//            data.put("data", dataArray);
+//            data.put("count", count);
+//            return data;
+//
+//        }
+//        if (ufo.getRoleId() == 2) {
+//            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+//                SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+//                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+//                //查找指定字符第一次出现的位置
+//                dataJson.put("zk_money", dataObj.getCoupon() * 100);
+//                dataJson.put("hasCoupon", 1);
+//                dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
+//                dataJson.put("commissionRate", dataObj.getComssion() / 10);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+//                dataJson.put("shopName", dataObj.getShoptitle());
+//                dataJson.put("istmall", isTmall);
+//                dataJson.put("agent", agent.setScale(1, BigDecimal.ROUND_DOWN).doubleValue() * 100 * score / 100);
+//                dataArray.add(dataJson);
+//            }
+//            data.put("data", dataArray);
+//            data.put("count", count);
+//            return data;
+//        }
+//        for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+//            SysJhTaobaoHot dataObj = sysJhTaobaoHots.get(i);
+//            JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+//            //查找指定字符第一次出现的位置
+//            dataJson.put("zk_money", dataObj.getCoupon() * 100);
+//            dataJson.put("hasCoupon", 1);
+//            dataJson.put("zk_price", Double.valueOf(dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100));
+//            dataJson.put("commissionRate", dataObj.getComssion() / 10);
+//            dataJson.put("shopName", dataObj.getShoptitle());
+//            dataJson.put("istmall", isTmall);
+//            dataJson.put("agent", 0);
+//            dataArray.add(dataJson);
+//        }
+//        data.put("data", dataArray);
+//        data.put("count", count);
+//        return
+        return null;
     }
 
 

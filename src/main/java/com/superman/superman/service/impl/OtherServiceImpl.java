@@ -46,16 +46,7 @@ public class OtherServiceImpl implements OtherService {
 
     @Autowired
     private RedisUtil redisUtil;
-    @Value("${weixin.wx-pay-url}")
-    private String pay_url;
-    @Value("${weixin.wx-pay-appid}")
-    private String pay_appid;
-    @Value("${weixin.wx-pay-partnerid}")
-    private String partner_id;
-    @Value("${weixin.wx-pay-notify-url}")
-    private String notify_url;
-    @Value("${juanhuang.logo}")
-    private String logo;
+
     @Override
     public ByteArrayOutputStream crateQRCode(String content) {
         if (!StringUtils.isEmpty(content)) {
@@ -96,6 +87,7 @@ public class OtherServiceImpl implements OtherService {
     public JSONArray queryAdviceForDev(PageParam pageParam) {
         List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(pageParam.getStartRow(), pageParam.getPageSize());
         JSONArray data=new JSONArray();
+        String logo = settingDao.querySetting("Logo").getConfigValue();
         for (SysJhAdviceDev sy:sysJhAdviceDevs)
         {
             JSONObject var=new JSONObject();

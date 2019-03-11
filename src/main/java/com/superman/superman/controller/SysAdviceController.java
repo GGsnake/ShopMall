@@ -36,21 +36,6 @@ public class SysAdviceController{
 	private SysAdviceDao sysAdviceDao;
 	@Autowired
 	private OtherService otherService;
-	@Value("${juanhuang.wx}")
-	private String wx;
-	@Value("${juanhuang.wxname}")
-	private String wxname;
-	@Value("${juanhuang.wxurl}")
-	private String wxurl;
-	@Value("${juanhuang.wxcontacturl}")
-	private String wxcontacturl;
-	@Value("${update.version}")
-	private String version;
-	@Value("${update.ios}")
-	private String ios;
-	@Value("${update.android}")
-	private String android;
-
 	/**
 	 * 列表
 	 */
@@ -151,8 +136,6 @@ public class SysAdviceController{
 		Config wxAccount = otherService.querySetting("WxImage");
 		return WeikeResponseUtil.success(wxAccount.getConfigValue());
 	}
-
-
 
 
 }

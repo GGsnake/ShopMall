@@ -144,6 +144,7 @@ public class ShopGoodController {
     @PostMapping("/good")
     public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
                                 @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "tbcat", defaultValue = "0", required = false) Integer cat,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
                                 @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
     ) {
@@ -151,32 +152,33 @@ public class ShopGoodController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        if (type == 0) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
-            return WeikeResponseUtil.success(data);
+        PageParam param = new PageParam(pageNo, pageSize);
+        JSONObject paramData = new JSONObject();
+        paramData.put("start", param.getStartRow());
+        paramData.put("end", param.getPageSize());
+        paramData.put("opt", 7);
+//        String orderFiled = null;
+        paramData.put("istamll", type);
+        if (cat != null && cat != 0) {
+            paramData.put("cat", cat);
         }
-        if (type == 1) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 2);
-            return WeikeResponseUtil.success(data);
-        }
+        JSONObject data = taoBaoApiService.goodLocalSuperForOpt(paramData, Long.valueOf(uid), 1);
+        return WeikeResponseUtil.success(data);
 
-        if (type == 2) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
-            return WeikeResponseUtil.success(data);
+//        if (type == 2) {
+//            PageParam pageParam = new PageParam(pageNo, pageSize);
+//            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
+//            return WeikeResponseUtil.success(data);
+//
+//        }
+//
+//        if (type == 3) {
+//            PageParam pageParam = new PageParam(pageNo, pageSize);
+//            JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
+//            return WeikeResponseUtil.success(data);
+//
+//        }
 
-        }
-
-        if (type == 3) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
-            return WeikeResponseUtil.success(data);
-
-        }
-
-        return null;
     }
 
     /**
@@ -198,7 +200,7 @@ public class ShopGoodController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam pageParam = new PageParam(pageNo, pageSize);
-        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1,cid);
+        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1, cid);
         return WeikeResponseUtil.success(data);
 
     }

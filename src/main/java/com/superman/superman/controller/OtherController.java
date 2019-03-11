@@ -48,8 +48,6 @@ public class OtherController {
     private String DOMAINURL;
     @Value("${domain.codeurl}")
     private String QINIUURLLAST;
-    @Value("${juanhuang.sharescore}")
-    private Integer sharescore;
     @Value("${domain.qnyurl}")
     private String QINIUURL;
     @Value("${server.port}")
@@ -165,11 +163,12 @@ public class OtherController {
         scoreBean.setDataSrc(4);
         scoreBean.setUserId(userinfo.getId());
         scoreBean.setScoreType(1);
+        String shareScore = otherService.querySetting("ShareScore").getConfigValue();
         scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(sharescore.longValue());
+        scoreBean.setScore(Long.valueOf(shareScore));
         if (!scoreService.isShare(userinfo.getId())) {
             scoreDao.addScore(scoreBean);
-            userinfo.setUserscore(sharescore);
+            userinfo.setUserscore(Integer.valueOf(shareScore));
             scoreDao.updateUserScore(userinfo);
         }
         String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
@@ -266,10 +265,10 @@ public class OtherController {
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
-        int expire=6;
+        int expire = 6;
         Config wxAccount = otherService.querySetting("OrderAdvice");
-        if(wxAccount!=null){
-            expire= Integer.parseInt(wxAccount.getConfigValue());
+        if (wxAccount != null) {
+            expire = Integer.parseInt(wxAccount.getConfigValue());
         }
         redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, expire, TimeUnit.SECONDS);

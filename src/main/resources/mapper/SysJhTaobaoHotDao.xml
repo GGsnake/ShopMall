@@ -22,6 +22,49 @@
         <result property="createtime" column="createTime"/>
     </resultMap>
 
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysJhJdHot" id="jhJdMap">
+        <result property="id" column="id"/>
+        <result property="picturl" column="pictUrl"/>
+        <result property="shoptitle" column="shopTitle"/>
+        <result property="title" column="title"/>
+        <result property="commissionrate" column="commissionRate"/>
+        <result property="coupon" column="coupon"/>
+        <result property="zkfinalprice" column="zkFinalPrice"/>
+        <result property="volume" column="volume"/>
+        <result property="numiid" column="numIid"/>
+        <result property="status" column="status"/>
+        <result property="jdurl" column="jdurl"/>
+        <result property="istamll" column="istamll"/>
+        <result property="comssion" column="commission"/>
+        <result property="orderCoupon" column="order_coupon"/>
+        <result property="orderCommiss" column="order_commiss"/>
+        <result property="orderVolume" column="order_volume"/>
+        <result property="createtime" column="createTime"/>
+    </resultMap>
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysJhTaobaoAll" id="jhTaobaoAllMap">
+        <result property="id" column="id"/>
+        <result property="picturl" column="pictUrl"/>
+        <result property="shoptitle" column="shopTitle"/>
+        <result property="title" column="title"/>
+        <result property="commissionrate" column="commissionRate"/>
+        <result property="commission" column="commission"/>
+        <result property="coupon" column="coupon"/>
+        <result property="zkfinalprice" column="zkFinalPrice"/>
+        <result property="couponprice" column="couponPrice"/>
+        <result property="volume" column="volume"/>
+        <result property="numiid" column="numIid"/>
+        <result property="status" column="status"/>
+        <result property="opt" column="opt"/>
+        <result property="cat" column="cat"/>
+        <result property="orderCoupon" column="order_coupon"/>
+        <result property="orderCommiss" column="order_commiss"/>
+        <result property="orderVolume" column="order_volume"/>
+        <result property="createtime" column="createTime"/>
+        <result property="istamll" column="istamll"/>
+    </resultMap>
+
     <!--<select id="queryObject" resultType="io.sbed.modules.sys.entity.SysJhTaobaoHot">-->
     <!--select * from jh_taobao_hot where id = #{value}-->
     <!--</select>-->
@@ -34,12 +77,46 @@
 		select *,sum(commissionRate+coupon+volume) math from jh_taobao_hot
 		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
     </select>
+    <select id="queryPageJd" resultMap="jhJdMap">
+        select * from jh_jd_good
+        <if test="cid!= null">
+            WHERE cid =#{cid}
+        </if>
+        ORDER BY volume desc limit #{start},#{end} ;
+    </select>
 
+    <select id="countMaxJd" resultType="java.lang.Integer">
+        select count(*) from jh_jd_good
+    </select>
 
+    <select id="countMaxJdCid" resultType="java.lang.Integer">
+        select count(*) from jh_jd_good where cid=#{cid}
+    </select>
     <select id="queryForGod" resultMap="jhTaobaoHotMap">
-		select *,sum(commissionRate+coupon) math from jh_taobao_hot
+		select *,sum(commissionRate+coupon*2) math from jh_taobao_hot
 		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
     </select>
+    <select id="queryForBao" resultMap="jhTaobaoHotMap">
+		select *  from jh_taobao_hot
+		  limit #{start},#{end} ;
+    </select>
+
+    <select id="queryForJu" resultMap="jhTaobaoHotMap">
+		select *  from jh_taobao_good where opt=6
+		  limit #{start},#{end} ;
+    </select>
+
+    <select id="countJu" resultType="java.lang.Integer">
+		select count(*) from jh_taobao_good where opt=6
+	</select>
+
+
+    <select id="queryMaxGood" resultMap="jhTaobaoHotMap">
+select * from jh_taobao_good where opt=0 and  coupon>100  ORDER BY zkFinalPrice asc limit #{start},#{end}
+	</select>
+    <select id="countMaxGood" resultType="java.lang.Integer">
+		select count(*) from jh_taobao_good where coupon>100  and opt=0
+	</select>
 
     <select id="queryTotal" resultType="int">
     select count(*) from jh_taobao_hot 	where istamll=0
@@ -49,6 +126,42 @@
     </select>
     <select id="queryTotalGod" resultType="int">
     select count(*) from jh_taobao_hot
+    </select>
+
+
+    <select id="queryLocalAllOpt" resultMap="jhTaobaoAllMap">
+        select * from jh_taobao_all WHERE status=0
+        <if test="opt != null">
+            AND opt = #{opt}
+        </if>
+        <if test="cat != null">
+            AND cat= #{cat}
+        </if>
+        <if test="istamll != null">
+            AND istamll= #{istamll}
+        </if>
+        <choose>
+            <when test="sort!= null">
+                order by ${sort} ${order}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+        limit #{start},#{end}
+    </select>
+    <select id="countLocalAllOpt" resultType="int">
+
+        select count(*) from jh_taobao_all where
+        status=0
+        <if test="opt != null">
+            and opt = #{opt}
+        </if>
+        <if test="cat != null">
+            and cat= #{cat}
+        </if>
+        <if test="istamll != null">
+            and   istamll= #{istamll}
+        </if>
     </select>
 
     <insert id="save" useGeneratedKeys="true"
@@ -84,36 +197,83 @@
 			now()
 		)
 	</insert>
+    <insert id="saveopt" useGeneratedKeys="true"
+            keyProperty="id">
+		insert IGNORE jh_taobao_good
+		(
+			`pictUrl`,
+			`shopTitle`,
+			`title`,
+			`commissionRate`,
+			`coupon`,
+			`zkFinalPrice`,
+			`volume`,
+			`numIid`,
+			`status`,
+			`istamll`,
+			`commission`,
+			`createTime`,
+			`opt`
+		)
+		values
+		(
+			#{pictUrl},
+			#{shopTitle},
+			#{title},
+			#{commissionRate},
+			#{coupon},
+			#{zkFinalPrice},
+			#{volume},
+			#{numIid},
+			0,
+			#{istamll},
+			#{comssion},
+			now(),
+			#{opt}
 
-    <!--<update id="update" parameterType="io.sbed.modules.sys.entity.SysJhTaobaoHot">-->
-    <!--update jh_taobao_hot -->
-    <!--<set>-->
-    <!--<if test="picturl != null">`pictUrl` = #{picturl}, </if>-->
-    <!--<if test="shoptitle != null">`shopTitle` = #{shoptitle}, </if>-->
-    <!--<if test="title != null">`title` = #{title}, </if>-->
-    <!--<if test="commissionrate != null">`commissionRate` = #{commissionrate}, </if>-->
-    <!--<if test="coupon != null">`coupon` = #{coupon}, </if>-->
-    <!--<if test="zkfinalprice != null">`zkFinalPrice` = #{zkfinalprice}, </if>-->
-    <!--<if test="volume != null">`volume` = #{volume}, </if>-->
-    <!--<if test="numiid != null">`numIid` = #{numiid}, </if>-->
-    <!--<if test="status != null">`status` = #{status}, </if>-->
-    <!--<if test="orderCoupon != null">`order_coupon` = #{orderCoupon}, </if>-->
-    <!--<if test="orderCommiss != null">`order_commiss` = #{orderCommiss}, </if>-->
-    <!--<if test="orderVolume != null">`order_volume` = #{orderVolume}, </if>-->
-    <!--<if test="createtime != null">`createTime` = #{createtime}</if>-->
-    <!--</set>-->
-    <!--where id = #{id}-->
-    <!--</update>-->
-    <!---->
-    <!--<delete id="delete">-->
-    <!--delete from jh_taobao_hot where id = #{value}-->
-    <!--</delete>-->
-    <!---->
-    <!--<delete id="deleteBatch">-->
-    <!--delete from jh_taobao_hot where id in -->
-    <!--<foreach item="id" collection="array" open="(" separator="," close=")">-->
-    <!--#{id}-->
-    <!--</foreach>-->
-    <!--</delete>-->
+		)
+	</insert>
+    <insert id="saveJd" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into jh_jd_good
+		(
+			`pictUrl`,
+			`shopTitle`,
+			`jdurl`,
+			`title`,
+			`commissionRate`,
+			`coupon`,
+			`zkFinalPrice`,
+			`volume`,
+			`numIid`,
+			`status`,
+			`istamll`,
+			`commission`,
+			`createTime`,
+			`opt`,
+			`cid`
+		)
+		values
+		(
+			#{pictUrl},
+			#{shopTitle},
+			#{jdurl},
+			#{title},
+			#{commissionRate},
+			#{coupon},
+			#{zkFinalPrice},
+			#{volume},
+			#{numIid},
+			0,
+			#{istamll},
+			#{comssion},
+			now(),
+			#{opt},
+			#{cid}
+
+		)
+	</insert>
+
+
 
 </mapper>

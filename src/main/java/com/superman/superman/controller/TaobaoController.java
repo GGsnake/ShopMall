@@ -50,100 +50,80 @@ public class TaobaoController {
         JSONObject data = taoBaoApiServicel.serachGoodsAll(taoBaoSerachBean, Long.valueOf(uid));
         return WeikeResponseUtil.success(data);
     }
-
     /**
      * 首页的类目活动入口
      *
      * @param request
-     * @param opt
-     * @param tbsort
+     * @param opt       1 上百券 2 聚划算 3 9.9包邮 4生活家居
+     * @param sort
      * @param pageParam
      * @return
      */
     @LoginRequired
     @GetMapping("/opt")
-    public WeikeResponse optIndex(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
+    public WeikeResponse optIndex(HttpServletRequest request, Integer opt,
+                                  @RequestParam(value = "sort", required = false, defaultValue = "0 ") Integer sort, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
-        if (opt == 1) {
-            JSONObject jsonObject = taoBaoApiServicel.goodLocal(param, Long.valueOf(uid), 4);
-            return WeikeResponseUtil.success(jsonObject);
+        JSONObject paramData = new JSONObject();
+        paramData.put("start", param.getStartRow());
+        paramData.put("end", param.getPageSize());
+        String orderFiled = null;
+        if (sort == 1) {
+            //券后价
+            orderFiled = "couponPrice";
         }
-        if (opt == 2) {
+        if (sort == 2) {
+            //销量
+            orderFiled = "volume";
+        }
+        if (sort == 3) {
+            //券额度
+            orderFiled = "coupon";
+        }
+        paramData.put("opt", opt);
+        paramData.put("sort", orderFiled);
+        JSONObject jsonObject = taoBaoApiServicel.goodLocalSuperForOpt(paramData, Long.valueOf(uid), null);
+        return WeikeResponseUtil.success(jsonObject);
+    }
+
+//    /**
+//     * 首页爆款宝贝
+//     *
+//     * @param request
+//     * @param opt
+//     * @param tbsort
+//     * @param pageParam
+//     * @return
+//     */
+//    @LoginRequired
+//    @GetMapping("/hotGoods")
+//    public WeikeResponse hotGoods(HttpServletRequest request, Integer opt,
+//                                  @RequestParam(value = "sort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
+//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+//        if (uid == null) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//        }
+////        TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
 //
-//            TbkDgOptimusMaterialRequest req = new TbkDgOptimusMaterialRequest();
-//            req.setMaterialId(4071l);
-//            req.setPageNo(Long.valueOf(param.getPageNo()));
-//            req.setPageSize(Long.valueOf(param.getPageSize()));
-//            req.setAdzoneId(92706150203l);
-            //https://api.open.21ds.cn/op_api_v1/getitems?apkey=c003483d-fd72-c78a-72ec-1d0e6034919d&page=1
-            JSONObject jsonObject = taoBaoApiServicel.goodLocal(param, Long.valueOf(uid),6);
-
-//            req
-            return WeikeResponseUtil.success(jsonObject);
-
-
-        }
-        if (opt == 3) {
-            taoBaoSerachBean.setEndPrice(10l);
-            taoBaoSerachBean.setCat("50016348,50026523,50025705,21,19,29,50010404,16,50002766,50008090");
-        }
-        if (opt == 4) {
-            //爆款入口
-            JSONObject data = taoBaoApiServicel.goodLocal(param, Long.valueOf(uid), 8);
-            return WeikeResponseUtil.success(data);
-        }
-        if (opt == 5) {
-            //爆款入口
-            JSONObject data = taoBaoApiServicel.goodLocal(param, Long.valueOf(uid), 5);
-            return WeikeResponseUtil.success(data);
-        }
-        taoBaoSerachBean.setPageSize(Long.valueOf(pageParam.getPageSize()));
-        taoBaoSerachBean.setPageNo(Long.valueOf(pageParam.getPageNo()));
-        taoBaoSerachBean.setSort(tbsort);
-        JSONObject jsonObject = taoBaoApiServicel.indexSearch(taoBaoSerachBean, Long.valueOf(uid));
-        return WeikeResponseUtil.success(jsonObject);
-    }
-
-    /**
-     * 首页爆款宝贝
-     *
-     * @param request
-     * @param opt
-     * @param tbsort
-     * @param pageParam
-     * @return
-     */
-    @LoginRequired
-    @GetMapping("/hotGoods")
-    public WeikeResponse hotGoods(HttpServletRequest request, Integer opt, @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        }
-        TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
-        if (opt == 1) {
-            taoBaoSerachBean.setQ("淘抢购");
-        }
-        if (opt == 2) {
-            taoBaoSerachBean.setQ("聚划算");
-        }
-        if (opt == 3) {
-            taoBaoSerachBean.setEndPrice(10l);
-        }
-        if (opt == 4) {
-            taoBaoSerachBean.setQ("生活家居");
-        }
-        taoBaoSerachBean.setPageSize(Long.valueOf(pageParam.getPageSize()));
-        taoBaoSerachBean.setPageNo(Long.valueOf(pageParam.getPageNo()));
-        taoBaoSerachBean.setSort(tbsort);
-        JSONObject jsonObject = taoBaoApiServicel.indexSearch(taoBaoSerachBean, Long.valueOf(uid));
-        return WeikeResponseUtil.success(jsonObject);
-    }
+////        if (opt == 1) {
+//////            taoBaoApiServicel.goodLocalSuper("淘抢购");
+////        }
+////        if (opt == 2) {
+////            taoBaoSerachBean.setQ("聚划算");
+////        }
+////        if (opt == 3) {
+////            taoBaoSerachBean.setEndPrice(10l);
+////        }
+////        if (opt == 4) {
+////            taoBaoSerachBean.setQ("生活家居");
+////        }
+//////        JSONObject jsonObject = taoBaoApiServicel.indexSearch(taoBaoSerachBean, Long.valueOf(uid));
+////        return WeikeResponseUtil.success(jsonObject);
+//    }
 
     /**
      * 淘口令解析

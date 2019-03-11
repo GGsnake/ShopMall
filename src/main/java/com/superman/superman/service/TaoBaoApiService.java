@@ -37,6 +37,12 @@ public interface TaoBaoApiService {
      * @return
      */
     JSONObject goodLocal(PageParam pageParam, Long uid, Integer status);
+    /**
+     * 本地淘宝搜索引擎加强版
+     *
+     * @return
+     */
+    JSONObject goodLocalSuperForOpt(JSONObject pageParam,Long uid, Integer status);
 
     /**
      * 淘宝搜索首页专用

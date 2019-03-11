@@ -1,6 +1,7 @@
 package com.superman.superman.dao;
 
 import com.superman.superman.model.SysJhJdHot;
+import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.model.SysJhTaobaoHot;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -38,6 +39,18 @@ public interface SysJhTaobaoHotDao extends BaseDao<SysJhTaobaoHot> {
      */
 
     List<SysJhTaobaoHot> queryMaxGood(Map<String,Object> map);
+    /**
+     * 本地搜索引擎
+     * @return
+     */
+
+    List<SysJhTaobaoAll> queryLocalAllOpt(Map<String,Object> map);
+    /**
+     * 本地搜索引擎
+     * @return
+     */
+
+    Integer countLocalAllOpt(Map<String,Object> map);
     /**
      * 上百券
      * @return
