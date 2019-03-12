@@ -37,9 +37,6 @@ public class ShopGoodController {
     RestTemplate restTemplate;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private SysJhTaobaoHotDao
-            sysJhTaobaoHotDao;
 
     /**
      * 超级搜索引擎
@@ -192,6 +189,29 @@ public class ShopGoodController {
     @PostMapping("/jd")
     public WeikeResponse Search(HttpServletRequest request,
                                 Integer cid,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
+    ) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        PageParam pageParam = new PageParam(pageNo, pageSize);
+        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1, cid);
+        return WeikeResponseUtil.success(data);
+
+    }
+    /**
+     * 拼多多本地搜索引擎
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/pdd")
+    public WeikeResponse pddSearch(HttpServletRequest request,
+//                                Integer cid,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
                                 @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
     ) {

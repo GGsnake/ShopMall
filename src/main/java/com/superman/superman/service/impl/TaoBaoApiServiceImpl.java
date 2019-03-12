@@ -217,11 +217,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             if (resultList == null || resultList.size() == 0) {
                 return data;
             }
-
-//            Long count = rsp.g;
-//            if (count == 0) {
-//                return data;
-//            }
             JSONArray dataArray = new JSONArray();
             if (ufo.getRoleId() == 1) {
                 for (int i = 0; i < resultList.size(); i++) {
@@ -329,6 +324,13 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         return data;
     }
 
+    /**
+     * 淘宝本地类目引擎   根据opt选择判断
+     * @param param
+     * @param uid
+     * @param status
+     * @return
+     */
     @Override
     public JSONObject goodLocalSuperForOpt(JSONObject param, Long uid, Integer status) {
         Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
@@ -337,7 +339,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
         Double score = Double.valueOf(ufo.getScore());
         JSONArray dataArray = new JSONArray();
-
         //默认降序
         param.put("order", "desc");
         List<SysJhTaobaoAll> sysJhTaobaoHots = sysJhTaobaoHotDao.queryLocalAllOpt(param);
@@ -350,17 +351,17 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (ufo.getRoleId() == 1) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
                 SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
-                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
-                dataJson.put("zk_money", dataObj.getCoupon() * 100);
-                dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                bean.put("zk_money", dataObj.getCoupon() * 100);
+                bean.put("hasCoupon", 1);
+                bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
-                dataJson.put("shopName", dataObj.getShoptitle());
-                dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
-                dataJson.put("agent", agent.doubleValue() * 100);
-                dataArray.add(dataJson);
+                bean.put("shopName", dataObj.getShoptitle());
+                bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
+                bean.put("agent", agent.doubleValue() * 100);
+                dataArray.add(bean);
             }
             data.put("data", dataArray);
             data.put("count", count);
@@ -370,17 +371,17 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (ufo.getRoleId() == 2) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
                 SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
-                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
-                dataJson.put("zk_money", dataObj.getCoupon() * 100);
-                dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                bean.put("zk_money", dataObj.getCoupon() * 100);
+                bean.put("hasCoupon", 1);
+                bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
+                bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
-                dataJson.put("shopName", dataObj.getShoptitle());
-                dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
-                dataJson.put("agent", agent.doubleValue() * score );
-                dataArray.add(dataJson);
+                bean.put("shopName", dataObj.getShoptitle());
+                bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
+                bean.put("agent", agent.doubleValue() * score );
+                dataArray.add(bean);
             }
             data.put("data", dataArray);
             data.put("count", count);
@@ -388,20 +389,19 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         }
         for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
             SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
-            JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+            JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
             //查找指定字符第一次出现的位置
-            dataJson.put("zk_money", dataObj.getCoupon() * 100);
-            dataJson.put("hasCoupon", 1);
-            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-            dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
-            dataJson.put("shopName", dataObj.getShoptitle());
-            dataJson.put("istmall", dataObj.getIstamll() == 0 ? false : true);
-            dataJson.put("agent", 0);
-            dataArray.add(dataJson);
+            bean.put("zk_money", dataObj.getCoupon() * 100);
+            bean.put("hasCoupon", 1);
+            bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+            bean.put("shopName", dataObj.getShoptitle());
+            bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
+            bean.put("agent", 0);
+            dataArray.add(bean);
         }
         data.put("data", dataArray);
         data.put("count", count);
-//        return
         return data;
     }
 

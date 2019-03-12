@@ -9,9 +9,12 @@ import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.model.SysJhJdHot;
+import com.superman.superman.model.SysJhPdd;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.utils.ConvertUtils;
+import com.superman.superman.utils.PageParam;
 import com.superman.superman.utils.sign.EverySign;
 import com.superman.superman.utils.net.HttpRequest;
 import lombok.NonNull;
@@ -43,6 +46,7 @@ public class PddApiServiceImpl implements PddApiService {
     private Integer RANGE;
     @Autowired
     private UserinfoMapper userinfoMapper;
+
     //生成推广链接
     @Override
     public JSONObject convertPdd(@NonNull String pid, @NonNull Long goodId) {
@@ -128,6 +132,108 @@ public class PddApiServiceImpl implements PddApiService {
             JSONObject data = new JSONObject();
             Integer roleId = ufo.getRoleId();
             response = client.syncInvoke(request);
+            if (response == null) {
+                data.put("data", dataArray);
+                data.put("count", 0);
+                return data;
+            }
+            Integer totalCount = response.getGoodsSearchResponse().getTotalCount();
+            if (totalCount == 0) {
+                data.put("data", dataArray);
+                data.put("count", 0);
+                return data;
+            }
+            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
+            if (roleId == 1) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long promotion_rate = item.getPromotionRate();
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    Float promoto = Float.valueOf(promotion_rate) / 1000;
+                    Float comssion = Float.valueOf(after * promoto);
+                    BigDecimal var1 = new BigDecimal(comssion);
+                    BigDecimal var2 = new BigDecimal(rang);
+                    BigDecimal rmb = var1.multiply(var2);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("shopName", item.getMallName());
+                    dataJson.put("zk_price", after);
+                    dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataArray.add(dataJson);
+                }
+            }
+            if (roleId == 2) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long promotion_rate = item.getPromotionRate();
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    Float promoto = Float.valueOf(promotion_rate) / 1000;
+                    Float comssion = Float.valueOf(after * promoto);
+                    BigDecimal var1 = new BigDecimal(comssion);
+                    BigDecimal var2 = new BigDecimal(rang);
+                    BigDecimal var3 = new BigDecimal(scoreAfer);
+                    BigDecimal rmb = var1.multiply(var2);
+                    BigDecimal agent = rmb.multiply(var3);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("shopName", item.getMallName());
+
+                    dataJson.put("zk_price", after);
+                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataArray.add(dataJson);
+                }
+            }
+            if (roleId == 3) {
+                for (int i = 0; i < goodsList.size(); i++) {
+                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+                    Long min_group_price = item.getMinGroupPrice();
+                    Long coupon_discount = item.getCouponDiscount();
+                    Float after = Float.valueOf(min_group_price - coupon_discount);
+                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
+                    dataJson.put("zk_money", coupon_discount);
+                    dataJson.put("price", min_group_price);
+                    dataJson.put("zk_price", after);
+                    dataJson.put("shopName", item.getMallName());
+
+                    dataJson.put("agent", 0);
+                    dataArray.add(dataJson);
+                }
+            }
+            data.put("data", dataArray);
+            data.put("count", totalCount);
+            return data;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public JSONObject getLocalGoodsAll(PageParam pageParam, Long uid) {
+        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+        if (ufo == null) {
+            return null;
+        }
+        JSONObject param = new JSONObject();
+        param.put("start", pageParam.getStartRow());
+        param.put("end", pageParam.getPageSize());
+        List<SysJhPdd> sysJhTaobaoHots = new ArrayList<>(10);
+        Integer count = 0;
+//        sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageJd(param);
+//        count = sysJhTaobaoHotDao.countMaxJdCid(cid);
+        Double score = Double.valueOf(ufo.getScore());
+        Double scoreAfer = score / 100;
+        Double rang = RANGE / 100d;
+        try {
+            JSONArray dataArray = new JSONArray();
+            JSONObject data = new JSONObject();
+            Integer roleId = ufo.getRoleId();
             if (response == null) {
                 data.put("data", dataArray);
                 data.put("count", 0);
