@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableCaching
 @EnableAsync
-//@EnableDiscoveryClient
 @MapperScan("com.superman.superman.dao")
 public class SupermanApplication {
 

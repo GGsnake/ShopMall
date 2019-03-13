@@ -143,8 +143,8 @@ public class ShopGoodController {
                                 @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
                                 @RequestParam(value = "tbcat", defaultValue = "0", required = false) Integer cat,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
-    ) {
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo)
+    {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -201,6 +201,7 @@ public class ShopGoodController {
         return WeikeResponseUtil.success(data);
 
     }
+
     /**
      * 拼多多本地搜索引擎
      *
@@ -212,15 +213,15 @@ public class ShopGoodController {
     @PostMapping("/pdd")
     public WeikeResponse pddSearch(HttpServletRequest request,
 //                                Integer cid,
-                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
+                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                   @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
     ) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam pageParam = new PageParam(pageNo, pageSize);
-        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1, cid);
+        JSONObject data = pddApiService.getLocalGoodsAll(pageParam, Long.valueOf(uid));
         return WeikeResponseUtil.success(data);
 
     }
@@ -254,7 +255,7 @@ public class ShopGoodController {
             data = jdApiService.jdDetail(goodId);
         }
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 20, TimeUnit.SECONDS);
+        redisUtil.expire(key, 5, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

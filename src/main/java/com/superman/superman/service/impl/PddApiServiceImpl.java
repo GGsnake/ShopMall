@@ -8,12 +8,15 @@ import com.pdd.pop.sdk.http.api.request.PddDdkGoodsDetailRequest;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
+import com.superman.superman.dao.SysJhPddAllDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.SysJhJdHot;
 import com.superman.superman.model.SysJhPdd;
+import com.superman.superman.model.SysJhPddAll;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.utils.ConvertUtils;
+import com.superman.superman.utils.GoodUtils;
 import com.superman.superman.utils.PageParam;
 import com.superman.superman.utils.sign.EverySign;
 import com.superman.superman.utils.net.HttpRequest;
@@ -46,6 +49,8 @@ public class PddApiServiceImpl implements PddApiService {
     private Integer RANGE;
     @Autowired
     private UserinfoMapper userinfoMapper;
+    @Autowired
+    private SysJhPddAllDao sysJhPddAllDao;
 
     //生成推广链接
     @Override
@@ -152,16 +157,17 @@ public class PddApiServiceImpl implements PddApiService {
                     Long coupon_discount = item.getCouponDiscount();
                     Float after = Float.valueOf(min_group_price - coupon_discount);
                     Float promoto = Float.valueOf(promotion_rate) / 1000;
-                    Float comssion = Float.valueOf(after * promoto);
-                    BigDecimal var1 = new BigDecimal(comssion);
-                    BigDecimal var2 = new BigDecimal(rang);
-                    BigDecimal rmb = var1.multiply(var2);
+                    Float comssion = after * promoto;
+//                    BigDecimal var1 = new BigDecimal(comssion);
+//                    BigDecimal var2 = new BigDecimal(rang);
+//                    BigDecimal rmb = var1.multiply(var2);
                     JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
                     dataJson.put("shopName", item.getMallName());
                     dataJson.put("zk_price", after);
-                    dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+//                    dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                    dataJson.put("agent", comssion);
                     dataArray.add(dataJson);
                 }
             }
@@ -175,15 +181,12 @@ public class PddApiServiceImpl implements PddApiService {
                     Float promoto = Float.valueOf(promotion_rate) / 1000;
                     Float comssion = Float.valueOf(after * promoto);
                     BigDecimal var1 = new BigDecimal(comssion);
-                    BigDecimal var2 = new BigDecimal(rang);
                     BigDecimal var3 = new BigDecimal(scoreAfer);
-                    BigDecimal rmb = var1.multiply(var2);
-                    BigDecimal agent = rmb.multiply(var3);
+                    BigDecimal agent = var1.multiply(var3);
                     JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
                     dataJson.put("shopName", item.getMallName());
-
                     dataJson.put("zk_price", after);
                     dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                     dataArray.add(dataJson);
@@ -223,97 +226,73 @@ public class PddApiServiceImpl implements PddApiService {
         JSONObject param = new JSONObject();
         param.put("start", pageParam.getStartRow());
         param.put("end", pageParam.getPageSize());
-        List<SysJhPdd> sysJhTaobaoHots = new ArrayList<>(10);
+        List<SysJhPddAll> sysJhTaobaoHots = new ArrayList<>(10);
         Integer count = 0;
-//        sysJhTaobaoHots = sysJhTaobaoHotDao.queryPageJd(param);
-//        count = sysJhTaobaoHotDao.countMaxJdCid(cid);
+        sysJhTaobaoHots = sysJhPddAllDao.queryPageJd(param);
+        count = sysJhPddAllDao.queryTotal();
         Double score = Double.valueOf(ufo.getScore());
-        Double scoreAfer = score / 100;
-        Double rang = RANGE / 100d;
-        try {
-            JSONArray dataArray = new JSONArray();
-            JSONObject data = new JSONObject();
-            Integer roleId = ufo.getRoleId();
-            if (response == null) {
-                data.put("data", dataArray);
-                data.put("count", 0);
-                return data;
-            }
-            Integer totalCount = response.getGoodsSearchResponse().getTotalCount();
-            if (totalCount == 0) {
-                data.put("data", dataArray);
-                data.put("count", 0);
-                return data;
-            }
-            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
-            if (roleId == 1) {
-                for (int i = 0; i < goodsList.size(); i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    Long promotion_rate = item.getPromotionRate();
-                    Long min_group_price = item.getMinGroupPrice();
-                    Long coupon_discount = item.getCouponDiscount();
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    Float promoto = Float.valueOf(promotion_rate) / 1000;
-                    Float comssion = Float.valueOf(after * promoto);
-                    BigDecimal var1 = new BigDecimal(comssion);
-                    BigDecimal var2 = new BigDecimal(rang);
-                    BigDecimal rmb = var1.multiply(var2);
-                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("shopName", item.getMallName());
-                    dataJson.put("zk_price", after);
-                    dataJson.put("agent", rmb.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                    dataArray.add(dataJson);
-                }
-            }
-            if (roleId == 2) {
-                for (int i = 0; i < goodsList.size(); i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    Long promotion_rate = item.getPromotionRate();
-                    Long min_group_price = item.getMinGroupPrice();
-                    Long coupon_discount = item.getCouponDiscount();
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    Float promoto = Float.valueOf(promotion_rate) / 1000;
-                    Float comssion = Float.valueOf(after * promoto);
-                    BigDecimal var1 = new BigDecimal(comssion);
-                    BigDecimal var2 = new BigDecimal(rang);
-                    BigDecimal var3 = new BigDecimal(scoreAfer);
-                    BigDecimal rmb = var1.multiply(var2);
-                    BigDecimal agent = rmb.multiply(var3);
-                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("shopName", item.getMallName());
-
-                    dataJson.put("zk_price", after);
-                    dataJson.put("agent", agent.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                    dataArray.add(dataJson);
-                }
-            }
-            if (roleId == 3) {
-                for (int i = 0; i < goodsList.size(); i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    Long min_group_price = item.getMinGroupPrice();
-                    Long coupon_discount = item.getCouponDiscount();
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    JSONObject dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("zk_price", after);
-                    dataJson.put("shopName", item.getMallName());
-
-                    dataJson.put("agent", 0);
-                    dataArray.add(dataJson);
-                }
+        if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
+            return null;
+        }
+        JSONArray dataArray = new JSONArray();
+        JSONObject data = new JSONObject();
+        if (ufo.getRoleId() == 1) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
+                dataJson.put("hasCoupon", 1);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue());
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", 0);
+                dataJson.put("agent", dataObj.getCommission().doubleValue() * 100);
+                dataArray.add(dataJson);
             }
             data.put("data", dataArray);
-            data.put("count", totalCount);
+            data.put("count", count);
             return data;
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
-        return null;
+        if (ufo.getRoleId() == 2) {
+            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+                SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
+                JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+                //查找指定字符第一次出现的位置
+                dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
+                dataJson.put("hasCoupon", 1);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() * 100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+                dataJson.put("shopName", dataObj.getShoptitle());
+                dataJson.put("istmall", 0);
+                dataJson.put("agent", dataObj.getCommission().doubleValue() * 100 * score / 100);
+                dataArray.add(dataJson);
+            }
+            data.put("data", dataArray);
+            data.put("count", count);
+            return data;
+        }
+        for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+            SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
+            JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
+            //查找指定字符第一次出现的位置
+            dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
+            dataJson.put("hasCoupon", 1);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() * 100);
+//                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
+            dataJson.put("shopName", dataObj.getShoptitle());
+            dataJson.put("istmall", 0);
+            dataJson.put("agent", 0);
+            dataArray.add(dataJson);
+        }
+        data.put("data", dataArray);
+        data.put("count", count);
+//        return
+        return data;
     }
 
 

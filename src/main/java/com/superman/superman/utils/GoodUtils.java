@@ -2,6 +2,7 @@ package com.superman.superman.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.SysJhJdHot;
+import com.superman.superman.model.SysJhPddAll;
 import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.model.SysJhTaobaoHot;
 import com.taobao.api.response.TbkDgMaterialOptionalResponse;
@@ -34,6 +35,16 @@ public class GoodUtils {
         return dataJson;
     }
     public static JSONObject convertLocalTaobao(SysJhJdHot dataObj) {
+        JSONObject dataJson = new JSONObject();
+        dataJson.put("price", dataObj.getZkfinalprice().doubleValue()*100);
+        dataJson.put("volume", dataObj.getVolume());
+        dataJson.put("goodId", dataObj.getNumiid());
+        dataJson.put("imgUrl", dataObj.getPicturl());
+        dataJson.put("goodName", dataObj.getTitle());
+        return dataJson;
+    }
+
+    public static JSONObject convertLocalTaobao(SysJhPddAll dataObj) {
         JSONObject dataJson = new JSONObject();
         dataJson.put("price", dataObj.getZkfinalprice().doubleValue()*100);
         dataJson.put("volume", dataObj.getVolume());
