@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -172,8 +173,8 @@ public class UserApiServiceImpl implements UserApiService {
             log.warning("被升级的用户应该是粉丝" + uid);
             return false;
         }
-        Agent temp = agentDao.queryForUserIdSimple(uid);
-        if (temp == null || temp.getAgentId() != agentId) {
+        List<Agent> temp = agentDao.queryForUserId(uid);
+        if (temp == null ||temp.size()==0|| temp.get(0).getAgentId() != agentId) {
             log.warning("该用户不是您的粉丝" + uid);
             return false;
         }

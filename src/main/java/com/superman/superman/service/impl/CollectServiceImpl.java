@@ -25,16 +25,12 @@ import java.util.List;
 @Log
 @Service("collectService")
 public class CollectServiceImpl implements CollectService {
-
     @Autowired
     private CollectDao collectDao;
     @Autowired
     private UserinfoMapper userinfoMapper;
-
-
     @Value("${juanhuang.range}")
     Double rangeaa;
-
     @Override
     public JSONArray queryCollect(@NonNull Long uid, @NonNull PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);

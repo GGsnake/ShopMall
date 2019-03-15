@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/24.
@@ -32,15 +33,6 @@ import java.util.List;
 public class OderServiceImpl implements OderService {
     @Autowired
     private OderMapper oderMapper;
-    @Autowired
-    private TboderMapper tboderMapper;
-
-    @Autowired
-    private AgentDao agentDao;
-
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
     @Autowired
     private AllDevOderMapper allDevOderMapper;
     @Autowired
@@ -54,7 +46,7 @@ public class OderServiceImpl implements OderService {
     public JSONObject queryPddOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();
-        var data = new JSONObject();
+        JSONObject data = new JSONObject();
 
         switch (roleId) {
             case 1:
@@ -96,7 +88,7 @@ public class OderServiceImpl implements OderService {
         Integer roleId = userinfo.getRoleId();
         Integer score = userinfo.getScore();
         JSONObject data = new JSONObject();
-        HashMap hashMap = new HashMap();
+        Map hashMap = new HashMap();
         hashMap.put("id", uid);
         hashMap.put("jd", status);
         switch (roleId) {

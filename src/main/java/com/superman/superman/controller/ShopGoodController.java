@@ -131,9 +131,9 @@ public class ShopGoodController {
     }
 
     /**
-     * 本地搜索引擎
+     * 本地淘宝搜索引擎
      *
-     * @param type 平台 0 拼多多 1 淘宝
+     * @param type 平台 0 拼多多 1
      * @param
      * @return
      */
@@ -143,8 +143,7 @@ public class ShopGoodController {
                                 @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
                                 @RequestParam(value = "tbcat", defaultValue = "0", required = false) Integer cat,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo)
-    {
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -161,21 +160,6 @@ public class ShopGoodController {
         }
         JSONObject data = taoBaoApiService.goodLocalSuperForOpt(paramData, Long.valueOf(uid), 1);
         return WeikeResponseUtil.success(data);
-
-//        if (type == 2) {
-//            PageParam pageParam = new PageParam(pageNo, pageSize);
-//            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
-//            return WeikeResponseUtil.success(data);
-//
-//        }
-//
-//        if (type == 3) {
-//            PageParam pageParam = new PageParam(pageNo, pageSize);
-//            JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
-//            return WeikeResponseUtil.success(data);
-//
-//        }
-
     }
 
     /**
@@ -212,10 +196,8 @@ public class ShopGoodController {
     @LoginRequired
     @PostMapping("/pdd")
     public WeikeResponse pddSearch(HttpServletRequest request,
-//                                Integer cid,
                                    @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-                                   @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
-    ) {
+                                   @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -255,7 +237,7 @@ public class ShopGoodController {
             data = jdApiService.jdDetail(goodId);
         }
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 5, TimeUnit.SECONDS);
+        redisUtil.expire(key, 3, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

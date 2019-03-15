@@ -1,5 +1,6 @@
 package com.superman.superman.controller;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.ScoreDao;
@@ -11,6 +12,7 @@ import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
+import lombok.extern.java.Log;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by liujupeng on 2018/11/14.
  */
+@Log
 @RestController
 @RequestMapping("/score")
 public class ScoreController {
@@ -85,16 +88,21 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-
-        Long signScore = Long.valueOf(otherService.querySetting("SignScore").getConfigValue());
+        //签到积分奖励
+        String signScore1 = otherService.querySetting("SignScore").getConfigValue();
+        if (StringUtils.isEmpty(signScore1)){
+            log.warning("警告 签到积分奖励设置错误--------------------");
+            return WeikeResponseUtil.fail("1000522", "服务器内部错误");
+        }
+        Long signScore = Long.valueOf(signScore1);
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(3);
         scoreBean.setUserId(Long.valueOf(uid));
         scoreBean.setScoreType(1);
         scoreBean.setDay(EveryUtils.getNowday());
         scoreBean.setScore(signScore);
-        ScoreBean exit = scoreDao.isExit(scoreBean);
-        if (exit != null) {
+        ScoreBean bean = scoreDao.isExit(scoreBean);
+        if (bean != null) {
             return WeikeResponseUtil.fail("1000322", "已签到过");
         }
         Userinfo user = new Userinfo();
@@ -121,14 +129,7 @@ public class ScoreController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-//        String key = "myScore:" + uid;
-//        if (redisUtil.hasKey(key)) {
-//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-//        }
         JSONObject data = scoreService.myScore(Integer.valueOf(uid));
-
-//        redisUtil.set(key, data.toJSONString());
-//        redisUtil.expire(key, 5, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

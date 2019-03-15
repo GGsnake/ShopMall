@@ -9,9 +9,6 @@ import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.*;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +31,12 @@ public class MyOderController {
     @Autowired
     private MemberService memberService;
 
-    @ApiOperation(value = "我的订单", notes = "灵活搜索")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "devId", value = "平台类型", required = false, dataType = "Integer", paramType = "/Search"),
-            @ApiImplicitParam(name = "status", value = "订单状态", required = false, dataType = "Integer"),
-            @ApiImplicitParam(name = "sort", value = "排序方式", required = false, dataType = "Integer")
-    })
+//    @ApiOperation(value = "我的订单", notes = "灵活搜索")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "devId", value = "平台类型", required = false, dataType = "Integer", paramType = "/Search"),
+//            @ApiImplicitParam(name = "status", value = "订单状态", required = false, dataType = "Integer"),
+//            @ApiImplicitParam(name = "sort", value = "排序方式", required = false, dataType = "Integer")
+//    })
     @LoginRequired
     @PostMapping("/myOder")
     public WeikeResponse queryAllOder(HttpServletRequest request, PageParam pageParam, Integer devId, Integer status) {

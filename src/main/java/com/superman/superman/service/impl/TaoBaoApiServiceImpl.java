@@ -356,7 +356,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 bean.put("zk_money", dataObj.getCoupon() * 100);
                 bean.put("hasCoupon", 1);
                 bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 bean.put("shopName", dataObj.getShoptitle());
                 bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
@@ -376,7 +376,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 bean.put("zk_money", dataObj.getCoupon() * 100);
                 bean.put("hasCoupon", 1);
                 bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
-                bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+                bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 bean.put("shopName", dataObj.getShoptitle());
                 bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
@@ -394,7 +394,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             bean.put("zk_money", dataObj.getCoupon() * 100);
             bean.put("hasCoupon", 1);
             bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-            bean.put("commissionRate", dataObj.getCommissionrate().intValue() / 10);
+            bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
             bean.put("shopName", dataObj.getShoptitle());
             bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
             bean.put("agent", 0);

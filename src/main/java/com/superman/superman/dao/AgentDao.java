@@ -13,14 +13,7 @@ import java.util.Map;
 public interface AgentDao {
     @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
     List<Agent> queryForUserId(Integer id);
-    @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
-    Agent queryForUserIdSimple(Integer id);
 
-    @Select("SELECT userId FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
-    List<Long> queryForUserIdLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
-
-    @Select("SELECT userId,createTime FROM agent WHERE agentId= #{id} and status=0 order by createTime limit #{star},#{end} ")
-    List<Agent> queryForUserIdAgentLimt(@Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
     /**
      * 统计我的一级粉丝或者代理

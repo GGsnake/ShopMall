@@ -54,7 +54,7 @@ public class TaobaoController {
      * 首页的类目活动入口
      *
      * @param request
-     * @param opt       1 上百券 2 聚划算 3 9.9包邮 4生活家居
+     * @param opt       1 上百券 2 聚划算 3 9.9包邮 4生活家居 5爆款 6精选 7淘宝首页
      * @param sort
      * @param pageParam
      * @return
@@ -89,40 +89,6 @@ public class TaobaoController {
         JSONObject jsonObject = taoBaoApiServicel.goodLocalSuperForOpt(paramData, Long.valueOf(uid), null);
         return WeikeResponseUtil.success(jsonObject);
     }
-//    /**
-//     * 首页爆款宝贝
-//     *
-//     * @param request
-//     * @param opt
-//     * @param tbsort
-//     * @param pageParam
-//     * @return
-//     */
-//    @LoginRequired
-//    @GetMapping("/hotGoods")
-//    public WeikeResponse hotGoods(HttpServletRequest request, Integer opt,
-//                                  @RequestParam(value = "sort", required = false, defaultValue = "total_sales_des") String tbsort, PageParam pageParam) {
-//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-//        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-//        }
-////        TbkDgMaterialOptionalRequest taoBaoSerachBean = new TbkDgMaterialOptionalRequest();
-//
-////        if (opt == 1) {
-//////            taoBaoApiServicel.goodLocalSuper("淘抢购");
-////        }
-////        if (opt == 2) {
-////            taoBaoSerachBean.setQ("聚划算");
-////        }
-////        if (opt == 3) {
-////            taoBaoSerachBean.setEndPrice(10l);
-////        }
-////        if (opt == 4) {
-////            taoBaoSerachBean.setQ("生活家居");
-////        }
-//////        JSONObject jsonObject = taoBaoApiServicel.indexSearch(taoBaoSerachBean, Long.valueOf(uid));
-////        return WeikeResponseUtil.success(jsonObject);
-//    }
 
     /**
      * 淘口令解析

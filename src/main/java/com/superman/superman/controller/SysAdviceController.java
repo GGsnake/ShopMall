@@ -1,5 +1,6 @@
 package com.superman.superman.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -80,7 +81,10 @@ public class SysAdviceController{
 	public WeikeResponse querySysJhProblem(PageParam pageParam){
 			//查询列表数据
 		PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-		List<SysJhProblem> total = sysAdviceDao.querySysJhProblem(param.getStartRow(),param.getPageSize());
+		Map<String,Object> map=new HashMap<>();
+		map.put("offset",param.getStartRow());
+		map.put("limit",param.getPageSize());
+		List<SysJhProblem> total = sysAdviceDao.querySysJhProblem(map);
 		int sum = sysAdviceDao.countProblem();
 		JSONObject var1=new JSONObject();
 		var1.put("pageData", total);

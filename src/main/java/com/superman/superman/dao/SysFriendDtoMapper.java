@@ -1,6 +1,5 @@
 package com.superman.superman.dao;
 
-import com.superman.superman.model.SysDaygoods;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

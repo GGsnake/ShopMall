@@ -344,11 +344,11 @@ public class JdApiServiceImpl implements JdApiService {
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getComssion() *100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() *100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
-                dataJson.put("agent",dataObj.getCommissionrate().doubleValue()*100);
+                dataJson.put("agent",dataObj.getComssion().doubleValue()*100);
                 dataJson.put("jdurl", dataObj.getJdurl());
                 if (dataObj.getCoupon()!=0){
                     dataJson.put("hasCoupon", 1);
@@ -380,13 +380,13 @@ public class JdApiServiceImpl implements JdApiService {
 
                 }
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getComssion()*100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue()*100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
                 dataJson.put("jdurl", dataObj.getJdurl());
 
-                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100 * score / 100);
+                dataJson.put("agent", dataObj.getComssion().doubleValue() * 100 * score / 100);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -400,7 +400,7 @@ public class JdApiServiceImpl implements JdApiService {
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
             dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-            dataJson.put("commissionRate", dataObj.getComssion() *100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() *100);
             dataJson.put("shopName", dataObj.getShoptitle());
             dataJson.put("istmall", isTmall);
             dataJson.put("jdurl", dataObj.getJdurl());

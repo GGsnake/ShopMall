@@ -18,9 +18,6 @@ import com.superman.superman.service.SysFriendDtoService;
 public class SysFriendDtoServiceImpl implements SysFriendDtoService{
     @Autowired
     private SysFriendDtoMapper sysFriendDtoMapper;
-//    @Resource
-//    private SysFriendDtoMapper sysFriendDtoMapper;
-
     @Override
     public JSONObject queryList(PageParam pageParam){
         PageParam temp =new PageParam(pageParam.getPageNo(),pageParam.getPageSize());

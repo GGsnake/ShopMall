@@ -16,9 +16,6 @@ import com.superman.superman.service.MoneyService;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import me.hao0.wepay.core.Wepay;
 import me.hao0.wepay.core.WepayBuilder;
@@ -64,10 +61,10 @@ public class MemberController {
     @Value("${domain.codeurl}")
     private String URL;
 
-    @ApiOperation(value = "我的个人页面")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
-    })
+//    @ApiOperation(value = "我的个人页面")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
+//    })
     @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request) {
@@ -192,7 +189,11 @@ public class MemberController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(Integer.valueOf(uid), param.getStartRow(), pageParam.getPageSize());
+        Map<String,Object> map=new HashMap<>();
+        map.put("offset",param.getStartRow());
+        map.put("limit",param.getPageSize());
+        map.put("uid",uid);
+        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(map);
         return WeikeResponseUtil.success(temp);
     }
 

@@ -78,7 +78,7 @@ public class CollectController {
         data.setPromotion_rate(param.getPromotion_rate());
         data.setVolume(param.getVolume());
         Boolean aBoolean = collectService.addCollect(data);
-        if (aBoolean==false)
+        if (!aBoolean)
             return WeikeResponseUtil.fail(ResponseCode.ADD_GOODS_ERROR);
         return WeikeResponseUtil.success();
     }

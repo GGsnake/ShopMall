@@ -85,7 +85,10 @@ public class OtherServiceImpl implements OtherService {
 
     @Override
     public JSONArray queryAdviceForDev(PageParam pageParam) {
-        List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(pageParam.getStartRow(), pageParam.getPageSize());
+        Map<String,Object> map=new HashMap<>();
+        map.put("offset",pageParam.getStartRow());
+        map.put("limit",pageParam.getPageSize());
+        List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(map);
         JSONArray data=new JSONArray();
         String logo = settingDao.querySetting("Logo").getConfigValue();
         for (SysJhAdviceDev sy:sysJhAdviceDevs)

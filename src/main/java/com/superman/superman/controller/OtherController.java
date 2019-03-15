@@ -231,6 +231,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
+    //朋友圈图片
     @PostMapping("/friend")
     public WeikeResponse friend(PageParam pageParam) {
         //查询列表数据
@@ -284,7 +285,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
-    /**
+    /**对外接口
      * show
      */
     @GetMapping("/show/{name}")
@@ -299,7 +300,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
-    /**
+    /** 对外接口
      * money
      */
     @GetMapping("/money/{name}")

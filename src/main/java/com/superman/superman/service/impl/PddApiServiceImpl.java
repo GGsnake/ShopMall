@@ -243,7 +243,7 @@ public class PddApiServiceImpl implements PddApiService {
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("zk_price", dataObj.getCouponprice().doubleValue() * 100);
                 dataJson.put("commissionRate", dataObj.getCommissionrate().intValue());
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
@@ -263,7 +263,7 @@ public class PddApiServiceImpl implements PddApiService {
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("zk_price", dataObj.getCouponprice().doubleValue() * 100);
                 dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
@@ -281,7 +281,7 @@ public class PddApiServiceImpl implements PddApiService {
             //查找指定字符第一次出现的位置
             dataJson.put("zk_money", dataObj.getCoupon().intValue() * 100);
             dataJson.put("hasCoupon", 1);
-            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            dataJson.put("zk_price", dataObj.getCouponprice().doubleValue() * 100);
             dataJson.put("commissionRate", dataObj.getCommissionrate().intValue() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
             dataJson.put("shopName", dataObj.getShoptitle());

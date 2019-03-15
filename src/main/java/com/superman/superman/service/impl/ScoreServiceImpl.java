@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +84,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     @Override
+    @Async
     public String recordBrowse(String uid, Long goodId) {
         SetOperations setOperations = redisTemplate.opsForSet();
         String kv = read_key + uid + EveryUtils.getToday();
