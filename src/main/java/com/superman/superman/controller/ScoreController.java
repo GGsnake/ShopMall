@@ -39,7 +39,6 @@ public class ScoreController {
     private ScoreDao scoreDao;
     @Autowired
     RedisUtil redisUtil;
-
     //浏览商品积分上报
     @LoginRequired
     @GetMapping("/upVis")
@@ -77,8 +76,6 @@ public class ScoreController {
             }
         }
         return WeikeResponseUtil.fail("100041", "浏览次数不足");
-
-
     }
     //每日签到 积分领取
     @LoginRequired

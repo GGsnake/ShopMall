@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 @CrossOrigin(origins = "*")
 @RestController
 public class UserController {
-
     @Autowired
     private TokenService tokenService;
     @Autowired
@@ -39,52 +38,12 @@ public class UserController {
     private LogService logService;
     @Autowired
     private UserinfoMapper userinfoMapper;
-
-
     @LoginRequired
     @PostMapping("/index")
     public User redisIndex(HttpServletRequest request) {
         request.getHeader("token");
         return null;
     }
-
-//    @PostMapping(value = "/createUser")
-//    public Result createUser(@RequestParam(value = "mobile") String mobile,
-//                             @RequestParam(value = "pwd") String pwd,
-////                             @RequestParam(value = "code") String code,
-//                             @RequestParam(value = "pid", required = false) String pid) {
-//
-//        Userinfo user = new Userinfo();
-//        user.setUserphone(mobile);
-//        user.setLoginpwd(pwd);
-//        user.set(code);
-//        Boolean flag = userServiceApi.createUserByPhone(user);
-//
-//        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
-//
-//        return Result.error("验证码错误");
-//    }
-
-//    @PostMapping("/login")
-//    public Object Login(HttpServletRequest request, @RequestBody String body) {
-//        JSONObject data = JSONObject.parseObject(body);
-//        String userName = data.getString("user_name");
-//        String passWord = data.getString("pass_word");
-//        Userinfo user = userServiceApi.queryUserByPhone(userName);
-//        if (user == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-//        }
-//        //获取数据库中的密码，与输入的密码加密后比对
-//        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
-//        }
-//        //异步上报登录记录
-//        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
-//        //生成一个token，保存用户登录状态
-//        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
-//        return WeikeResponseUtil.success(model);
-//    }
-
     /**
      * 通过手机号登录
      *
@@ -136,46 +95,6 @@ public class UserController {
     }
 
 
-//    /**
-//     * 通过wx登陆
-//     *
-//     * @param reqMap
-//     * @return
-//     */
-//    @PostMapping("/wxlogin")
-//    public Object LoginWX(@RequestBody Map<String, Object> reqMap) {
-//        String code = RequestUtil.getMapString(reqMap.get("wx_code").toString());
-//        //微信接口
-//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + Constants.APPID +
-//                "&secret=" + Constants.SECRET + "&js_code=" + code + "&grant_type=authorization_code";
-//        //restTemplate请求微信的接口，获取微信的sessionId
-//        RestTemplate restTemplate = new RestTemplate();
-//        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
-//                null, String.class);
-//        if (responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK) {
-//            String response = responseEntity.getBody();
-//            /*
-//            //string转jsonObject,
-//            正常返回的JSON数据包{"openid": "OPENID","session_key": "SESSIONKEY"}
-//             */
-//            JSONObject responseObject = JSONObject.parseObject(response);
-//            String wxOpenId = responseObject.get("openid").toString();
-//            String sessionKey = responseObject.get("session_key").toString();
-//            User user = userServer.findUserByWxId(wxOpenId);
-//            //wxOpenId与id都不存在则创建一个新用户
-//            if (user == null) {
-//                UserDto userDto = userServer.autoRegisterUser(wxOpenId);
-//                //生成一个token，保存用户登录状态
-//                TokenModel model = tokenManager.createToken(userDto.getUser().getId());
-//                return ResultUtil.ok(model);
-//            }else {
-//                //生成一个token，保存用户登录状态
-//                TokenModel model = tokenManager.createToken(user.getId());
-//                return ResultUtil.ok(model);
-//            }
-//        }
-//        return ResultUtil.fail();
-//    }
 
     /**
      * 通过微信登陆
@@ -241,6 +160,11 @@ public class UserController {
         return WeikeResponseUtil.success(model);
     }
 
+    /**
+     * 短信发送模块
+     * @param phone
+     * @return
+     */
     @PostMapping("/sendSMS")
     public WeikeResponse sendSMS(String phone) {
         if (phone == null || !EveryUtils.isMobile(phone)) {
@@ -260,5 +184,81 @@ public class UserController {
         return WeikeResponseUtil.fail("1000242", "短信商未知错误");
     }
 
+//    /**
+//     * 通过wx登陆
+//     *
+//     * @param reqMap
+//     * @return
+//     */
+//    @PostMapping("/wxlogin")
+//    public Object LoginWX(@RequestBody Map<String, Object> reqMap) {
+//        String code = RequestUtil.getMapString(reqMap.get("wx_code").toString());
+//        //微信接口
+//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + Constants.APPID +
+//                "&secret=" + Constants.SECRET + "&js_code=" + code + "&grant_type=authorization_code";
+//        //restTemplate请求微信的接口，获取微信的sessionId
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+//                null, String.class);
+//        if (responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK) {
+//            String response = responseEntity.getBody();
+//            /*
+//            //string转jsonObject,
+//            正常返回的JSON数据包{"openid": "OPENID","session_key": "SESSIONKEY"}
+//             */
+//            JSONObject responseObject = JSONObject.parseObject(response);
+//            String wxOpenId = responseObject.get("openid").toString();
+//            String sessionKey = responseObject.get("session_key").toString();
+//            User user = userServer.findUserByWxId(wxOpenId);
+//            //wxOpenId与id都不存在则创建一个新用户
+//            if (user == null) {
+//                UserDto userDto = userServer.autoRegisterUser(wxOpenId);
+//                //生成一个token，保存用户登录状态
+//                TokenModel model = tokenManager.createToken(userDto.getUser().getId());
+//                return ResultUtil.ok(model);
+//            }else {
+//                //生成一个token，保存用户登录状态
+//                TokenModel model = tokenManager.createToken(user.getId());
+//                return ResultUtil.ok(model);
+//            }
+//        }
+//        return ResultUtil.fail();
+//    }
+//    @PostMapping(value = "/createUser")
+//    public Result createUser(@RequestParam(value = "mobile") String mobile,
+//                             @RequestParam(value = "pwd") String pwd,
+////                             @RequestParam(value = "code") String code,
+//                             @RequestParam(value = "pid", required = false) String pid) {
+//
+//        Userinfo user = new Userinfo();
+//        user.setUserphone(mobile);
+//        user.setLoginpwd(pwd);
+//        user.set(code);
+//        Boolean flag = userServiceApi.createUserByPhone(user);
+//
+//        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
+//
+//        return Result.error("验证码错误");
+//    }
+
+//    @PostMapping("/login")
+//    public Object Login(HttpServletRequest request, @RequestBody String body) {
+//        JSONObject data = JSONObject.parseObject(body);
+//        String userName = data.getString("user_name");
+//        String passWord = data.getString("pass_word");
+//        Userinfo user = userServiceApi.queryUserByPhone(userName);
+//        if (user == null) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//        }
+//        //获取数据库中的密码，与输入的密码加密后比对
+//        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
+//        }
+//        //异步上报登录记录
+//        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
+//        //生成一个token，保存用户登录状态
+//        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
+//        return WeikeResponseUtil.success(model);
+//    }
 
 }
