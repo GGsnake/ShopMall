@@ -23,35 +23,12 @@ public interface TaoBaoApiService {
     JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
 
     /**
-     * 淘宝搜索引擎 擎天柱
-     *
-     * @param request
-     * @param uid
-     * @return
-     */
-    JSONObject serachGoodsMater(TbkDgOptimusMaterialRequest request, Long uid);
-
-    /**
-     * 本地淘宝搜索引擎
-     *
-     * @return
-     */
-    JSONObject goodLocal(PageParam pageParam, Long uid, Integer status);
-    /**
      * 本地淘宝搜索引擎加强版
      *
      * @return
      */
     JSONObject goodLocalSuperForOpt(JSONObject pageParam,Long uid, Integer status);
 
-    /**
-     * 淘宝搜索首页专用
-     *
-     * @param request
-     * @param req
-     * @return
-     */
-    JSONObject indexSearch(TbkDgMaterialOptionalRequest request, Long req);
 
     /**
      * 查询淘宝商品单个的缩略图
@@ -81,25 +58,10 @@ public interface TaoBaoApiService {
 
 
     /**
-     * 类目入口引擎
-     *
-     * @param optReq
-     * @param uid
-     * @return
-     */
-    JSONObject serachOpt(OptReq optReq, String uid);
-
-    /**
      * 查询淘宝的商品详情
      *
      * @return
      */
     JSONObject deatil(Long goodId);
 
-    /**
-     * 查询淘宝的店铺详情
-     *
-     * @return
-     */
-    JSONObject shopDeatil(Long shopId);
 }
