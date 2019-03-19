@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/** 收藏控制器
+/**
+ * 收藏控制器
  * Created by liujupeng on 2018/11/20.
  */
 @Log
@@ -27,6 +28,7 @@ public class CollectController {
 
     /**
      * 获取我的收藏 分页加载
+     *
      * @param request
      * @param pageParam
      * @return
@@ -52,21 +54,22 @@ public class CollectController {
 
     /**
      * 新增我的收藏
+     *
      * @param request
      * @param body
      * @return
      */
     @LoginRequired
     @PostMapping("/add")
-    public WeikeResponse addMyCollect(HttpServletRequest request,@RequestBody String body) {
+    public WeikeResponse addMyCollect(HttpServletRequest request, @RequestBody String body) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-
         Collect param = JSONObject.parseObject(body, Collect.class);
-        if (!param.param())
+        if (!param.param()) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        CollectBean data=new CollectBean();
+        }
+        CollectBean data = new CollectBean();
         data.setTitle(param.getTitle());
         data.setPrice(param.getPrice());
         data.setGoodId(param.getGoodId());
@@ -78,22 +81,25 @@ public class CollectController {
         data.setPromotion_rate(param.getPromotion_rate());
         data.setVolume(param.getVolume());
         Boolean aBoolean = collectService.addCollect(data);
-        if (!aBoolean)
+        if (!aBoolean) {
+            log.warning("收藏商品错误"+data.toString());
             return WeikeResponseUtil.fail(ResponseCode.ADD_GOODS_ERROR);
+        }
         return WeikeResponseUtil.success();
     }
 
     /**
      * 删除我的收藏
+     *
      * @param request
      * @param id
      * @return
      */
     @LoginRequired
     @PostMapping("/{id}")
-    public WeikeResponse deleteMyCollect(HttpServletRequest request,@PathVariable(value = "id") Integer id) {
+    public WeikeResponse deleteMyCollect(HttpServletRequest request, @PathVariable(value = "id") Integer id) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null||id==null)
+        if (uid == null || id == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         Boolean flag = collectService.deleteCollect(id, Long.valueOf(uid));
         if (flag)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.sbed.modules.sys.dao.SysJhPddAllDao">
+<mapper namespace="com.superman.superman.dao.SysJhPddAllDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.sbed.modules.sys.entity.SysJhPddAll" id="jhPddAllMap">
+    <resultMap type="com.superman.superman.model.SysJhPddAll" id="jhPddAllMap">
         <result property="id" column="id"/>
         <result property="picturl" column="pictUrl"/>
         <result property="shoptitle" column="shopTitle"/>
@@ -21,11 +21,18 @@
         <result property="createtime" column="createTime"/>
     </resultMap>
 
-	<select id="queryObject" resultType="io.sbed.modules.sys.entity.SysJhPddAll">
+	<select id="queryObject" resultType="com.superman.superman.model.SysJhPddAll">
 		select * from jh_pdd_all where id = #{value}
 	</select>
-
-	<select id="queryList" resultType="io.sbed.modules.sys.entity.SysJhPddAll">
+	<select id="queryPageJd" resultMap="jhPddAllMap">
+		select * from jh_pdd_all
+		ORDER BY volume desc limit #{start},#{end} ;
+	</select>
+	<!--<select id="countPdd" resultMap="jhPddAllMap">-->
+		<!--select * from jh_pdd_all-->
+	<!---->
+	<!--</select>-->
+	<select id="queryList" resultType="com.superman.superman.model.SysJhPddAll">
 		select * from jh_pdd_all
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
@@ -44,7 +51,7 @@
 		select count(*) from jh_pdd_all 
 	</select>
 	 
-	<insert id="save" parameterType="io.sbed.modules.sys.entity.SysJhPddAll" useGeneratedKeys="true" keyProperty="id">
+	<insert id="save" parameterType="com.superman.superman.model.SysJhPddAll" useGeneratedKeys="true" keyProperty="id">
 		insert into jh_pdd_all
 		(
 			`pictUrl`, 
@@ -81,7 +88,7 @@
 		)
 	</insert>
 	 
-	<update id="update" parameterType="io.sbed.modules.sys.entity.SysJhPddAll">
+	<update id="update" parameterType="com.superman.superman.model.SysJhPddAll">
 		update jh_pdd_all 
 		<set>
 			<if test="picturl != null">`pictUrl` = #{picturl}, </if>

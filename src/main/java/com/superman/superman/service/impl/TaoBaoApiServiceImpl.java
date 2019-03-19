@@ -52,12 +52,11 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Value("${juanhuang.range}")
     private Double RANGE;
-    @Value("${miao.apkey}")
-    private String APKEY;
     @Value("${miao.url}")
     private String URL;
-    @Value("${miao.openurl}")
-    private String OPENURL;
+    @Autowired
+    private SettingDao settingDao;
+
     @Autowired
     private ConfigQueryManager configQueryManager;
     @Override
@@ -67,7 +66,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             return null;
         }
         JSONObject data = new JSONObject();
-
         String taobaoAdzoneId = configQueryManager.queryForKey("TAOBAOAdzoneId");
         String appkey = configQueryManager.queryForKey("TAOBAOAPPKEY");
         String secret = configQueryManager.queryForKey("TAOBAOSECRET");
@@ -232,7 +230,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);
                 bean.put("hasCoupon", 1);
-                bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                bean.put("zk_price", dataObj.getCouponprice().doubleValue() * 100);
                 bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 bean.put("shopName", dataObj.getShoptitle());
@@ -249,7 +247,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);
                 bean.put("hasCoupon", 1);
-                bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
+                bean.put("zk_price", dataObj.getCouponprice().doubleValue() * 100 - dataObj.getCoupon() * 100);
                 bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
                 BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommission().doubleValue());
                 bean.put("shopName", dataObj.getShoptitle());
@@ -265,7 +263,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);
                 bean.put("hasCoupon", 1);
-                bean.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                bean.put("zk_price", dataObj.getCouponprice().doubleValue() * 100);
                 bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
                 bean.put("shopName", dataObj.getShoptitle());
                 bean.put("istmall", dataObj.getIstamll() == 0 ? false : true);
@@ -279,8 +277,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         return data;
     }
 
-    @Autowired
-    private SettingDao settingDao;
 
     /**
      * 生成淘口令推广链接
@@ -354,10 +350,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     @Override
     @Cacheable(value = "tb-tkl", key = "#tkl")
     public JSONObject convertTaobaoTkl(String tkl) {
+        String miaoAppKey = configQueryManager.queryForKey("MiaoAppKey");
+
         String taobaoSercahUrl = URL + "jiexitkl?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
-        urlSign.put("apkey", APKEY);
+        urlSign.put("apkey", miaoAppKey);
         urlSign.put("kouling", tkl);
         String linkStringByGet = null;
         try {
