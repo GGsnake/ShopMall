@@ -52,8 +52,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Value("${juanhuang.range}")
     private Double RANGE;
-    @Value("${miao.url}")
-    private String URL;
+
     @Autowired
     private SettingDao settingDao;
 
@@ -290,13 +289,15 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      */
     @Override
     public JSONObject convertTaobao(@NonNull Long pid, @NonNull Long good_id) {
+        String URL = configQueryManager.queryForKey("MiaoTbUrl");
+
         String taobaoSercahUrl = URL + "getitemgyurl?";
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
         //喵有券appkey
-        String miaoAppKey = settingDao.querySetting("MiaoAppKey").getConfigValue();
-        String appid = settingDao.querySetting("TAOBAOAPPID").getConfigValue();
-        String tbname = settingDao.querySetting("TAOBAONAME").getConfigValue();
+        String miaoAppKey = configQueryManager.queryForKey("MiaoAppKey");
+        String appid = configQueryManager.queryForKey("TAOBAOAPPID");
+        String tbname = configQueryManager.queryForKey("TAOBAONAME");
         urlSign.put("apkey", miaoAppKey);
         //用户的淘宝推广位pid 拼接
         urlSign.put("pid", "mm_" + "244040164" + "_" + appid + "_" + pid);
@@ -354,6 +355,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     @Cacheable(value = "tb-tkl", key = "#tkl")
     public JSONObject convertTaobaoTkl(String tkl) {
         String miaoAppKey = configQueryManager.queryForKey("MiaoAppKey");
+        String URL = configQueryManager.queryForKey("MiaoTbUrl");
 
         String taobaoSercahUrl = URL + "jiexitkl?";
         JSONObject temp = new JSONObject();

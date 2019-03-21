@@ -10,6 +10,7 @@ import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
 import com.superman.superman.dao.SysJhPddAllDao;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.SysJhJdHot;
 import com.superman.superman.model.SysJhPdd;
 import com.superman.superman.model.SysJhPddAll;
@@ -37,14 +38,7 @@ import java.util.*;
 @Log
 @Service("pddServiceApi")
 public class PddApiServiceImpl implements PddApiService {
-    @Value("${pdd_pro.pdd-key}")
-    private String KEY;
-    @Value("${pdd_pro.pdd-secret}")
-    private String SECRET;
-    @Value("${pdd_pro.pdd-access_token}")
-    private String ACCESS_TOKEN;
-    @Value("${pdd_pro.pdd-router-url}")
-    private String PDD_URL;
+
     @Value("${juanhuang.range}")
     private Integer RANGE;
     @Autowired
@@ -52,9 +46,16 @@ public class PddApiServiceImpl implements PddApiService {
     @Autowired
     private SysJhPddAllDao sysJhPddAllDao;
 
+    @Autowired
+    private ConfigQueryManager configQueryManager;
+
     //生成推广链接
     @Override
     public JSONObject convertPdd(@NonNull String pid, @NonNull Long goodId) {
+        String KEY = configQueryManager.queryForKey("PDDKEY");
+        String SECRET = configQueryManager.queryForKey("PDDSECRET");
+        String PDD_URL = configQueryManager.queryForKey("PDDREQURL");
+
         String res = null;
         JSONObject pddTemp = new JSONObject();
         StringBuilder str = new StringBuilder();
@@ -90,6 +91,9 @@ public class PddApiServiceImpl implements PddApiService {
     //查询拼多多商品详情
     @Override
     public JSONObject pddDetail(Long goodIdList) {
+        String KEY = configQueryManager.queryForKey("PDDKEY");
+        String SECRET = configQueryManager.queryForKey("PDDSECRET");
+
         PopClient client = new PopHttpClient(KEY, SECRET);
         PddDdkGoodsDetailRequest request = new PddDdkGoodsDetailRequest();
         List gd = new ArrayList();
@@ -127,6 +131,9 @@ public class PddApiServiceImpl implements PddApiService {
         if (ufo == null) {
             return null;
         }
+        String KEY = configQueryManager.queryForKey("PDDKEY");
+        String SECRET = configQueryManager.queryForKey("PDDSECRET");
+
         PopClient client = new PopHttpClient(KEY, SECRET);
         Double score = Double.valueOf(ufo.getScore());
         Double scoreAfer = score / 100;
@@ -203,7 +210,6 @@ public class PddApiServiceImpl implements PddApiService {
                     dataJson.put("price", min_group_price);
                     dataJson.put("zk_price", after);
                     dataJson.put("shopName", item.getMallName());
-
                     dataJson.put("agent", 0);
                     dataArray.add(dataJson);
                 }

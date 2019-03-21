@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.SysJhJdHot;
 import com.superman.superman.model.SysJhTaobaoHot;
 import com.superman.superman.model.Userinfo;
@@ -41,19 +42,14 @@ public class JdApiServiceImpl implements JdApiService {
     private  RestTemplate restTemplate;
     @Value("${domain.jdimageurl}")
     private String jdimageurl;
-    @Value("${domain.jdsecret}")
-    private String jdsecret;
-    @Value("${domain.jdkey}")
-    private String jdkey;
-    @Value("${domain.jdUrl}")
-    private String jdurl;
     @Value("${domain.jduid}")
     private String jduid;
     @Value("${juanhuang.range}")
     private Integer range;
-    @Value("${miao.apkey}")
-    private String apkey;
+
     private static final String URL = "https://api.open.21ds.cn/jd_api_v1/";
+    @Autowired
+    private ConfigQueryManager configQueryManager;
     /**
      * 京东生成推广URL
      * @param jdpid
@@ -61,6 +57,8 @@ public class JdApiServiceImpl implements JdApiService {
      * @return
      */
     public JSONObject convertJd(String jdpid, String materialId) {
+        String apkey = configQueryManager.queryForKey("MiaoAppKey");
+
         String jdurl = URL + "getitemcpsurl?";
         Map<String, String> urlSign = new HashMap<>();
         urlSign.put("apkey", apkey);
@@ -100,6 +98,8 @@ public class JdApiServiceImpl implements JdApiService {
         if (usr == null) {
             return null;
         }
+        String apkey = configQueryManager.queryForKey("MiaoAppKey");
+
         String jdurl = URL + "getjdunionitems?";
         Integer roleId = usr.getRoleId();
         Double score = Double.valueOf(usr.getScore());
@@ -434,6 +434,8 @@ public class JdApiServiceImpl implements JdApiService {
 //        urlSign.put("apkey", apkey);
 //        urlSign.put("skuids", goodId.toString());
 //        String link = null;
+        String apkey = configQueryManager.queryForKey("MiaoAppKey");
+
         String jdurl1 = URL + "getitemdesc?";
         Map<String, String> urlSign1 = new HashMap<>();
         urlSign1.put("apkey", apkey);
