@@ -89,10 +89,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             if (count == 0) {
                 return data;
             }
+            TbkDgMaterialOptionalResponse.MapData dataObj=null;
+            int length=resultList.size();
             JSONArray dataArray = new JSONArray();
             if (ufo.getRoleId() == 1) {
-                for (int i = 0; i < resultList.size(); i++) {
-                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                for (int i = 0; i < length; i++) {
+                    dataObj   = resultList.get(i);
                     String coupon_info1 = dataObj.getCouponInfo();
                     String coupon_info = null;
                     JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
@@ -125,8 +127,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             }
             if (ufo.getRoleId() == 2) {
                 Double var3 = score / 100;
-                for (int i = 0; i < resultList.size(); i++) {
-                    TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+                for (int i = 0; i < length; i++) {
+                    dataObj = resultList.get(i);
                     String coupon_info1 = dataObj.getCouponInfo();
                     JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                     String coupon_info = null;
@@ -162,8 +164,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 data.put("count", count);
                 return data;
             }
-            for (int i = 0; i < resultList.size(); i++) {
-                TbkDgMaterialOptionalResponse.MapData dataObj = resultList.get(i);
+            for (int i = 0; i <length; i++) {
+             dataObj = resultList.get(i);
                 //查找指定字符第一次出现的位置
                 JSONObject dataJson = GoodUtils.convertTaobao(dataObj);
                 String coupon_info1 = dataObj.getCouponInfo();
@@ -222,10 +224,11 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         param.clear();
         JSONArray dataArray = new JSONArray();
         JSONObject data = param;
-
+        SysJhTaobaoAll dataObj=null;
+        int length = sysJhTaobaoHots.size();
         if (ufo.getRoleId() == 1) {
-            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-                SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
+            for (int i = 0; i < length; i++) {
+                dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);
@@ -241,8 +244,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 
         }
         if (ufo.getRoleId() == 2) {
-            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-                SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
+            for (int i = 0; i < length; i++) {
+                dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);
@@ -257,8 +260,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             }
         }
         if (ufo.getRoleId() == 3) {
-            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
-                SysJhTaobaoAll dataObj = sysJhTaobaoHots.get(i);
+            for (int i = 0; i <length; i++) {
+                dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 bean.put("zk_money", dataObj.getCoupon() * 100);

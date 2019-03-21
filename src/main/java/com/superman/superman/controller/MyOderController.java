@@ -9,7 +9,6 @@ import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.*;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
