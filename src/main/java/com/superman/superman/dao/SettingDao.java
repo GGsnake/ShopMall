@@ -17,4 +17,6 @@ public interface SettingDao {
      */
     @Select("select * from jh_config where ConfigNo=#{no}")
     Config querySetting(String no);
+
+
 }

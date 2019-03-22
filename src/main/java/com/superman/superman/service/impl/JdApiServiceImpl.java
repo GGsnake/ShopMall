@@ -50,6 +50,18 @@ public class JdApiServiceImpl implements JdApiService {
     private static final String URL = "https://api.open.21ds.cn/jd_api_v1/";
     @Autowired
     private ConfigQueryManager configQueryManager;
+    public static String getURLEncoderString(String str) {
+        String result = "";
+        if (null == str) {
+            return "";
+        }
+        try {
+            result = java.net.URLEncoder.encode(str, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
     /**
      * 京东生成推广URL
      * @param jdpid
@@ -63,7 +75,7 @@ public class JdApiServiceImpl implements JdApiService {
         Map<String, String> urlSign = new HashMap<>();
         urlSign.put("apkey", apkey);
         urlSign.put("unionId", jduid);
-        urlSign.put("materialId", materialId);
+        urlSign.put("materialId", getURLEncoderString(materialId));
         urlSign.put("positionId", jdpid);
         String linkStringByGet = null;
         try {
