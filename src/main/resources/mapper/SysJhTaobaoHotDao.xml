@@ -35,6 +35,7 @@
         <result property="numiid" column="numIid"/>
         <result property="status" column="status"/>
         <result property="jdurl" column="jdurl"/>
+        <result property="link" column="link"/>
         <result property="istamll" column="istamll"/>
         <result property="comssion" column="commission"/>
         <result property="orderCoupon" column="order_coupon"/>
