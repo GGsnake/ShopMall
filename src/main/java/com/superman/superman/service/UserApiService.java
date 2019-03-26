@@ -17,7 +17,7 @@ public interface UserApiService {
 
     Userinfo queryByUid(Long uid);
 
-
+    Boolean invitation(Map<String,Object> map);
     Userinfo queryByWx(String  uid);
 
     Integer createInvCode(String phone);

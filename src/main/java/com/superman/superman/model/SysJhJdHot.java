@@ -56,5 +56,7 @@ public class SysJhJdHot implements Serializable  {
 
 	private String jdurl;
 
+	private String link;
+
 
 }

@@ -38,12 +38,14 @@ public class UserController {
     private LogService logService;
     @Autowired
     private UserinfoMapper userinfoMapper;
+
     @LoginRequired
     @PostMapping("/index")
     public User redisIndex(HttpServletRequest request) {
         request.getHeader("token");
         return null;
     }
+
     /**
      * 通过手机号登录
      *
@@ -93,7 +95,6 @@ public class UserController {
         TokenModel model = tokenService.createToken(id.toString());
         return WeikeResponseUtil.success(model);
     }
-
 
 
     /**
@@ -162,6 +163,7 @@ public class UserController {
 
     /**
      * 短信发送模块
+     *
      * @param phone
      * @return
      */

@@ -29,33 +29,7 @@ public class UserApiServiceImpl implements UserApiService {
     private HotUserMapper hotUserMapper;
     @Autowired
     private UserinfoMapper userinfoMapper;
-    /**
-     * 创建新用户
-     *
-     * @param regiser
-     * @return
-     */
-    @Override
-    @Transactional
-    public Boolean createUser(UserRegiser regiser) {
-        JSONObject data = (JSONObject) createPid();
-        Long tb = data.getLong("tb");
-        String pdd = data.getString("pdd");
-        String jd = data.getString("jd");
-        if (data == null || tb == null|| pdd == null || jd == null) {
-            log.warning("警告PId不足" + EveryUtils.getNowday());
-            throw  new RuntimeException("新增用户失败原因 PID不足");
-        }
-        regiser.setTbpid(tb);
-        regiser.setPddpid(pdd);
-        regiser.setJdpid(jd);
-        int flag = userinfoMapper.insert(regiser);
-        if (flag==0){
-            throw  new RuntimeException("新增用户失败");
-        }
-        createInvCode(regiser.getUserphone());
-        return true;
-    }
+
 
     @Override
     public Integer createUserByPhone(UserRegiser regiser) {
@@ -89,6 +63,68 @@ public class UserApiServiceImpl implements UserApiService {
     public Userinfo queryByUid(@NonNull Long uid) {
         var userinfo = userinfoMapper.selectByPrimaryKey(uid);
         return userinfo;
+    }
+    /**
+     * 创建新用户
+     *
+     * @param regiser
+     * @return
+     */
+    @Override
+    @Transactional
+    public Boolean createUser(UserRegiser regiser) {
+        JSONObject data = (JSONObject) createPid();
+        Long tb = data.getLong("tb");
+        String pdd = data.getString("pdd");
+        String jd = data.getString("jd");
+        if (data == null || tb == null|| pdd == null || jd == null) {
+            log.warning("警告PId不足" + EveryUtils.getNowday());
+            throw  new RuntimeException("新增用户失败原因 PID不足");
+        }
+        regiser.setTbpid(tb);
+        regiser.setPddpid(pdd);
+        regiser.setJdpid(jd);
+        int flag = userinfoMapper.insert(regiser);
+        if (flag==0){
+            throw  new RuntimeException("新增用户失败");
+
+        }
+        createInvCode(regiser.getUserphone());
+        return true;
+    }
+
+    /**
+     * 邀请用户注册
+     * @param map
+     * @return
+     */
+    @Override
+    @Transactional
+    public Boolean invitation(Map<String, Object> map) {
+        String userPhone = String.valueOf(map.get("userPhone"));
+        String code = String.valueOf(map.get("code"));
+
+        UserRegiser userinfo = new UserRegiser();
+        userinfo.setUserphone(userPhone);
+        userinfo.setRoleId(3);
+        //创建用户(未关联微信)
+        Boolean flag = createUser(userinfo);
+        if (flag){
+            //获取用户Id
+            Userinfo data = userinfoMapper.selectByPhone(userPhone);
+            //根据邀请码查询代理的Id
+            Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
+            Agent agent = new Agent();
+            agent.setUserId(data.getId().intValue());
+            agent.setAgentId(agentId);
+            //关联邀请关系
+            int insert = agentDao.insert(agent);
+            if (insert==0){
+                throw  new RuntimeException("关联用户失败");
+            }
+            return true;
+        }
+        throw  new RuntimeException("创建新用户失败");
     }
 
     @Override

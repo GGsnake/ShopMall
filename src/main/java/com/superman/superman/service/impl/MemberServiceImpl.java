@@ -53,14 +53,16 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
-        JSONObject myJson = new JSONObject();
         Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
+
         Integer roleId = user.getRoleId();
         String userphoto = user.getUserphoto();
         String username = user.getUsername();
         //存储用户集合
         HashSet<Long> uidSet = new HashSet<>();
         uidSet.add(uid);
+
+        JSONObject myJson = new JSONObject();
         myJson.put("roleId", roleId);
         myJson.put("image", userphoto == null ? Constants.IMG_DEFAUT : userphoto);
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);

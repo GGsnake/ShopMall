@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +88,7 @@ public class OtherController {
      */
     @LoginRequired
     @PostMapping("/convert")
-    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId, String jdurl) throws IOException {
+    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId, String jdurl, String coupon) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
@@ -95,42 +96,39 @@ public class OtherController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        JSONObject data = new JSONObject();
+        JSONObject data = null;
         //缓存
         String key = "convert:" + devId.toString() + uid + goodId + jdurl;
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
-
+        String uland_url = null;
         if (devId == 0) {
             data = taoBaoApiService.convertTaobao(userinfo.getTbpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
             if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
-        }
-
-        if (devId == 1) {
+        } else if (devId == 1) {
             data = pddApiService.convertPdd(userinfo.getPddpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
             if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
-        }
-        if (devId == 2) {
-            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl);
+        } else if (devId == 2) {
+            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl, coupon);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
             if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -138,7 +136,7 @@ public class OtherController {
 
         }
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 500, TimeUnit.SECONDS);
+        redisUtil.expire(key, 200, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -195,25 +193,20 @@ public class OtherController {
         if (isVaild == null || !isVaild.toString().equals(vaild)) {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
-        UserRegiser userinfo = new UserRegiser();
-        userinfo.setUserphone(userPhone);
-        userinfo.setLoginpwd(code);
-        Integer status = userApiService.createUserByPhone(userinfo);
-        if (status == 2) {
-            return WeikeResponseUtil.fail("1000200", "该手机号已经注册过");
+        //检测注册手机号是否存在
+        Userinfo userinfo = userApiService.queryUserByPhone(userPhone);
+        if (userinfo != null) {
+            return WeikeResponseUtil.fail("1000199", "手机号已注册");
         }
-        if (status == 4) {
-            return WeikeResponseUtil.fail("1000201", "未知错误 请重试");
+        Map<String, Object> param = new HashMap<>();
+        param.put("userPhone", userPhone);
+        param.put("code", code);
+        Boolean invitation = userApiService.invitation(param);
+        if (invitation) {
+            return WeikeResponseUtil.success();
         }
-        //获取用户Id
-        Userinfo data = userinfoMapper.selectByPhone(userPhone);
-        //根据邀请码查询代理的Id
-        Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
-        Agent agent = new Agent();
-        agent.setUserId(data.getId().intValue());
-        agent.setAgentId(agentId);
-        agentDao.insert(agent);
-        return WeikeResponseUtil.success("注册成功");
+        return WeikeResponseUtil.fail("1000699", "创建用户失败 请重试");
+
     }
 
     //每日爆款
@@ -285,7 +278,8 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
-    /**对外接口
+    /**
+     * 对外接口
      * show
      */
     @GetMapping("/show/{name}")
@@ -300,7 +294,8 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
-    /** 对外接口
+    /**
+     * 对外接口
      * money
      */
     @GetMapping("/money/{name}")

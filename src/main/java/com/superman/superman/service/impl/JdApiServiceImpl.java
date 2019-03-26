@@ -39,7 +39,7 @@ public class JdApiServiceImpl implements JdApiService {
     @Autowired
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Autowired
-    private  RestTemplate restTemplate;
+    private RestTemplate restTemplate;
     @Value("${domain.jdimageurl}")
     private String jdimageurl;
     @Value("${domain.jduid}")
@@ -50,37 +50,44 @@ public class JdApiServiceImpl implements JdApiService {
     private static final String URL = "https://api.open.21ds.cn/jd_api_v1/";
     @Autowired
     private ConfigQueryManager configQueryManager;
+
     public static String getURLEncoderString(String str) {
         String result = "";
         if (null == str) {
             return "";
         }
         try {
-            result = java.net.URLEncoder.encode(str, "UTF-8");
+            result = java.net.URLEncoder.encode(str, "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return result;
     }
+
     /**
      * 京东生成推广URL
+     *
      * @param jdpid
      * @param materialId
      * @return
      */
-    public JSONObject convertJd(String jdpid, String materialId) {
+    public JSONObject convertJd(String jdpid, String materialId, String coupon) {
         String apkey = configQueryManager.queryForKey("MiaoAppKey");
-
+        String urlEncoderString = getURLEncoderString(materialId);
+        String encoderString = getURLEncoderString(coupon);
         String jdurl = URL + "getitemcpsurl?";
         Map<String, String> urlSign = new HashMap<>();
         urlSign.put("apkey", apkey);
         urlSign.put("unionId", jduid);
-        urlSign.put("materialId", getURLEncoderString(materialId));
+        urlSign.put("materialId", urlEncoderString);
+        urlSign.put("couponUrl", encoderString);
         urlSign.put("positionId", jdpid);
         String linkStringByGet = null;
+        log.warning(encoderString);
         try {
-            linkStringByGet = NetUtils.createLinkStringByGet(urlSign);
-            String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
+            linkStringByGet = jdurl + NetUtils.createLinkStringByGet(urlSign);
+//            log.warning(linkStringByGet);
+            String res = restTemplate.getForObject(linkStringByGet, String.class);
             JSONObject resJson = JSON.parseObject(res);
             if (resJson.getInteger("code") == 200) {
                 JSONObject var1 = resJson.getJSONObject("data");
@@ -89,8 +96,7 @@ public class JdApiServiceImpl implements JdApiService {
                 data.put("tkLink", null);
                 data.put("url", null);
                 return data;
-            }
-            else {
+            } else {
                 return new JSONObject();
             }
         } catch (UnsupportedEncodingException e) {
@@ -98,8 +104,10 @@ public class JdApiServiceImpl implements JdApiService {
         }
         return null;
     }
+
     /**
      * 京东搜索引擎
+     *
      * @param goodsReq
      * @param uid
      * @return
@@ -148,7 +156,7 @@ public class JdApiServiceImpl implements JdApiService {
         JSONArray dataArray = new JSONArray();
         String res = restTemplate.getForObject(jdurl + linkStringByGet, String.class);
         JSONObject allData = JSON.parseObject(res).getJSONObject("data");
-        Integer totalCount =allData.getInteger("totalCount");
+        Integer totalCount = allData.getInteger("totalCount");
         if (totalCount == null || totalCount == 0) {
             temp.put("data", dataArray);
             temp.put("count", 0);
@@ -157,6 +165,7 @@ public class JdApiServiceImpl implements JdApiService {
         dataArray = allData.getJSONArray("lists");
         JSONArray templist = new JSONArray();
         for (int i = 0; i < dataArray.size(); i++) {
+
             JSONObject jdJson = (JSONObject) dataArray.get(i);
             JSONObject jdData = new JSONObject();
             //单价2*
@@ -168,8 +177,9 @@ public class JdApiServiceImpl implements JdApiService {
             //图片URL
             JSONObject img = (JSONObject) jdJson.getJSONObject("imageInfo").getJSONArray("imageList").get(0);
             BigDecimal coms = new BigDecimal(comsA);
-            BigDecimal commission = new BigDecimal(commissionA);
+//            BigDecimal commission = new BigDecimal(commissionA);
             BigDecimal priceall = new BigDecimal(price);
+            jdData.put("agent", 0);
             //优惠卷信息
             JSONArray coupon = jdJson.getJSONObject("couponInfo").getJSONArray("couponList");
             //判断是否有优惠卷
@@ -177,28 +187,28 @@ public class JdApiServiceImpl implements JdApiService {
                 JSONObject couponList = (JSONObject) coupon.get(0);
                 BigDecimal discount = new BigDecimal(couponList.getInteger("discount"));
                 BigDecimal subtract = priceall.subtract(discount);
+                jdData.put("coupon", couponList.getString("link"));
                 jdData.put("zk_price", subtract.doubleValue() * 100);
                 jdData.put("zk_money", discount.doubleValue() * 100);
+                if (roleId == 1) {
+                    Double var9 =subtract.doubleValue() * comsA;
+                    BigDecimal var5 = new BigDecimal(var9);
+                    jdData.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                }
+                if (roleId == 2) {
+                    double var9 = subtract.doubleValue() * comsA;
+                    double var3 = score / 100;
+                    double priceComs = var9 * var3;
+                    BigDecimal var5 = new BigDecimal(priceComs);
+                    jdData.put("agent", var5.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                }
             } else {
+
                 jdData.put("zk_price", priceall.doubleValue() * 100);
                 jdData.put("zk_money", 0);
             }
-            if (roleId == 1) {
-                Double var9 = (100 * commission.doubleValue()) * range / 100;
-                BigDecimal var5 = new BigDecimal(var9);
-                jdData.put("agent", var5.intValue());
-            }
-            if (roleId == 2) {
-                BigDecimal var5 = new BigDecimal(((100 * commission.doubleValue()) * range / 100));
-                Double var3 = score / 100;
-                BigDecimal var6 = new BigDecimal(var3);
-                var5.multiply(var6);
-                jdData.put("agent", var5.intValue());
-            }
-            if (roleId == 3) {
-                jdData.put("agent", 0);
-            }
-            jdData.put("shopName",  jdJson.getJSONObject("shopInfo").getString("shopName"));
+
+            jdData.put("shopName", jdJson.getJSONObject("shopInfo").getString("shopName"));
             jdData.put("commissionRate", coms.intValue() * 10);
             jdData.put("volume", jdJson.getInteger("inOrderCount30Days"));
             jdData.put("goodId", jdJson.getLong("skuId"));
@@ -206,7 +216,7 @@ public class JdApiServiceImpl implements JdApiService {
             jdData.put("imgUrl", img.getString("url"));
             jdData.put("istmall", "false");
             jdData.put("price", price * 100);
-            jdData.put("jdurl", "http://"+jdJson.getString("materialUrl"));
+            jdData.put("jdurl", "http://" + jdJson.getString("materialUrl"));
             templist.add(jdData);
         }
         temp.put("data", templist);
@@ -245,18 +255,18 @@ public class JdApiServiceImpl implements JdApiService {
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getComssion() *100);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getComssion() * 100);
+                dataJson.put("coupon", dataObj.getLink());
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
-                dataJson.put("agent",dataObj.getCommissionrate().doubleValue()*100);
+                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100);
                 dataJson.put("jdurl", dataObj.getJdurl());
-                if (dataObj.getCoupon()!=0){
+                if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
 
-                }
-                else {
+                } else {
                     dataJson.put("hasCoupon", 0);
 
                 }
@@ -273,16 +283,17 @@ public class JdApiServiceImpl implements JdApiService {
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
-                if (dataObj.getCoupon()!=0){
+                if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
 
-                }
-                else {
+                } else {
                     dataJson.put("hasCoupon", 0);
 
                 }
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getComssion()*100);
+                dataJson.put("coupon", dataObj.getLink());
+
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getComssion() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
@@ -299,18 +310,18 @@ public class JdApiServiceImpl implements JdApiService {
             SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
             JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
             //查找指定字符第一次出现的位置
+            dataJson.put("coupon", dataObj.getLink());
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
-            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-            dataJson.put("commissionRate", dataObj.getComssion() *100);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            dataJson.put("commissionRate", dataObj.getComssion() * 100);
             dataJson.put("shopName", dataObj.getShoptitle());
             dataJson.put("istmall", isTmall);
             dataJson.put("jdurl", dataObj.getJdurl());
-            if (dataObj.getCoupon()!=0){
+            if (dataObj.getCoupon() != 0) {
                 dataJson.put("hasCoupon", 1);
 
-            }
-            else {
+            } else {
                 dataJson.put("hasCoupon", 0);
 
             }
@@ -355,18 +366,19 @@ public class JdApiServiceImpl implements JdApiService {
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() *100);
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
-                dataJson.put("agent",dataObj.getComssion().doubleValue()*100);
+                dataJson.put("agent", dataObj.getComssion().doubleValue() * 100);
                 dataJson.put("jdurl", dataObj.getJdurl());
-                if (dataObj.getCoupon()!=0){
+                dataJson.put("coupon", dataObj.getLink());
+
+                if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
 
-                }
-                else {
+                } else {
                     dataJson.put("hasCoupon", 0);
 
                 }
@@ -379,20 +391,22 @@ public class JdApiServiceImpl implements JdApiService {
         }
         if (ufo.getRoleId() == 2) {
             for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+
                 SysJhJdHot dataObj = sysJhTaobaoHots.get(i);
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
-                if (dataObj.getCoupon()!=0){
+                if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
 
-                }
-                else {
+                } else {
                     dataJson.put("hasCoupon", 0);
 
                 }
-                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue()*100);
+                dataJson.put("coupon", dataObj.getLink());
+
+                dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
@@ -411,19 +425,21 @@ public class JdApiServiceImpl implements JdApiService {
             //查找指定字符第一次出现的位置
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
-            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue()*100);
-            dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() *100);
+            dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
             dataJson.put("shopName", dataObj.getShoptitle());
             dataJson.put("istmall", isTmall);
+
             dataJson.put("jdurl", dataObj.getJdurl());
-            if (dataObj.getCoupon()!=0){
+            if (dataObj.getCoupon() != 0) {
                 dataJson.put("hasCoupon", 1);
 
-            }
-            else {
+            } else {
                 dataJson.put("hasCoupon", 0);
 
             }
+            dataJson.put("coupon", dataObj.getLink());
+
             dataJson.put("agent", 0);
             dataArray.add(dataJson);
         }
@@ -433,8 +449,10 @@ public class JdApiServiceImpl implements JdApiService {
         return data;
     }
 
-    /** 京东商品详情
+    /**
+     * 京东商品详情
      * 商品ID
+     *
      * @param goodId
      * @return
      */
@@ -459,7 +477,7 @@ public class JdApiServiceImpl implements JdApiService {
             String res1 = restTemplate.getForObject(jdurl1 + linkStringByGet1, String.class);
 //            String res = restTemplate.getForObject(jdurl + link, String.class);
 
-            if (JSON.parseObject(res1).getInteger("code") == 200 ) {
+            if (JSON.parseObject(res1).getInteger("code") == 200) {
                 JSONArray list = JSON.parseObject(res1).getJSONArray("data");
 //                JSONObject object = (JSONObject) JSON.parseObject(res).getJSONArray("data").get(0);
                 JSONArray jsonArray = new JSONArray();
@@ -478,7 +496,6 @@ public class JdApiServiceImpl implements JdApiService {
         }
         return null;
     }
-
 
 
 }

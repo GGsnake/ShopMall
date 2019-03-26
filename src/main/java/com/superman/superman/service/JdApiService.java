@@ -14,7 +14,7 @@ public interface JdApiService {
      * @param materialId
      * @return
      */
-    JSONObject convertJd(String pid, String materialId);
+    JSONObject convertJd(String pid, String materialId,String coupon);
 
 
     /**

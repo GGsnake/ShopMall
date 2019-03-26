@@ -197,10 +197,11 @@
 				var param={
 					"phone":phone,
 					"vaild":vaild,
-					"code":100021
+					"code":code
 				}
 				$.ajax({
 					type:"POST",
+					// url:"http://www.quanhuangmaoyi.com:8080/other/createUser",
 					url:"http://www.quanhuangmaoyi.com:8080/other/createUser",
 					data:param,
 					dataType:'json',
