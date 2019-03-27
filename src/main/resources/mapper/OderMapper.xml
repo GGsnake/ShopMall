@@ -53,11 +53,11 @@
     </select>
 
     <select id="superQueryForListToWait" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
-        count from userinfo us
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in(0,1,2,3) and pdd.settle=0
-        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (12,14) and tb.settle=0
-        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17) and jd.settle=0
+        Select SUM(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) AS
+        count FROM userinfo us
+        LEFT JOIN oder pdd ON pdd.p_id=us.pddPid and pdd.order_status in(0,1,2,3) and pdd.settle=0
+        LEFT JOIN tboder tb ON tb.adzone_id=us.tbPid and tb.tk_status in (12,14) and tb.settle=0
+        LEFT JOIN jdoder jd ON jd.positionId=us.jdPid and jd.validCode in (16,17) and jd.settle=0
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -67,24 +67,11 @@
     </select>
 
     <select id="superQueryForListToFinsh" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
-        count from userinfo us
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status = 5 and pdd.settle=0
-        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status= 3 and tb.settle=0
-        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode= 18 and jd.settle=0
-        <if test="list!= null">
-            WHERE us.id in
-            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-    </select>
-    <select id="superQueryOderForUidListToEstimate" resultType="java.lang.Long">
-        Select sum(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) as
-        count from userinfo us
-        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in (0,1,2,3,5) and pdd.settle=0
-        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (3,12,14) and tb.settle=0
-        left join jdoder jd on jd.positionId=us.jdPid and jd.validCode in (16,17,18) and jd.settle=0
+        Select SUM(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) AS
+        count FROM userinfo us
+        LEFT JOIN oder pdd ON pdd.p_id=us.pddPid AND pdd.order_status = 5 AND pdd.settle=0
+        LEFT JOIN tboder tb ON tb.adzone_id=us.tbPid AND tb.tk_status= 3 AND tb.settle=0
+        LEFT JOIN jdoder jd ON jd.positionId=us.jdPid AND jd.validCode= 18 AND jd.settle=0
         <if test="list!= null">
             WHERE us.id in
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -93,12 +80,26 @@
         </if>
     </select>
 
-    <select id="selectPidInFinish" resultType="java.lang.Integer">
-        select
-        SUM(promotion_amount)
-        from oder
+    <select id="superQueryOderForUidListToEstimate" resultType="java.lang.Long">
+        SELECT SUM(IFNULL(pdd.promotion_amount,0)+IFNULL(tb.pub_share_pre_fee*100,0)+IFNULL(jd.estimateFee*100,0)) AS
+        COUNT FROM userinfo us
+        LEFT JOIN oder pdd ON pdd.p_id=us.pddPid AND pdd.order_status in (0,1,2,3,5) AND pdd.settle=0
+        LEFT JOIN tboder tb ON tb.adzone_id=us.tbPid AND tb.tk_status in (3,12,14) AND tb.settle=0
+        LEFT JOIN jdoder jd ON jd.positionId=us.jdPid AND jd.validCode in (16,17,18) AND jd.settle=0
         <if test="list!= null">
-            WHERE p_id in
+            WHERE us.id IN
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectPidInFinish" resultType="java.lang.Integer">
+        SELECT
+        SUM(promotion_amount)
+        FROM oder
+        <if test="list!= null">
+            WHERE p_id IN
             <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
                 #{item}
             </foreach>

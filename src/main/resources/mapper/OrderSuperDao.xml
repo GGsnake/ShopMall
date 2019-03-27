@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.superman.superman.dao.OrderSuperDao">
+
+    <sql id="Base_Column_Pdd">
+      goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn,p_id
+  </sql>
+    <sql id="Base_Column_Jd">
+      skuId,estimateFee,skuName,orderTime,orderId,positionId
+  </sql>
+    <sql id="Base_Column_Tb">
+    income_rate,pub_share_pre_fee,odercreate_time as odercreateTime,num_iid as numIid ,commission,item_title as itemTitle,trade_id as tradeId,adzone_id as adzoneId
+  </sql>
+
+    <select id="queryPddPageSize" resultType="com.superman.superman.req.OderPdd">
+        SELECT
+        <include refid="Base_Column_Pdd"/>
+        FROM oder
+        WHERE p_id in (Select pddPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select pddPid from userinfo WHERE id =#{id})
+        <if test="status!= null">
+            and order_status in
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
+    <select id="queryPddPageSizeCount" resultType="java.lang.Integer">
+        SELECT IFNULL(count(id),0)
+        FROM oder
+        WHERE p_id in (Select pddPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select pddPid from userinfo WHERE id =#{id})
+        <if test="status!= null">
+            and order_status in
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryTbPageSizeCount" resultType="java.lang.Integer">
+        SELECT IFNULL(count(id),0)
+        FROM tboder
+        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and tk_status in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryTbPageSize" resultType="com.superman.superman.model.Tboder">
+        SELECT
+        <include refid="Base_Column_Tb"/>
+        FROM tboder
+        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and tk_status in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
+    <select id="queryJdPageSize" resultType="com.superman.superman.model.JdOder">
+        SELECT
+        <include refid="Base_Column_Jd"/>
+        FROM jdoder
+        WHERE positionId in (Select jdPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select jdPid from userinfo WHERE id =#{id})
+        <if test="tk_status!= null">
+            and validCode in
+            <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit #{star},#{end}
+    </select>
+
+
+    <select id="queryJdPageSizeCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM jdoder
+        WHERE positionId in (Select jdPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select jdPid from userinfo WHERE id =#{id})
+        <if test="validCode!= null">
+            and validCode in
+            <foreach item="item" index="index" collection="jd" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <select id="queryJdOrder" resultType="java.lang.Integer">
+        SELECT SUM(IFNULL(jd.estimateFee*100,0)) AS total FROM userinfo us
+        LEFT JOIN jdoder jd ON jd.positionId=us.jdPid AND jd.validCode in (16,17,18) AND jd.settle=0
+        <if test="list!= null">
+            WHERE us.id IN
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryTaoBaoOrder" resultType="java.lang.Integer">
+        SELECT SUM(IFNULL(tb.pub_share_pre_fee*100,0)) AS total FROM userinfo us
+        left join tboder tb on tb.adzone_id=us.tbPid and tb.tk_status in (3,12,14) and tb.settle=0
+        <if test="list!= null">
+            WHERE us.id IN
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="queryPddOrder" resultType="java.lang.Integer">
+        SELECT SUM(IFNULL(pdd.promotion_amount,0)) AS total FROM userinfo us
+        left join oder pdd on pdd.p_id=us.pddPid and pdd.order_status in (0,1,2,3,5) and pdd.settle=0
+        <if test="list!= null">
+            WHERE us.id IN
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

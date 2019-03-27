@@ -69,15 +69,6 @@
     <!--<select id="queryObject" resultType="io.sbed.modules.sys.entity.SysJhTaobaoHot">-->
     <!--select * from jh_taobao_hot where id = #{value}-->
     <!--</select>-->
-
-    <select id="queryPage" resultMap="jhTaobaoHotMap">
-		select *,sum(commissionRate+coupon+volume) math from jh_taobao_hot
-		where istamll=0 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
-    </select>
-    <select id="queryPageTmall" resultMap="jhTaobaoHotMap">
-		select *,sum(commissionRate+coupon+volume) math from jh_taobao_hot
-		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
-    </select>
     <select id="queryPageJd" resultMap="jhJdMap">
         select * from jh_jd_good
         <if test="cid!= null">
@@ -93,14 +84,6 @@
     <select id="countMaxJdCid" resultType="java.lang.Integer">
         select count(*) from jh_jd_good where cid=#{cid}
     </select>
-    <select id="queryForGod" resultMap="jhTaobaoHotMap">
-		select *,sum(commissionRate+coupon*2) math from jh_taobao_hot
-		where istamll=1 GROUP BY id ORDER BY math desc limit #{start},#{end} ;
-    </select>
-    <select id="queryForBao" resultMap="jhTaobaoHotMap">
-		select *  from jh_taobao_hot
-		  limit #{start},#{end} ;
-    </select>
 
     <select id="queryForJu" resultMap="jhTaobaoHotMap">
 		select *  from jh_taobao_good where opt=6
@@ -112,9 +95,6 @@
 	</select>
 
 
-    <select id="queryMaxGood" resultMap="jhTaobaoHotMap">
-select * from jh_taobao_good where opt=0 and  coupon>100  ORDER BY zkFinalPrice asc limit #{start},#{end}
-	</select>
     <select id="countMaxGood" resultType="java.lang.Integer">
 		select count(*) from jh_taobao_good where coupon>100  and opt=0
 	</select>
@@ -164,116 +144,6 @@ select * from jh_taobao_good where opt=0 and  coupon>100  ORDER BY zkFinalPrice 
             and   istamll= #{istamll}
         </if>
     </select>
-
-    <insert id="save" useGeneratedKeys="true"
-            keyProperty="id">
-		insert into jh_taobao_hot
-		(
-			`pictUrl`, 
-			`shopTitle`, 
-			`title`, 
-			`commissionRate`, 
-			`coupon`, 
-			`zkFinalPrice`, 
-			`volume`, 
-			`numIid`, 
-			`status`, 
-			`istamll`,
-			`commission`,
-			`createTime`
-		)
-		values
-		(
-			#{pictUrl},
-			#{shopTitle},
-			#{title}, 
-			#{commissionRate},
-			#{coupon}, 
-			#{zkFinalPrice},
-			#{volume}, 
-			#{numIid},
-			0,
-			#{istamll},
-			#{comssion},
-			now()
-		)
-	</insert>
-    <insert id="saveopt" useGeneratedKeys="true"
-            keyProperty="id">
-		insert IGNORE jh_taobao_good
-		(
-			`pictUrl`,
-			`shopTitle`,
-			`title`,
-			`commissionRate`,
-			`coupon`,
-			`zkFinalPrice`,
-			`volume`,
-			`numIid`,
-			`status`,
-			`istamll`,
-			`commission`,
-			`createTime`,
-			`opt`
-		)
-		values
-		(
-			#{pictUrl},
-			#{shopTitle},
-			#{title},
-			#{commissionRate},
-			#{coupon},
-			#{zkFinalPrice},
-			#{volume},
-			#{numIid},
-			0,
-			#{istamll},
-			#{comssion},
-			now(),
-			#{opt}
-
-		)
-	</insert>
-    <insert id="saveJd" useGeneratedKeys="true"
-            keyProperty="id">
-		insert into jh_jd_good
-		(
-			`pictUrl`,
-			`shopTitle`,
-			`jdurl`,
-			`title`,
-			`commissionRate`,
-			`coupon`,
-			`zkFinalPrice`,
-			`volume`,
-			`numIid`,
-			`status`,
-			`istamll`,
-			`commission`,
-			`createTime`,
-			`opt`,
-			`cid`
-		)
-		values
-		(
-			#{pictUrl},
-			#{shopTitle},
-			#{jdurl},
-			#{title},
-			#{commissionRate},
-			#{coupon},
-			#{zkFinalPrice},
-			#{volume},
-			#{numIid},
-			0,
-			#{istamll},
-			#{comssion},
-			now(),
-			#{opt},
-			#{cid}
-
-		)
-	</insert>
 
 
 

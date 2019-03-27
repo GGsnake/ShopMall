@@ -2,10 +2,7 @@ package com.superman.superman.dao;
 
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
-import com.superman.superman.model.ApplyCash;
-import com.superman.superman.model.SysAdvice;
-import com.superman.superman.model.SysJhAdviceDev;
-import com.superman.superman.model.SysJhAdviceOder;
+import com.superman.superman.model.*;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -42,6 +39,14 @@ public interface SysAdviceDao extends BaseDao<SysAdvice> {
      */
     @Select("select * from jh_advice_dev limit #{offset}, #{limit} ")
     List<SysJhAdviceDev> queryAdviceDev(Map<String,Object> map);
+
+    /**
+     * 轮播图
+     *
+     * @return
+     */
+    @Select("select * from jh_banner_good order by id limit 3")
+    List<BannerGoods> queryBannerGoods();
 
     /**
      * 查询常见问题

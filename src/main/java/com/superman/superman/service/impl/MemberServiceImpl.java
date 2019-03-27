@@ -68,14 +68,16 @@ public class MemberServiceImpl implements MemberService {
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
         switch (roleId) {
             case 1:
-                //查询自己的订单预估收入
+                //先统计自己的订单预估收入
                 Long myMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(uidSet));
                 if (myMoney != 0) {
                     myMoney = myMoney * range / 100;
                 }
                 //查询自己直属粉丝的订单预估收入
                 Long AllMoney = moneyService.queryCashMoney(user);
-                myJson.put("myMoney", AllMoney + myMoney);
+                //合并直属粉丝和自己的总收入
+                long tempMoney = AllMoney + myMoney;
+                myJson.put("myMoney",tempMoney);
                 myJson.put("myTeamMoney", AllMoney);
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);

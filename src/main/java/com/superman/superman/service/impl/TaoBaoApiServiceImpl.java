@@ -52,10 +52,6 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Value("${juanhuang.range}")
     private Double RANGE;
-
-    @Autowired
-    private SettingDao settingDao;
-
     @Autowired
     private ConfigQueryManager configQueryManager;
     @Override

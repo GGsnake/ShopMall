@@ -1,11 +1,9 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.dao.AgentDao;
-import com.superman.superman.dao.ScoreDao;
-import com.superman.superman.dao.SettingDao;
-import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.req.UserRegiser;
@@ -42,8 +40,6 @@ public class OtherController {
     @Autowired
     private SettingDao settingDao;
     @Autowired
-    private AgentDao agentDao;
-    @Autowired
     private PddApiService pddApiService;
     @Value("${domain.url}")
     private String DOMAINURL;
@@ -61,21 +57,22 @@ public class OtherController {
     private SysAdviceService adviceService;
     @Autowired
     private ScoreDao scoreDao;
-
     @Autowired
     private SysDaygoodsService daygoodsService;
     @Autowired
     private SysFriendDtoService sysFriendDtoService;
-
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private UserApiService userApiService;
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    SysJhTaobaoHotDao sysJhTaobaoHotDao;
+    @Autowired
+    private SysAdviceDao sysAdviceDao;
 
     /**
      * 生成推广链接
@@ -171,6 +168,60 @@ public class OtherController {
         }
         String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
+    }
+
+
+    /**
+     * 首页轮播
+     */
+    @LoginRequired
+    @GetMapping("/indexBanner")
+    public WeikeResponse querySysJhProblem(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (userinfo == null) {
+            return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
+        }
+        Integer roleId = userinfo.getRoleId();
+        Integer score = userinfo.getScore();
+        List<BannerGoods> total = sysAdviceDao.queryBannerGoods();
+        if (total == null) {
+            return null;
+        }
+        JSONObject object = null;
+        JSONArray array = new JSONArray();
+        for (BannerGoods temp : total
+        ) {
+            object = new JSONObject();
+            SysJhTaobaoAll sysJhTaobaoAll = sysJhTaobaoHotDao.queryLocalSimple(temp.getGoodId());
+            if (sysJhTaobaoAll == null) {
+                continue;
+            }
+            if (roleId == 1) {
+                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * 100);
+            } else if (roleId == 2) {
+                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * score);
+
+            } else {
+                object.put("agent", 0);
+            }
+            object.put("zk_money", sysJhTaobaoAll.getCoupon());
+            object.put("volume", sysJhTaobaoAll.getVolume());
+            object.put("istmall", sysJhTaobaoAll.getIstamll());
+            object.put("imgUrl", sysJhTaobaoAll.getPicturl());
+            object.put("zk_price", sysJhTaobaoAll.getCouponprice());
+            object.put("price", sysJhTaobaoAll.getZkfinalprice());
+            object.put("hasCoupon", 1);
+            object.put("goodName", sysJhTaobaoAll.getTitle());
+            object.put("shopName", sysJhTaobaoAll.getShoptitle());
+            object.put("goodId", temp.getGoodId());
+            array.add(object);
+        }
+
+        return WeikeResponseUtil.success(array);
     }
 
     /**
@@ -269,14 +320,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
-    /**
-     * 首页轮播图
-     */
-    @GetMapping("/banner")
-    public WeikeResponse banner() {
-        List<String> data = settingDao.queryBanner();
-        return WeikeResponseUtil.success(data);
-    }
+
 
     /**
      * 对外接口

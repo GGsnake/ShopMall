@@ -48,8 +48,6 @@ public class MemberController {
     private UserinfoMapper userinfoMapper;
     @Autowired
     private AgentDao agentDao;
-    //    @Autowired
-//    PddApiService pddApiService;
     @Autowired
     MemberService memberService;
     @Autowired
@@ -61,10 +59,6 @@ public class MemberController {
     @Value("${domain.codeurl}")
     private String URL;
 
-//    @ApiOperation(value = "我的个人页面")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
-//    })
     @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request) {
@@ -227,7 +221,7 @@ public class MemberController {
         redisUtil.set(key, var.toJSONString());
         redisUtil.expire(key, 20, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(var);
-    }   //
+    }
 
     /**
      * 升级代理接口
@@ -248,7 +242,7 @@ public class MemberController {
             return WeikeResponseUtil.fail(ResponseCode.INT_CUSY);
         }
         Boolean var = userApiService.upAgent(id, Integer.valueOf(uid), score);
-        if (var == false) {
+        if (!var) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
         }
         return WeikeResponseUtil.success(var);

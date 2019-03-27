@@ -36,6 +36,8 @@ public class OderServiceImpl implements OderService {
     @Autowired
     private AllDevOderMapper allDevOderMapper;
     @Autowired
+    private OrderSuperDao orderSuperDao;
+    @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     private JdApiService jdApiService;
@@ -188,11 +190,11 @@ public class OderServiceImpl implements OderService {
                         JSONObject tempData = new JSONObject();
                         Double commission = oder.getCommission();
                         if (commission == 0) {
-                            Double promotionAmount =  oder.getPub_share_pre_fee() * range / 100d;
+                            Double promotionAmount = oder.getPub_share_pre_fee() * range / 100d;
                             Double money = promotionAmount * score / 100d;
                             tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                         } else {
-                            Double promotionAmount =  oder.getCommission() * range / 100d;
+                            Double promotionAmount = oder.getCommission() * range / 100d;
                             Double money = promotionAmount * score / 100d;
                             tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                         }
@@ -216,11 +218,12 @@ public class OderServiceImpl implements OderService {
         }
         return null;
     }
+
     /**
      * 京东    订单状态      15.待付款,16.已付款,17.已完成,18.已结算
      * 淘宝    订单状态      3：订单结算，12：订单付款， 13：订单失效，14：订单成功
      * 拼多多   订单状态      -1 未支付; 0-已支付；1-已成团；2-确认收货；3-审核成功；4-审核失败（不可提现）
-     *                      5 -已经结算；8-非多多进宝商品（无佣金订单）
+     * 5 -已经结算；8-非多多进宝商品（无佣金订单）
      *
      * @param status 0 未结算 1 已结算
      * @return
@@ -239,7 +242,11 @@ public class OderServiceImpl implements OderService {
 
     @Override
     public Long superQueryOderForUidListToEstimate(List<Long> uidList) {
-        return   oderMapper.superQueryOderForUidListToEstimate(uidList);
+        //TODO 待添加redis 缓存
+        Integer jdTotal = orderSuperDao.queryJdOrder(uidList);
+        Integer tbTotal = orderSuperDao.queryTaoBaoOrder(uidList);
+        Integer pddTotal = orderSuperDao.queryPddOrder(uidList);
+        return Long.valueOf(jdTotal+tbTotal+pddTotal);
     }
 
 }
