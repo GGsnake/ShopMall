@@ -11,18 +11,39 @@ import java.util.Map;
 public interface UserApiService {
     Boolean createUser(UserRegiser userinfo);
 
-    Integer createUserByPhone(UserRegiser userinfo);
-
     Userinfo queryUserByPhone(String userPhone);
 
     Userinfo queryByUid(Long uid);
 
-    Boolean invitation(Map<String,Object> map);
-    Userinfo queryByWx(String  uid);
+    Boolean invitation(Map<String, Object> map);
 
+    /**
+     * 根据
+     * @param wx
+     * @return
+     */
+    Userinfo queryByWx(String wx);
+
+    /**
+     * 异步创建用户的邀请码
+     * @param phone
+     * @return
+     */
     Integer createInvCode(String phone);
 
+    /**
+     * 为用户分配平台推广位接口
+     * @return
+     */
     Map<String, Object> createPid();
 
+    /**
+     * 运营商升级粉丝为代理接口
+     *
+     * @param uid
+     * @param agentId
+     * @param score
+     * @return
+     */
     Boolean upAgent(Integer uid, Integer agentId, Integer score);
 }

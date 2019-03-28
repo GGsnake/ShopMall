@@ -45,6 +45,28 @@
         from userinfo
         where id = #{id,jdbcType=BIGINT}
     </select>
+
+    <select id="queryUserInfo" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT  <include refid="Base_Column_List"/> FROM userinfo
+        <where>
+            <if test="score.score != null">
+                And score = #{score.score}
+            </if>
+            <if test="score.dataSrc != null">
+                And dataSrc = #{score.dataSrc}
+            </if>
+            <if test="score.dataRemarks != null">
+                And dataRemarks = #{score.dataRemarks}
+            </if>
+            <if test="score.scoreType != null">
+                And scoreType = #{score.scoreType}
+            </if>
+            <if test="score.day != null">
+                And day = #{score.day}
+            </if>
+        </where>
+        where id = #{id,jdbcType=BIGINT}
+    </select>
     <select id="selectIn" resultType="com.superman.superman.model.Userinfo">
         SELECT pddPid ,tbPid,jdPid
         FROM userinfo

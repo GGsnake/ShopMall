@@ -21,6 +21,8 @@ public class BannerGoods {
     private Integer status;
     //平台来源
     private Integer src;
+    //平台来源
+    private String imgUrl;
 
     //创建时间
     private Date createtime;

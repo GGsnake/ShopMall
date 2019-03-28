@@ -38,7 +38,7 @@ public class OtherController {
     @Autowired
     private ScoreService scoreService;
     @Autowired
-    private SettingDao settingDao;
+    private SysFriendDtoMapper sysFriendDtoMapper;
     @Autowired
     private PddApiService pddApiService;
     @Value("${domain.url}")
@@ -105,12 +105,15 @@ public class OtherController {
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
-            if (uland_url == null) {
+            String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/shop.html?name=" + data.getString("tkLink"), uid);
+            if (codeUrl == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            data.put("qrcode", QINIUURL + uland_url);
-        } else if (devId == 1) {
+
+            data.put("qrcode", QINIUURL + codeUrl);
+        }
+
+        if (devId == 1) {
             data = pddApiService.convertPdd(userinfo.getPddpid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -120,7 +123,8 @@ public class OtherController {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
-        } else if (devId == 2) {
+        }
+        if (devId == 2) {
             data = jdApiService.convertJd(userinfo.getJdpid(), jdurl, coupon);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
@@ -208,8 +212,10 @@ public class OtherController {
             } else {
                 object.put("agent", 0);
             }
+
             object.put("zk_money", sysJhTaobaoAll.getCoupon());
             object.put("volume", sysJhTaobaoAll.getVolume());
+            object.put("Url", temp.getImgUrl());
             object.put("istmall", sysJhTaobaoAll.getIstamll());
             object.put("imgUrl", sysJhTaobaoAll.getPicturl());
             object.put("zk_price", sysJhTaobaoAll.getCouponprice());
@@ -223,6 +229,7 @@ public class OtherController {
 
         return WeikeResponseUtil.success(array);
     }
+
 
     /**
      * 处理二维码进来的注册用户
@@ -283,11 +290,15 @@ public class OtherController {
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
+        JSONObject map = new JSONObject();
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONObject data = sysFriendDtoService.queryList(param);
-        redisUtil.set(key, data.toJSONString());
+        JSONArray data = sysFriendDtoService.queryListFriend(param);
+        Integer count = sysFriendDtoMapper.count();
+        map.put("list", data);
+        map.put("count", count);
+        redisUtil.set(key, map.toJSONString());
         redisUtil.expire(key, 50, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(data);
+        return WeikeResponseUtil.success(map);
     }
 
     /**
@@ -319,7 +330,6 @@ public class OtherController {
         redisUtil.expire(key, expire, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
-
 
 
     /**

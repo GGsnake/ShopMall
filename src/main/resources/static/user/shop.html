@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>券皇</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    .container{
+      text-align: center;
+      margin: 20px 14px 50px 14px;
+    }
+    .main{
+      padding: 0.8em;
+      margin: 50px 0 2px;
+      height: 100px;
+      border: 1px dashed #DBA5C8;
+      background: #fff;
+    }
+    .main .title{
+      background: #e21945;
+      border-radius: 10px;
+      font-size: 1.8rem;
+      line-height: 80px;
+      color: #fff;
+      padding: 0 4px;
+      height: 80px;
+      top: -50px;
+      position: relative;
+    }
+    .main .content{
+      font-size: 1.6rem;
+      top: -30px;
+      word-wrap:break-word;
+      position: relative;
+    }
+    /*.main .content .copyData{
+    }*/
+    .copy{
+      border: 0;
+      font-size: 1.5rem;
+      width: 250px;
+      height: 55px;
+      padding: 6px 15px;
+      box-sizing: border-box;
+      background: #e21945;
+      display: inline-block;
+      margin: 50px auto;
+      border-radius: 16px;
+      color: #fff;
+
+    }
+  </style>
+  <script src="jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="layer.mobile-v2.0/layer_mobile/layer.js"></script>
+  <script>
+    $(document).ready(function(){
+      // 链接
+      var url1=GetQueryString("name");
+	  var url=decodeURIComponent(url1);
+      document.getElementById('copyData').innerHTML=url;
+      function GetQueryString(name) {   
+          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
+          var r = window.location.search.substr(1).match(reg);
+          if (r!=null) return (r[2]); return null;
+      }
+      // 点击复制
+      $('.copy').click(function(){
+        var copyData=document.getElementById('copyData').innerText;
+        var oInput=document.createElement('input');
+        oInput.value=copyData;
+        document.body.appendChild(oInput);
+        oInput.select();
+        document.execCommand("Copy");
+        oInput.className='oInput';
+        oInput.style.display='none';
+        layer.open({
+          content:"复制成功",
+          skin:'',
+          time:2,
+        });
+
+      });
+    }); 
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="line"></div>
+    <div class="main">
+        <div class="title" id="title">一键复制&gt;进入购物app</div>
+        <div id="content" class="content">
+          <span id="copyData"></span>
+        </div>
+    </div>
+    <button type="button" class="copy" id="copy">一键复制</button>
+  </div>
+</body>
+</html>

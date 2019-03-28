@@ -16,7 +16,14 @@ public interface SysFriendDtoMapper {
      * @return
      */
     @Select("select * from jh_friend_dto order by createTime desc limit #{page}, #{pageSize}")
-    List<SysFriendDto> queryListGod(@Param("page")Integer page, @Param("pageSize")Integer pageSize);
+    List<SysFriendDto> queryListGod(@Param("page")Integer page, @Param("pageSize")Integer pageSize);   /**
+     *
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Select("select * from jh_friend_dto order by createTime desc limit #{page}, #{pageSize}")
+    List<SysFriendDto> queryListFriend(@Param("page")Integer page, @Param("pageSize")Integer pageSize);
     /**
      *
      * @return

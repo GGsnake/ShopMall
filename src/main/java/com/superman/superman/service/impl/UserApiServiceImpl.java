@@ -30,34 +30,11 @@ public class UserApiServiceImpl implements UserApiService {
     @Autowired
     private UserinfoMapper userinfoMapper;
 
-
-    @Override
-    public Integer createUserByPhone(UserRegiser regiser) {
-        String userphone = regiser.getUserphone();
-        if ( userphone== null) {
-            return 1;
-        }
-        Userinfo info = queryUserByPhone(userphone);
-        //查询手机号是否注册过
-        if (info != null) {
-            return 2;
-        }
-        regiser.setRoleId(3);
-        regiser.setScore(0);
-        Boolean oprear = createUser(regiser);
-        if (oprear) {
-            return 0;
-        }
-        return 4;
-    }
-
-
     @Override
     public Userinfo queryUserByPhone(@NonNull String userPhone) {
         Userinfo info = userinfoMapper.selectByPhone(userPhone);
         return info;
     }
-
 
     @Override
     public Userinfo queryByUid(@NonNull Long uid) {
