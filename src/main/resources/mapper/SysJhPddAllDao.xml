@@ -26,7 +26,7 @@
 	</select>
 	<select id="queryPageJd" resultMap="jhPddAllMap">
 		select * from jh_pdd_all
-		ORDER BY volume desc limit #{start},#{end} ;
+		ORDER BY createTime desc limit #{start},#{end} ;
 	</select>
 	<!--<select id="countPdd" resultMap="jhPddAllMap">-->
 		<!--select * from jh_pdd_all-->

@@ -21,6 +21,7 @@ public interface TokenService {
      * @param model token
      * @return 是否有效
      */
+
     public boolean checkToken(TokenModel model);
 
     /**

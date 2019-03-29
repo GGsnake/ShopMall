@@ -2,6 +2,7 @@ package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.*;
 import com.superman.superman.model.*;
@@ -284,6 +285,7 @@ public class OtherController {
 
     //朋友圈图片
     @PostMapping("/friend")
+//    @FastCache(timeOut = "5")
     public WeikeResponse friend(PageParam pageParam) {
         //查询列表数据
         String key = "friend:" + pageParam.getPageNo();

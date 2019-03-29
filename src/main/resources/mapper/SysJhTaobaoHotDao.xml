@@ -74,7 +74,7 @@
         <if test="cid!= null">
             WHERE cid =#{cid}
         </if>
-        ORDER BY volume desc limit #{start},#{end} ;
+        ORDER BY createTime desc limit #{start},#{end} ;
     </select>
 
     <select id="countMaxJd" resultType="java.lang.Integer">
@@ -126,6 +126,7 @@
                 order by ${sort} ${order}
             </when>
             <otherwise>
+                order by createTime desc
             </otherwise>
         </choose>
         limit #{start},#{end}

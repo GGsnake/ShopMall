@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
   <title>券皇</title>
   <style>
     *{
@@ -37,8 +38,7 @@
       word-wrap:break-word;
       position: relative;
     }
-    /*.main .content .copyData{
-    }*/
+
     .copy{
       border: 0;
       font-size: 1.5rem;
@@ -55,48 +55,52 @@
     }
   </style>
   <script src="jquery-3.2.1.min.js"></script>
+  <script src="clipboard.min.js"></script>
   <script type="text/javascript" src="layer.mobile-v2.0/layer_mobile/layer.js"></script>
   <script>
-    $(document).ready(function(){
-      // 链接
-      var url1=GetQueryString("name");
-	  var url=decodeURIComponent(url1);
-      document.getElementById('copyData').innerHTML=url;
-      function GetQueryString(name) {   
-          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
-          var r = window.location.search.substr(1).match(reg);
-          if (r!=null) return (r[2]); return null;
-      }
-      // 点击复制
-      $('.copy').click(function(){
-        var copyData=document.getElementById('copyData').innerText;
-        var oInput=document.createElement('input');
-        oInput.value=copyData;
-        document.body.appendChild(oInput);
-        oInput.select();
-        document.execCommand("Copy");
-        oInput.className='oInput';
-        oInput.style.display='none';
-        layer.open({
-          content:"复制成功",
-          skin:'',
-          time:2,
-        });
-
+      $(document).ready(function(){
+          // 链接
+          var name=GetQueryString("name");
+          var decodeName=decodeURIComponent(name);
+          document.getElementById('copyData').innerHTML=decodeName;
+          function GetQueryString(name) {
+              var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)","i");
+              var r = window.location.search.substr(1).match(reg);
+              if (r!=null) return (r[2]); return null;
+          }
+          $(".copy").bind('click',function(){
+              var clipboard=new ClipboardJS('.copy');
+              clipboard.on('success',function(e){
+                  e.clearSelection();
+                  layer.open({
+                      content:'复制成功',
+                      skin:'',
+                      time:2,
+                  });
+              });
+              clipboard.on('error',function(e){
+                  layer.open({
+                      content:'复制失败',
+                      skin:'',
+                      time:2,
+                  });
+              })
+          })
       });
-    }); 
   </script>
 </head>
+
 <body>
-  <div class="container">
-    <div class="line"></div>
-    <div class="main">
-        <div class="title" id="title">一键复制&gt;进入购物app</div>
-        <div id="content" class="content">
-          <span id="copyData"></span>
-        </div>
+<div class="container">
+  <div class="line"></div>
+  <div class="main">
+    <div class="title" id="title">一键复制&gt;进入购物app</div>
+    <div id="content" class="content">
+      <span id="copyData"></span>
     </div>
-    <button type="button" class="copy" id="copy">一键复制</button>
   </div>
+  <button type="button" class="copy" data-clipboard-target='#copyData'>一键复制</button>
+</div>
 </body>
+
 </html>
