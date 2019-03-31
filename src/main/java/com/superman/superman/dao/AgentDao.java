@@ -85,8 +85,8 @@ public interface AgentDao {
     @Select("SELECT score FROM userinfo WHERE pddPid=#{id}")
     Integer queryUserScore(String id);
 
-    @Select("SELECT score FROM userinfo WHERE tbPid=#{id}")
-    Integer queryUserScoreTb(Long id);
+    @Select("SELECT score FROM userinfo WHERE rid=#{id}")
+    Integer queryUserScoreTb(String id);
 
     @Select("SELECT score FROM userinfo WHERE jdPid=#{id}")
     Integer queryUserScoreJd(Long id);

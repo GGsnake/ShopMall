@@ -140,6 +140,8 @@ public class Userinfo {
 
     private String wxopenid;
     private Double cash;
+    private String rid;
+    private String spid;
 
 
 

@@ -89,7 +89,7 @@ public class OderManager {
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
-        Long tbpid = userinfo.getTbpid();
+        String tbpid = userinfo.getRid();
         if (roleId == 3) {
             return null;
         }
@@ -106,17 +106,18 @@ public class OderManager {
         }
         for (int i = 0; i < json.size(); i++) {
             JSONObject chid = (JSONObject) json.get(i);
-            if (chid.getLong("pid")==tbpid){
+            String pid = chid.getString("pid");
+            if (pid == tbpid) {
                 //获得原始佣金
                 Double promotionAmount = chid.getDouble("comssion") * 100d;
                 //平台抽成后的运营商佣金
-                Double money = (promotionAmount * range / 100) ;
+                Double money = (promotionAmount * range / 100);
                 chid.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                 chid.remove("pid");
                 dataArray.add(chid);
                 continue;
             }
-            Integer score = agentDao.queryUserScoreTb(chid.getLong("pid"));
+            Integer score = agentDao.queryUserScoreTb(pid);
             Long sc = 100l - score;
             //获得原始佣金
             Double promotionAmount = chid.getDouble("comssion") * 100d;

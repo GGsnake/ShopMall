@@ -72,7 +72,7 @@ public class MemberController {
         }
         JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 10, TimeUnit.SECONDS);
+        redisUtil.expire(key, 3, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

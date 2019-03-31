@@ -131,6 +131,8 @@
         </choose>
         limit #{start},#{end}
     </select>
+
+
     <select id="countLocalAllOpt" resultType="int">
 
         select count(*) from jh_taobao_all where

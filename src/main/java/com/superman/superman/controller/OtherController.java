@@ -102,7 +102,7 @@ public class OtherController {
         }
         String uland_url = null;
         if (devId == 0) {
-            data = taoBaoApiService.convertTaobao(userinfo.getTbpid(), goodId);
+            data = taoBaoApiService.convertTaobao(userinfo.getRid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
