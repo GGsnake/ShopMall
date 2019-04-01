@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>券皇</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    .container{
+      text-align: center;
+      margin: 20px 14px 50px 14px;
+    }
+    .main{
+      padding: 0.8em;
+      margin: 50px 0 2px;
+      height: 100px;
+      border: 1px dashed #DBA5C8;
+      background: #fff;
+    }
+    .main .title{
+      background: #e21945;
+      border-radius: 10px;
+      font-size: 1.8rem;
+      line-height: 80px;
+      color: #fff;
+      padding: 0 4px;
+      height: 80px;
+      top: -50px;
+      position: relative;
+    }
+    .main .content{
+      font-size: 1.6rem;
+      top: -30px;
+      word-wrap:break-word;
+      position: relative;
+    }
+
+    .copy{
+      border: 0;
+      font-size: 1.5rem;
+      width: 250px;
+      height: 55px;
+      padding: 6px 15px;
+      box-sizing: border-box;
+      background: #e21945;
+      display: inline-block;
+      margin: 50px auto;
+      border-radius: 16px;
+      color: #fff;
+
+    }
+  </style>
+  <script src="jquery-3.2.1.min.js"></script>
+  <script src="clipboard.min.js"></script>
+  <script type="text/javascript" src="layer.mobile-v2.0/layer_mobile/layer.js"></script>
+
+</head>
+
+<body>
+<div class="container">
+  <div class="line"></div>
+  <div class="main">
+    <div class="title" id="title">授权成功 请重启APP</div>
+    <div id="content" class="content">
+      <span id="copyData"></span>
+    </div>
+  </div>
+  <button type="button" class="copy" data-clipboard-target='#copyData'>授权成功 请重启APP</button>
+</div>
+</body>
+
+</html>

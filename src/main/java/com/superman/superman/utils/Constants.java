@@ -54,5 +54,17 @@ public class Constants {
      * 邀请记录
      */
     public static final String SMS_LOGIN="login:";
+    /**
+     * 邀请记录
+     */
+    public static final String TAOBAO_OAUTH_TOKEN_URL="https://oauth.taobao.com/token";
+    /**
+     * 邀请记录
+     */
+    public static final String APP_URL="http://www.quanhuangmaoyi.com";
+    /**
+     * 喵有券渠道备案URL
+     */
+    public static final String MIAO_BAK_URL="https://open.21ds.cn/index/extapi/tbkrelationbeian?";
 
 }

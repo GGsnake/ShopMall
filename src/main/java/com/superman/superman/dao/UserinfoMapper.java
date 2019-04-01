@@ -28,7 +28,7 @@ public interface UserinfoMapper {
 
     Userinfo selectByPhone(String userPhone);
 
-    @Select("select id,userPhone from userinfo where wxOpenId=#{id}")
+    @Select("select id,userPhone,rid,spid from userinfo where wxOpenId=#{id} limit 1")
     Userinfo queryUserWxOpenId(String id);
 
 
@@ -43,6 +43,15 @@ public interface UserinfoMapper {
      */
     @Update("update userinfo set wxOpenId=#{id},userName=#{name},userPhoto=#{photo} where userPhone=#{phone}")
     Integer updateUserWxOpenId(UpdateWxOpenId uu);
+
+    /**
+     * 渠道更新
+     *
+     * @param userinfo
+     * @return
+     */
+    @Update("update userinfo set rid=#{rid}  where id=#{id}")
+    Integer updateUserForRid(Userinfo userinfo);
 
     @Select("select SUM(promotion_amount) from oder where  p_id in (select pddPid from userinfo where  id in (select userId from agent where agentId=#{uid}))")
     Integer queryAllPidForAgentId(Integer uid);

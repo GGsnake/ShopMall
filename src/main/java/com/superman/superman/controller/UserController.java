@@ -80,6 +80,7 @@ public class UserController {
         }
         Long id = user.getId();
         String wxopenid = user.getWxopenid();
+        String userRid = user.getRid();
         if (wxopenid == null) {
             JSONObject data = new JSONObject();
             String vai = "phone_token:" + UUID.randomUUID();
@@ -87,6 +88,13 @@ public class UserController {
             redisTemplate.expire(vai, 600, TimeUnit.SECONDS);
             data.put("message", "未绑定微信号 请绑定");
             data.put("phone_token", vai);
+            return WeikeResponseUtil.success(data);
+        }
+        if (userRid==null){
+            String redirect_uri = userServiceApi.relationBak(user);
+            JSONObject data = new JSONObject();
+            data.put("message", "请绑定淘宝渠道");
+            data.put("url",redirect_uri);
             return WeikeResponseUtil.success(data);
         }
         //异步上报登录记录
@@ -104,14 +112,21 @@ public class UserController {
      */
     @PostMapping("/wxLogin")
     public WeikeResponse LoginWX(String wx, HttpServletRequest request) {
-        Userinfo var = userServiceApi.queryByWx(wx);
-        if (var == null || var.getUserphone() == null) {
+        Userinfo userinfo = userServiceApi.queryByWx(wx);
+        if (userinfo== null || userinfo.getUserphone() == null) {
             return WeikeResponseUtil.fail("1000124", "请先关联您的手机号");
         }
+        if (userinfo.getRid()==null){
+            String redirect_uri = userServiceApi.relationBak(userinfo);
+            JSONObject data = new JSONObject();
+            data.put("message", "请绑定淘宝渠道");
+            data.put("url",redirect_uri);
+            return WeikeResponseUtil.success(data);
+        }
         //异步上报登录
-        logService.addUserLoginLog(var.getId(), request.getRemoteAddr());
+        logService.addUserLoginLog(userinfo.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态
-        return WeikeResponseUtil.success(tokenService.createToken(var.getId().toString()));
+        return WeikeResponseUtil.success(tokenService.createToken(userinfo.getId().toString()));
     }
 
     /**
@@ -153,6 +168,13 @@ public class UserController {
         Integer flag = userinfoMapper.updateUserWxOpenId(temp);
         if (flag == 0) {
             return WeikeResponseUtil.fail("1000127", "绑定手机号失败");
+        }
+        if (var.getRid()==null){
+            String redirect_uri = userServiceApi.relationBak(var);
+            JSONObject data = new JSONObject();
+            data.put("message", "请继续绑定淘宝渠道");
+            data.put("url",redirect_uri);
+            return WeikeResponseUtil.success(data);
         }
         logService.addUserLoginLog(var.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态

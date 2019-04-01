@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FastCache {
-    String timeOut() default ""; // 超时时间
+    int timeOut() default 5; // 超时时间
 
 }

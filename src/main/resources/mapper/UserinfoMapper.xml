@@ -23,7 +23,8 @@
         <result column="createTime" property="createtime" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="roleId" property="roleId" jdbcType="INTEGER"/>
-
+        <result column="rid" property="rid" jdbcType="VARCHAR"/>
+        <result column="spid" property="spid" jdbcType="VARCHAR"/>
         <result column="score" property="score" jdbcType="INTEGER"/>
         <result column="cash" property="cash" jdbcType="DOUBLE"/>
 

@@ -1,5 +1,6 @@
 package com.superman.superman.aspect;
 
+import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.FastCache;
 import com.superman.superman.redis.RedisUtil;
 import lombok.extern.java.Log;
@@ -36,16 +37,16 @@ public class CacheAspect {
         FastCache fastCache = method.getAnnotation(FastCache.class);
         String name = method.getName();
         // 判断是否使用缓存
-        String timeOut = fastCache.timeOut();
+        int timeOut = fastCache.timeOut();
         String key = name+":"+generateKey(jp);
 
         jp.getSignature().getDeclaringTypeName();
         result = redisUtil.get(key);
         if (result == null) {
             result = jp.proceed(jp.getArgs());
-            redisUtil.set(key, result.toString());
-            redisUtil.expire(key, Long.parseLong(timeOut), TimeUnit.SECONDS);
+            redisUtil.setForTimeCustom(key,JSONObject.toJSONString(result),timeOut, TimeUnit.SECONDS);
         }
+        JSONObject jsonObject = JSONObject.parseObject(result.toString());
         return result;
     }
 
