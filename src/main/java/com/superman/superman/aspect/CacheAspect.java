@@ -41,13 +41,15 @@ public class CacheAspect {
         String key = name+":"+generateKey(jp);
 
         jp.getSignature().getDeclaringTypeName();
+
+        Class returnType=((MethodSignature)jp.getSignature()).getReturnType();
+
         result = redisUtil.get(key);
         if (result == null) {
             result = jp.proceed(jp.getArgs());
             redisUtil.setForTimeCustom(key,JSONObject.toJSONString(result),timeOut, TimeUnit.SECONDS);
         }
-        JSONObject jsonObject = JSONObject.parseObject(result.toString());
-        return result;
+        return  hget(result.toString(),returnType);
     }
 
     // 生成缓存 key策略
@@ -70,6 +72,11 @@ public class CacheAspect {
         Method method = methodSignature.getMethod();
 
         return method;
+    }
+    public <T> T hget(String field,Class<T> clazz){
+        String text=redisUtil.get(field);
+        T result= (T) JSONObject.parseObject(text);
+        return result;
     }
 }
 

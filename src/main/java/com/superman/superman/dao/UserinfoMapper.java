@@ -9,8 +9,6 @@ import java.util.List;
 
 @Mapper
 public interface UserinfoMapper {
-
-
     /**
      * 创建新用户
      *
@@ -18,8 +16,6 @@ public interface UserinfoMapper {
      * @return
      */
     int insert(UserRegiser userRegiser);
-
-
     /**
      * @param id
      * @return
@@ -52,16 +48,14 @@ public interface UserinfoMapper {
      */
     @Update("update userinfo set rid=#{rid}  where id=#{id}")
     Integer updateUserForRid(Userinfo userinfo);
-
-    @Select("select SUM(promotion_amount) from oder where  p_id in (select pddPid from userinfo where  id in (select userId from agent where agentId=#{uid}))")
-    Integer queryAllPidForAgentId(Integer uid);
-
-    List<Userinfo> selectIn(@Param("list") List userlist);
-
-    List<Userinfo> selectInFans(@Param("list") List userlist);
-
-    //TODO sql待优化
-    List<Userinfo> selectInUserInfo(@Param("list") List userlist);
+    /**
+     * 渠道检查
+     *
+     * @param rid
+     * @return
+     */
+    @Select("select id from userinfo where rid=#{rid} limit 1")
+    Integer relationIdExits(String rid);
 
     @Select("select id,userName,createTime,userPhone,roleId from userinfo where id in (SELECT userId FROM agent WHERE agentId= #{agentId} and status=0) and status=0 ORDER by roleId asc  limit #{star},#{end}")
     List<Userinfo> selectInUserInfoForAgentId(@Param("agentId") Long agentId, @Param("star") Integer star, @Param("end") Integer end);

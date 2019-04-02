@@ -285,7 +285,6 @@ public class OtherController {
 
     //朋友圈图片
     @PostMapping("/friend")
-//    @FastCache(timeOut = "5")
     public WeikeResponse friend(PageParam pageParam) {
         //查询列表数据
         String key = "friend:" + pageParam.getPageNo();
