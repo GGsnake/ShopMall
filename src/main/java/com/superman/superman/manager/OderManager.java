@@ -3,6 +3,7 @@ package com.superman.superman.manager;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
@@ -85,7 +86,7 @@ public class OderManager {
         }
         return null;
     }
-
+    @FastCache
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
@@ -107,9 +108,9 @@ public class OderManager {
         for (int i = 0; i < json.size(); i++) {
             JSONObject chid = (JSONObject) json.get(i);
             String pid = chid.getString("pid");
-            if (pid == tbpid) {
+            if (tbpid.equals(pid)) {
                 //获得原始佣金
-                Double promotionAmount = chid.getDouble("comssion") * 100d;
+                Double promotionAmount = chid.getDouble("comssion") ;
                 //平台抽成后的运营商佣金
                 Double money = (promotionAmount * range / 100);
                 chid.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
@@ -120,7 +121,7 @@ public class OderManager {
             Integer score = agentDao.queryUserScoreTb(pid);
             Long sc = 100l - score;
             //获得原始佣金
-            Double promotionAmount = chid.getDouble("comssion") * 100d;
+            Double promotionAmount = chid.getDouble("comssion") ;
             //平台抽成后的运营商佣金
             Double money = (promotionAmount * range / 100) * sc / 100d;
             chid.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());

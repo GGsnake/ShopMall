@@ -1,5 +1,6 @@
 package com.superman.superman.aspect;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.FastCache;
 import com.superman.superman.redis.RedisUtil;
@@ -24,32 +25,33 @@ import java.util.concurrent.TimeUnit;
 public class CacheAspect {
     @Autowired
     private RedisUtil redisUtil;
+
     @Cacheable
     @Pointcut("@annotation(com.superman.superman.annotation.FastCache)")
     public void logPointCut() {
     }
+
     @Around("logPointCut()")
     public Object aroundManagerLogPoint(ProceedingJoinPoint jp) throws Throwable {
         Object result = null;
-
         Method method = getMethod(jp);
         // 获取注解
         FastCache fastCache = method.getAnnotation(FastCache.class);
         String name = method.getName();
         // 判断是否使用缓存
         int timeOut = fastCache.timeOut();
-        String key = name+":"+generateKey(jp);
-
-        jp.getSignature().getDeclaringTypeName();
-
-        Class returnType=((MethodSignature)jp.getSignature()).getReturnType();
+        String key = name + ":" + generateKey(jp);
+        Class returnType = ((MethodSignature) jp.getSignature()).getReturnType();
 
         result = redisUtil.get(key);
         if (result == null) {
             result = jp.proceed(jp.getArgs());
-            redisUtil.setForTimeCustom(key,JSONObject.toJSONString(result),timeOut, TimeUnit.SECONDS);
+            redisUtil.setForTimeCustom(key, JSONObject.toJSONString(result), timeOut, TimeUnit.SECONDS);
+            return result;
         }
-        return  hget(result.toString(),returnType);
+        JSONObject jsonObject1 = JSONObject.parseObject(result.toString());
+        Object jsonObject = JSON.toJavaObject(jsonObject1,returnType);
+        return jsonObject;
     }
 
     // 生成缓存 key策略
@@ -73,9 +75,9 @@ public class CacheAspect {
 
         return method;
     }
-    public <T> T hget(String field,Class<T> clazz){
-        String text=redisUtil.get(field);
-        T result= (T) JSONObject.parseObject(text);
+
+    public <T> T hget(JSON field, Class<T> clazz) {
+        T result = (T) JSONObject.toJavaObject(field,clazz);
         return result;
     }
 }

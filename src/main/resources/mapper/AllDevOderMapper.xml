@@ -58,15 +58,18 @@
         SELECT
         <include refid="Base_Column_Tb"/>
         FROM tboder
-        WHERE relation_id in (Select rid from userinfo WHERE id in (select userId from agent where agentId=#{id}
-        and status=0) and status=0 union Select rid from userinfo WHERE id =#{id})
+        WHERE relation_id in
+        (SELECT rid FROM userinfo
+        WHERE id in (SELECT userId FROM agent WHERE agentId=#{id} and status=0) and status=0
+        UNION
+        SELECT rid FROM userinfo WHERE id =#{id})
         <if test="tk_status!= null">
-            and tk_status in
+            AND tk_status IN
             <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        limit #{star},#{end}
+        LIMIT #{star},#{end}
     </select>
 
     <select id="queryJdPageSize" resultType="com.superman.superman.model.JdOder">

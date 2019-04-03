@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
@@ -62,9 +63,6 @@ public class SysAdviceController {
     @PostMapping("/adv")
     public WeikeResponse queryAdviceForDev(PageParam pageParam) {
         String key = "adv:" + pageParam.getPageNo();
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
         //查询列表数据
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONArray adviceList = otherService.queryAdviceForDev(param);
@@ -72,8 +70,6 @@ public class SysAdviceController {
         JSONObject var1 = new JSONObject();
         var1.put("pageData", adviceList);
         var1.put("pageCount", total);
-        redisUtil.set(key, var1.toJSONString());
-        redisUtil.expire(key, 150, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(var1);
     }
 

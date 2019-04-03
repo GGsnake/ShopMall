@@ -46,10 +46,10 @@ public class MyOderController {
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List statusList = ConvertUtils.getStatus(devId, status);
         JSONObject allOder = new JSONObject();
-        String key = "oder:"+devId.toString()+uid+ status.toString() + pageParam.getPageNo();
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
+//        String key = "oder:"+devId.toString()+uid+ status.toString() + pageParam.getPageNo();
+//        if (redisUtil.hasKey(key)) {
+//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+//        }
         if (devId == 0) {
             allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
         }
@@ -62,8 +62,8 @@ public class MyOderController {
         if (devId == 3) {
             allOder = oderManager.getPddOder(Long.valueOf(uid), statusList, param);
         }
-        redisUtil.set(key,allOder.toJSONString());
-        redisUtil.expire(key,10, TimeUnit.SECONDS);
+//        redisUtil.set(key,allOder.toJSONString());
+//        redisUtil.expire(key,10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(allOder);
     }
 
