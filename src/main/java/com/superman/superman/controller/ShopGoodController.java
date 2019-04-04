@@ -69,7 +69,6 @@ public class ShopGoodController {
             pddSerachBean.setPage(pageNo);
             pddSerachBean.setPageSize(pageSize);
             pddSerachBean.setKeyword(keyword);
-            pddSerachBean.setWithCoupon(with_coupon == 0 ? true : false);
             pddSerachBean.setOptId(opt);
             pddSerachBean.setSortType(sort);
             data = pddApiService.serachGoodsAll(pddSerachBean, Long.valueOf(uid));

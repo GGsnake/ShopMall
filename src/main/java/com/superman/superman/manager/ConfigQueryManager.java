@@ -18,13 +18,7 @@ public class ConfigQueryManager {
     private RedisUtil redisUtil;
 
     public String queryForKey(String key) {
-        String value = "Config:" + key;
-        if (redisUtil.hasKey(value)) {
-            return redisUtil.get(key);
-        }
         String config = settingDao.querySetting(key).getConfigValue();
-        redisUtil.set(key, config);
-        redisUtil.expire(key, 60, TimeUnit.SECONDS);
         return config;
     }
 }

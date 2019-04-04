@@ -106,12 +106,13 @@ public class OtherController {
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/shop.html?name=" + data.getString("tkLink"), uid);
+            String tkLink = QINIUURLLAST + ":" + port + "/user/shop.html?name=";
+            String Url = EveryUtils.getURLEncoderString( data.getString("tkLink"));
+            String codeUrl = otherService.addQrCodeUrlInv(tkLink+Url, uid);
             if (codeUrl == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-
-            data.put("qrcode", QINIUURL + codeUrl);
+            data.put("qrcode",QINIUURL+codeUrl);
         }
 
         if (devId == 1) {
