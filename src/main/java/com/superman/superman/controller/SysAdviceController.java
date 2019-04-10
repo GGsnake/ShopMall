@@ -3,25 +3,18 @@ package com.superman.superman.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.annotation.FastCache;
-import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.dao.SysAdviceDao;
-import com.superman.superman.model.BannerGoods;
 import com.superman.superman.model.Config;
 import com.superman.superman.model.SysAdvice;
-import com.superman.superman.model.SysJhTaobaoAll;
-import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
-import com.superman.superman.service.SysAdviceService;
+import com.superman.superman.service.AdviceService;
 import com.superman.superman.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,11 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/advice")
 public class SysAdviceController {
-
     @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private SysAdviceService adviceService;
+    private AdviceService adviceService;
     @Autowired
     private SysAdviceDao sysAdviceDao;
     @Autowired

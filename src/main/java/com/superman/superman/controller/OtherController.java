@@ -2,12 +2,11 @@ package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.superman.superman.annotation.FastCache;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.*;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.*;
 import com.superman.superman.redis.RedisUtil;
-import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
 import com.superman.superman.utils.sign.EverySign;
@@ -55,13 +54,13 @@ public class OtherController {
     @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
-    private SysAdviceService adviceService;
+    private AdviceService adviceService;
     @Autowired
     private ScoreDao scoreDao;
     @Autowired
     private SysDaygoodsService daygoodsService;
     @Autowired
-    private SysFriendDtoService sysFriendDtoService;
+    private FriendDtoService friendDtoService;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
@@ -74,6 +73,9 @@ public class OtherController {
     SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Autowired
     private SysAdviceDao sysAdviceDao;
+    @Autowired
+    private ConfigQueryManager
+            configQueryManager;
 
     /**
      * 生成推广链接
@@ -106,13 +108,14 @@ public class OtherController {
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String tkLink = QINIUURLLAST + ":" + port + "/user/shop.html?name=";
-            String Url = EveryUtils.getURLEncoderString( data.getString("tkLink"));
-            String codeUrl = otherService.addQrCodeUrlInv(tkLink+Url, uid);
+            String reqUrl = configQueryManager.queryForKey("ReqUrl");
+            String tkLink = reqUrl + ":" + port + "/user/shop.html?name=";
+            String Url = EveryUtils.getURLEncoderString(data.getString("tkLink"));
+            String codeUrl = otherService.addQrCodeUrlInv(tkLink + Url, uid);
             if (codeUrl == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            data.put("qrcode",QINIUURL+codeUrl);
+            data.put("qrcode", QINIUURL + codeUrl);
         }
 
         if (devId == 1) {
@@ -294,7 +297,7 @@ public class OtherController {
         }
         JSONObject map = new JSONObject();
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONArray data = sysFriendDtoService.queryListFriend(param);
+        JSONArray data = friendDtoService.queryListFriend(param);
         Integer count = sysFriendDtoMapper.count();
         map.put("list", data);
         map.put("count", count);

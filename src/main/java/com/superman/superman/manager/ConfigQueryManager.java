@@ -1,6 +1,7 @@
 package com.superman.superman.manager;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SettingDao;
 import com.superman.superman.model.Config;
 import com.superman.superman.redis.RedisUtil;
@@ -14,9 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class ConfigQueryManager {
     @Autowired
     private SettingDao settingDao;
-    @Autowired
-    private RedisUtil redisUtil;
-
+    @FastCache(timeOut = 10)
     public String queryForKey(String key) {
         String config = settingDao.querySetting(key).getConfigValue();
         return config;

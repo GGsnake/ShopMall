@@ -13,8 +13,8 @@ import java.util.Map;
  * Created by liujupeng on 2018/12/12.
  */
 public class NetUtils {
-
-    public static String createLinkStringByGet(Map<String, String> params) throws UnsupportedEncodingException {
+    //Map转换成 URL
+    public static String convertUrlParam(Map<String, String> params){
 
         List<String> keys = new ArrayList<String>(params.keySet());
         Collections.sort(keys);

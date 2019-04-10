@@ -13,7 +13,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -26,7 +25,6 @@ public class CacheAspect {
     @Autowired
     private RedisUtil redisUtil;
 
-    @Cacheable
     @Pointcut("@annotation(com.superman.superman.annotation.FastCache)")
     public void logPointCut() {
     }
@@ -37,6 +35,7 @@ public class CacheAspect {
         Method method = getMethod(jp);
         // 获取注解
         FastCache fastCache = method.getAnnotation(FastCache.class);
+        //获得方法名
         String name = method.getName();
         // 判断是否使用缓存
         int timeOut = fastCache.timeOut();

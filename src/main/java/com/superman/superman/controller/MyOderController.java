@@ -62,8 +62,6 @@ public class MyOderController {
         if (devId == 3) {
             allOder = oderManager.getPddOder(Long.valueOf(uid), statusList, param);
         }
-//        redisUtil.set(key,allOder.toJSONString());
-//        redisUtil.expire(key,10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(allOder);
     }
 
