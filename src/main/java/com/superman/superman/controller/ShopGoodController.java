@@ -35,9 +35,6 @@ public class ShopGoodController {
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     RestTemplate restTemplate;
-    @Autowired
-    private RedisUtil redisUtil;
-
     /**
      * 超级搜索引擎
      *
@@ -221,10 +218,6 @@ public class ShopGoodController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        String key = "Detail:" + type.toString() + uid + goodId;
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
         JSONObject data = new JSONObject();
         if (type == 0) {
             data = taoBaoApiService.deatil(goodId);
@@ -235,8 +228,6 @@ public class ShopGoodController {
         if (type == 2) {
             data = jdApiService.jdDetail(goodId);
         }
-        redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 3, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

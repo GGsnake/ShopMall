@@ -8,6 +8,7 @@ import com.pdd.pop.sdk.http.api.request.PddDdkGoodsDetailRequest;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsDetailResponse;
 import com.pdd.pop.sdk.http.api.response.PddDdkGoodsSearchResponse;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SysJhPddAllDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.ConfigQueryManager;
@@ -89,6 +90,7 @@ public class PddApiServiceImpl implements PddApiService {
 
     //查询拼多多商品详情
     @Override
+    @FastCache(timeOut = 70)
     public JSONObject pddDetail(Long goodIdList) {
         String KEY = configQueryManager.queryForKey("PDDKEY");
         String SECRET = configQueryManager.queryForKey("PDDSECRET");
@@ -161,7 +163,7 @@ public class PddApiServiceImpl implements PddApiService {
 
             List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
             if (roleId == 1) {
-                for (int i = 0,len=goodsList.size(); i <len ; i++) {
+                for (int i = 0, len = goodsList.size(); i < len; i++) {
                     PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
                     //佣金比率
                     Long promotion_rate = item.getPromotionRate();
@@ -172,7 +174,7 @@ public class PddApiServiceImpl implements PddApiService {
                     //券后价
                     Long after = (min_group_price - coupon_discount);
                     //佣金
-                    Float comssion = Float.valueOf(after * promotion_rate/1000);
+                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
                     dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
@@ -194,14 +196,14 @@ public class PddApiServiceImpl implements PddApiService {
                     //券后价
                     Float after = Float.valueOf(min_group_price - coupon_discount);
                     //佣金
-                    Float comssion = Float.valueOf(after * promotion_rate/1000);
-                    Double agent =comssion*score;
+                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
+                    Double agent = comssion * score;
                     dataJson = ConvertUtils.convertPddSearchForSdk(item);
                     dataJson.put("zk_money", coupon_discount);
                     dataJson.put("price", min_group_price);
                     dataJson.put("shopName", item.getMallName());
                     dataJson.put("zk_price", after);
-                    dataJson.put("agent",agent.intValue());
+                    dataJson.put("agent", agent.intValue());
                     dataArray.add(dataJson);
                 }
             }
@@ -241,18 +243,19 @@ public class PddApiServiceImpl implements PddApiService {
         JSONObject param = new JSONObject();
         param.put("start", pageParam.getStartRow());
         param.put("end", pageParam.getPageSize());
-        List<SysJhPddAll> sysJhTaobaoHots = new ArrayList<>(10);
-        Integer count = 0;
-        sysJhTaobaoHots = sysJhPddAllDao.queryPageJd(param);
-        count = sysJhPddAllDao.queryTotal();
-        Double score = Double.valueOf(ufo.getScore());
-        if (sysJhTaobaoHots == null || sysJhTaobaoHots.size() == 0) {
+        int count = sysJhPddAllDao.queryTotal();
+        if (count == 0) {
             return null;
         }
+        Double score = Double.valueOf(ufo.getScore());
         JSONArray dataArray = new JSONArray();
         JSONObject data = new JSONObject();
+
+        List<SysJhPddAll> sysJhTaobaoHots = sysJhPddAllDao.queryPageJd(param);
+
+        int len = sysJhTaobaoHots.size();
         if (ufo.getRoleId() == 1) {
-            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+            for (int i = 0; i < len; i++) {
                 SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
@@ -272,7 +275,7 @@ public class PddApiServiceImpl implements PddApiService {
 
         }
         if (ufo.getRoleId() == 2) {
-            for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+            for (int i = 0; i < len; i++) {
                 SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
                 JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
@@ -290,7 +293,7 @@ public class PddApiServiceImpl implements PddApiService {
             data.put("count", count);
             return data;
         }
-        for (int i = 0; i < sysJhTaobaoHots.size(); i++) {
+        for (int i = 0; i < len; i++) {
             SysJhPddAll dataObj = sysJhTaobaoHots.get(i);
             JSONObject dataJson = GoodUtils.convertLocalTaobao(dataObj);
             //查找指定字符第一次出现的位置

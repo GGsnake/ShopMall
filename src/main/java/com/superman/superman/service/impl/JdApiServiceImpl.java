@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.ConfigQueryManager;
@@ -465,6 +466,7 @@ public class JdApiServiceImpl implements JdApiService {
      * @return
      */
     @Override
+    @FastCache(timeOut = 70)
     public JSONObject jdDetail(@NonNull Long goodId) {
         String apkey = configQueryManager.queryForKey("MiaoAppKey");
         String jdurl1 = URL + "getitemdesc?";

@@ -56,16 +56,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (ufo == null) {
             return null;
         }
-
         JSONObject data = new JSONObject();
-
         String taobaoAdzoneId = configQueryManager.queryForKey("TAOBAOAdzoneId");
         String appkey = configQueryManager.queryForKey("TAOBAOAPPKEY");
         String secret = configQueryManager.queryForKey("TAOBAOSECRET");
         String taobaourl = configQueryManager.queryForKey("TAOBAOURL");
         TaobaoClient client = new DefaultTaobaoClient(taobaourl, appkey, secret);
-
-
         //设置淘宝搜索引擎请求参数 (淘宝客API 通用物料搜索)
         request.setAdzoneId(Long.valueOf(taobaoAdzoneId));
         Double score = Double.valueOf(ufo.getScore());
@@ -217,9 +213,9 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         JSONArray dataArray = new JSONArray();
         JSONObject data = param;
         SysJhTaobaoAll dataObj = null;
-        int length = sysJhTaobaoHots.size();
+        int len = sysJhTaobaoHots.size();
         if (ufo.getRoleId() == 1) {
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < len; i++) {
                 dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
@@ -236,7 +232,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 
         }
         if (ufo.getRoleId() == 2) {
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < len; i++) {
                 dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
@@ -252,7 +248,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             }
         }
         if (ufo.getRoleId() == 3) {
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < len; i++) {
                 dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
@@ -281,6 +277,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      * @return
      */
     @Override
+    @FastCache(timeOut = 200)
     public JSONObject convertTaobao(@NonNull String rid, @NonNull Long good_id) {
         JSONObject temp = new JSONObject();
         Map<String, String> urlSign = new HashMap<>();
@@ -331,7 +328,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      * @return
      */
     @Override
-    @FastCache(timeOut = 60)
+    @FastCache(timeOut = 200)
     public JSONObject convertTaobaoTkl(@NonNull String tkl) {
         String miaoAppKey = configQueryManager.queryForKey("MiaoAppKey");
         String MiaoTbUrl = configQueryManager.queryForKey("MiaoTbUrl");
@@ -368,6 +365,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      * @return
      */
     @Override
+    @FastCache(timeOut = 120)
     public JSONObject deatil(@NonNull Long goodId) {
         JSONObject data = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -400,6 +398,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      * @param goodId
      * @return
      */
+    @FastCache(timeOut = 80)
     public String deatilGoodList(@NonNull Long goodId) {
         String appkey = configQueryManager.queryForKey("TAOBAOAPPKEY");
         String secret = configQueryManager.queryForKey("TAOBAOSECRET");

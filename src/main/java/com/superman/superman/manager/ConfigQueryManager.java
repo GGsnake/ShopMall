@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 public class ConfigQueryManager {
     @Autowired
     private SettingDao settingDao;
-    @FastCache(timeOut = 10)
     public String queryForKey(String key) {
         String config = settingDao.querySetting(key).getConfigValue();
         return config;
