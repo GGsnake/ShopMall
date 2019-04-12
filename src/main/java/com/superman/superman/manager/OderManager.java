@@ -86,7 +86,6 @@ public class OderManager {
         }
         return null;
     }
-    @FastCache
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();

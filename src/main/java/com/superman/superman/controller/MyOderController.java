@@ -46,10 +46,6 @@ public class MyOderController {
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List statusList = ConvertUtils.getStatus(devId, status);
         JSONObject allOder = new JSONObject();
-//        String key = "oder:"+devId.toString()+uid+ status.toString() + pageParam.getPageNo();
-//        if (redisUtil.hasKey(key)) {
-//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-//        }
         if (devId == 0) {
             allOder = oderManager.getTaobaoOder(Long.valueOf(uid), statusList, param);
         }

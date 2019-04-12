@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.*;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.JdOder;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
@@ -84,6 +85,9 @@ public class OderServiceImpl implements OderService {
         return null;
     }
 
+    @Autowired
+    private ConfigQueryManager configQueryManager;
+
     @Override
     public JSONObject queryJdOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
@@ -101,8 +105,13 @@ public class OderServiceImpl implements OderService {
                 for (int i = 0; i < list.size(); i++) {
                     JSONObject tempData1 = new JSONObject();
                     JSONObject jdurl = jdApiService.jdDetail(list.get(i).getSkuId());
-                    JSONArray list2 = jdurl.getJSONArray("list");
-                    String url = (String) list2.get(0);
+                    String url;
+                    if (jdurl != null) {
+                        JSONArray list2 = jdurl.getJSONArray("list");
+                        url = (String) list2.get(0);
+                    } else {
+                        url = configQueryManager.queryForKey("DetailImg");
+                    }
                     tempData1.put("img", url);
                     tempData1.put("title", list.get(i).getSkuName());
                     tempData1.put("oderId", list.get(i).getOrderId());
@@ -168,10 +177,10 @@ public class OderServiceImpl implements OderService {
                     tempData1.put("time", list.get(i).getOdercreateTime().getTime() / 1000);
                     Double commission = list.get(i).getCommission();
                     if (commission == 0) {
-                        tempData1.put("comssion", list.get(i).getPub_share_pre_fee()*100);
+                        tempData1.put("comssion", list.get(i).getPub_share_pre_fee() * 100);
 
                     } else {
-                        tempData1.put("comssion", commission*100);
+                        tempData1.put("comssion", commission * 100);
                     }
                     tempData1.put("pid", list.get(i).getRelation_id());
                     jsonObjectList.add(tempData1);
@@ -192,11 +201,11 @@ public class OderServiceImpl implements OderService {
                         if (commission == 0) {
                             Double promotionAmount = oder.getPub_share_pre_fee() * range / 100d;
                             Double money = promotionAmount * score / 100d;
-                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue()*100);
+                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue() * 100);
                         } else {
                             Double promotionAmount = oder.getCommission() * range / 100d;
                             Double money = promotionAmount * score / 100d;
-                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue()*100);
+                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue() * 100);
                         }
                         String url = taoBaoApiService.deatilGoodList(oder.getNumIid());
                         tempData.put("img", url);
@@ -249,9 +258,9 @@ public class OderServiceImpl implements OderService {
     @Override
     public Long superQueryOderForUidListToEstimate(List<Long> uidList) {
         //TODO 待添加redis 缓存
-        Integer jdTotal = orderSuperDao.queryAllDevOrder(uidList,1);
-        Integer tbTotal = orderSuperDao.queryAllDevOrder(uidList,2);
-        Integer pddTotal = orderSuperDao.queryAllDevOrder(uidList,3);
+        Integer jdTotal = orderSuperDao.queryAllDevOrder(uidList, 1);
+        Integer tbTotal = orderSuperDao.queryAllDevOrder(uidList, 2);
+        Integer pddTotal = orderSuperDao.queryAllDevOrder(uidList, 3);
         return jdTotal + tbTotal + pddTotal.longValue();
     }
 

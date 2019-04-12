@@ -1,5 +1,6 @@
 package com.superman.superman.dao;
 
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.model.JdOder;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
@@ -19,11 +20,36 @@ import java.util.Map;
 public interface AllDevOderMapper {
     //    @Select("select  goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn" +
 //            " from oder  where pid in and order_status=5")
-
+    /**
+     * 分页查询拼多多订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<OderPdd> queryPddPageSize(@Param("status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
+    /**
+     * 分页查询淘宝订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<Tboder> queryTbPageSize(@Param("tk_status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
-
+    /**
+     * 分页查询京东订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<JdOder> queryJdPageSize(@Param("tk_status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
     Integer queryPddPageSizeCount(@Param("status") List status,  @Param("id") Long id);
