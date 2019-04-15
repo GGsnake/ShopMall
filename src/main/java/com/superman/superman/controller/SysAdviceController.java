@@ -110,6 +110,8 @@ public class SysAdviceController {
         data.put("version", otherService.querySetting("Version").getConfigValue());
         data.put("ios", otherService.querySetting("Ios").getConfigValue());
         data.put("android", otherService.querySetting("Android").getConfigValue());
+        data.put("iosversion", otherService.querySetting("IosVersion").getConfigValue());
+        data.put("apply", otherService.querySetting("Apply").getConfigValue());
         return WeikeResponseUtil.success(data);
     }
 

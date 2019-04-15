@@ -27,7 +27,7 @@ public class SysJhJdHot implements Serializable  {
 	//标题
 	private String title;
 	//佣金比例
-	private BigDecimal commissionrate;
+	private Double commissionrate;
 	//优惠卷金额
 	private Integer coupon;
 	//推客的预估佣金额
@@ -48,7 +48,7 @@ public class SysJhJdHot implements Serializable  {
 	private Integer orderCommiss;
 
     //佣金权重
-	private Integer comssion;
+	private Double comssion;
 	//销量权重
 	private Integer orderVolume;
 	//创建时间

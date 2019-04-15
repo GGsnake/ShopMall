@@ -9,6 +9,7 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.GoodUtils;
 import com.superman.superman.utils.net.NetUtils;
@@ -30,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/12/4.
@@ -40,6 +42,8 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
+    private RedisUtil redisUtil;
+    @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
@@ -48,7 +52,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
     @Autowired
     private ConfigQueryManager configQueryManager;
 
-    final static int UNIT=100;
+    final static int UNIT = 100;
 
     @Override
     public JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid) {
@@ -189,6 +193,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
 
     /**
      * 淘宝本地类目引擎   根据opt选择判断模块
+     *
      * @param param
      * @param uid
      * @param status
@@ -219,7 +224,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
                 dataObj = sysJhTaobaoHots.get(i);
                 JSONObject bean = GoodUtils.convertLocalTaobao(dataObj);
                 //查找指定字符第一次出现的位置
-                bean.put("zk_money", dataObj.getCoupon() *UNIT );
+                bean.put("zk_money", dataObj.getCoupon() * UNIT);
                 bean.put("hasCoupon", 1);
                 bean.put("zk_price", dataObj.getCouponprice().doubleValue() * UNIT);
                 bean.put("commissionRate", dataObj.getCommissionrate().doubleValue() * UNIT);
@@ -398,8 +403,12 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
      * @param goodId
      * @return
      */
-    @FastCache(timeOut = 80)
+
     public String deatilGoodList(@NonNull Long goodId) {
+        String key = "deatilGoodList:" + goodId;
+        if (redisUtil.hasKey(key)) {
+            return redisUtil.get(key);
+        }
         String appkey = configQueryManager.queryForKey("TAOBAOAPPKEY");
         String secret = configQueryManager.queryForKey("TAOBAOSECRET");
         String taobaourl = configQueryManager.queryForKey("TAOBAOURL");
@@ -414,7 +423,10 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
             if (results == null || results.get(0) == null) {
                 return null;
             }
-            return results.get(0).getPictUrl();
+            String pictUrl = results.get(0).getPictUrl();
+            redisUtil.set(key, pictUrl);
+            redisUtil.expire(key, 250, TimeUnit.SECONDS);
+            return pictUrl;
         } catch (ApiException e) {
             log.warning("查询淘宝商品缩略图异常 异常代码=" + e.getMessage());
         }
