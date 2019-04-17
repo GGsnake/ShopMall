@@ -9,6 +9,7 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.SysJhJdHot;
 import com.superman.superman.model.Userinfo;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.JdApiService;
 import com.superman.superman.utils.GoodUtils;
 import com.superman.superman.utils.PageParam;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/14.
@@ -40,6 +42,8 @@ public class JdApiServiceImpl implements JdApiService {
     private SysJhTaobaoHotDao sysJhTaobaoHotDao;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private RedisUtil redisUtil;
     @Value("${domain.jdimageurl}")
     private String jdimageurl;
     @Value("${domain.jduid}")
@@ -264,12 +268,12 @@ public class JdApiServiceImpl implements JdApiService {
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                dataJson.put("commissionRate", dataObj.getComssion() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
                 dataJson.put("coupon", dataObj.getLink());
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
-                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100);
+                dataJson.put("agent", dataObj.getComssion() * 100);
                 dataJson.put("jdurl", dataObj.getJdurl());
                 if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
@@ -294,21 +298,19 @@ public class JdApiServiceImpl implements JdApiService {
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 if (dataObj.getCoupon() != 0) {
                     dataJson.put("hasCoupon", 1);
-
                 } else {
                     dataJson.put("hasCoupon", 0);
-
                 }
                 dataJson.put("coupon", dataObj.getLink());
 
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                dataJson.put("commissionRate", dataObj.getComssion() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
                 dataJson.put("jdurl", dataObj.getJdurl());
 
-                dataJson.put("agent", dataObj.getCommissionrate().doubleValue() * 100 * score / 100);
+                dataJson.put("agent", dataObj.getComssion()*score );
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -324,7 +326,7 @@ public class JdApiServiceImpl implements JdApiService {
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
             dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-            dataJson.put("commissionRate", dataObj.getComssion() * 100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
             dataJson.put("shopName", dataObj.getShoptitle());
             dataJson.put("istmall", isTmall);
             dataJson.put("jdurl", dataObj.getJdurl());
@@ -377,11 +379,11 @@ public class JdApiServiceImpl implements JdApiService {
                 dataJson.put("zk_money", dataObj.getCoupon() * 100);
                 dataJson.put("hasCoupon", 1);
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
-                dataJson.put("agent", dataObj.getComssion().doubleValue() * 100);
+                dataJson.put("agent", dataObj.getComssion() * 100);
                 dataJson.put("jdurl", dataObj.getJdurl());
                 dataJson.put("coupon", dataObj.getLink());
 
@@ -416,13 +418,13 @@ public class JdApiServiceImpl implements JdApiService {
                 dataJson.put("coupon", dataObj.getLink());
 
                 dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-                dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
+                dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
 //                BigDecimal agent = GoodUtils.commissonAritLocalTaobao(dataObj.getCommissionrate().doubleValue());
                 dataJson.put("shopName", dataObj.getShoptitle());
                 dataJson.put("istmall", isTmall);
                 dataJson.put("jdurl", dataObj.getJdurl());
 
-                dataJson.put("agent", dataObj.getComssion().doubleValue() * 100 * score / 100);
+                dataJson.put("agent", dataObj.getComssion() * 100 * score / 100);
                 dataArray.add(dataJson);
             }
             data.put("data", dataArray);
@@ -436,7 +438,7 @@ public class JdApiServiceImpl implements JdApiService {
             dataJson.put("zk_money", dataObj.getCoupon() * 100);
             dataJson.put("hasCoupon", 1);
             dataJson.put("zk_price", dataObj.getZkfinalprice().doubleValue() * 100);
-            dataJson.put("commissionRate", dataObj.getCommissionrate().doubleValue() * 100);
+            dataJson.put("commissionRate", dataObj.getCommissionrate() * 100);
             dataJson.put("shopName", dataObj.getShoptitle());
             dataJson.put("istmall", isTmall);
 
@@ -466,8 +468,11 @@ public class JdApiServiceImpl implements JdApiService {
      * @return
      */
     @Override
-    @FastCache(timeOut = 70)
     public JSONObject jdDetail(@NonNull Long goodId) {
+        String key = "jdDetail:" +goodId;
+        if (redisUtil.hasKey(key)) {
+            return JSONObject.parseObject(redisUtil.get(key));
+        }
         String apkey = configQueryManager.queryForKey("MiaoAppKey");
         String jdurl1 = URL + "getitemdesc?";
 
@@ -487,8 +492,11 @@ public class JdApiServiceImpl implements JdApiService {
                     jsonArray.add("http:" + url);
                 });
                 data.put("list", jsonArray);
+                redisUtil.set(key,data.toJSONString());
+                redisUtil.expire(key, 250, TimeUnit.SECONDS);
                 return data;
             }
+
 
         } catch (Exception e) {
             log.warning("查询京东商品详情失败");
