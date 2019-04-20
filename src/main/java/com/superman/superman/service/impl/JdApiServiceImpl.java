@@ -463,7 +463,6 @@ public class JdApiServiceImpl implements JdApiService {
     /**
      * 京东商品详情
      * 商品ID
-     *
      * @param goodId
      * @return
      */

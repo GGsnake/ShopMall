@@ -54,7 +54,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
         Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
-
         Integer roleId = user.getRoleId();
         String userphoto = user.getUserphoto();
         String username = user.getUsername();

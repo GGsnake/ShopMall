@@ -45,11 +45,11 @@ public class PddApiServiceImpl implements PddApiService {
     private UserinfoMapper userinfoMapper;
     @Autowired
     private SysJhPddAllDao sysJhPddAllDao;
-
     @Autowired
     private ConfigQueryManager configQueryManager;
-
-    //生成推广链接
+    /**
+     *   生成推广链接
+     */
     @Override
     public JSONObject convertPdd(@NonNull String pid, @NonNull Long goodId) {
         String KEY = configQueryManager.queryForKey("PDDKEY");
@@ -74,7 +74,7 @@ public class PddApiServiceImpl implements PddApiService {
             res = HttpRequest.sendPost(PDD_URL, urlSign);
 
         } catch (IOException e) {
-            log.warning(e.getMessage());
+            log.warning("请求拼多多生成链接失败 信息="+e.getMessage());
             return pddTemp;
         }
         JSONArray temp = JSONObject.parseObject(res).getJSONObject("goods_promotion_url_generate_response").getJSONArray("goods_promotion_url_list");

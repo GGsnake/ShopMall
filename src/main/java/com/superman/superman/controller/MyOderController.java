@@ -30,12 +30,7 @@ public class MyOderController {
     @Autowired
     private MemberService memberService;
 
-//    @ApiOperation(value = "我的订单", notes = "灵活搜索")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "devId", value = "平台类型", required = false, dataType = "Integer", paramType = "/Search"),
-//            @ApiImplicitParam(name = "status", value = "订单状态", required = false, dataType = "Integer"),
-//            @ApiImplicitParam(name = "sort", value = "排序方式", required = false, dataType = "Integer")
-//    })
+
     @LoginRequired
     @PostMapping("/myOder")
     public WeikeResponse queryAllOder(HttpServletRequest request, PageParam pageParam, Integer devId, Integer status) {

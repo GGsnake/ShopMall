@@ -1,15 +1,12 @@
 package com.superman.superman.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
-
-@Setter
-@Getter
-@ToString
+/**
+ * 京东订单表
+ */
+@Data
 public class JdOder{
     private Integer id;
     private String positionId;

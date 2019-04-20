@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/member")
 public class MemberController {
-
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
@@ -56,9 +55,6 @@ public class MemberController {
     MoneyService moneyService;
     @Autowired
     SysAdviceDao sysAdviceDao;
-    @Value("${domain.codeurl}")
-    private String URL;
-
     @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request) {
@@ -72,7 +68,7 @@ public class MemberController {
         }
         JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 3, TimeUnit.SECONDS);
+        redisUtil.expire(key, 10, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
