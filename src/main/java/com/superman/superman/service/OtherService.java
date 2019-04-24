@@ -48,10 +48,16 @@ public interface OtherService {
      */
     JSONObject payMoney(String uid, String ip);
     /**
-     * 微信预付款
+     * 设置查询
      *
      * @param no
      * @return
      */
     Config querySetting(String no);
+    /**
+     * 更新朋友圈的商品
+     *
+     * @return
+     */
+    void updateFrientGoods();
 }

@@ -11,8 +11,11 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SettingDao;
 import com.superman.superman.dao.SysAdviceDao;
+import com.superman.superman.dao.SysFriendDtoMapper;
+import com.superman.superman.dto.SysFriendDto;
 import com.superman.superman.model.Config;
 import com.superman.superman.model.SysJhAdviceDev;
+import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.utils.*;
@@ -24,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -84,25 +88,23 @@ public class OtherServiceImpl implements OtherService {
     @Override
 
     public JSONArray queryAdviceForDev(PageParam pageParam) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("offset",pageParam.getStartRow());
-        map.put("limit",pageParam.getPageSize());
+        Map<String, Object> map = new HashMap<>();
+        map.put("offset", pageParam.getStartRow());
+        map.put("limit", pageParam.getPageSize());
         List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(map);
-        JSONArray data=new JSONArray();
+        JSONArray data = new JSONArray();
         String logo = settingDao.querySetting("Logo").getConfigValue();
-        for (SysJhAdviceDev sy:sysJhAdviceDevs)
-        {
-            JSONObject var=new JSONObject();
-            var.put("title",sy.getTitile());
-            var.put("content",sy.getContent());
-            if (sy.getImage()==null){
-                var.put("image",logo);
+        for (SysJhAdviceDev sy : sysJhAdviceDevs) {
+            JSONObject var = new JSONObject();
+            var.put("title", sy.getTitile());
+            var.put("content", sy.getContent());
+            if (sy.getImage() == null) {
+                var.put("image", logo);
+            } else {
+                var.put("image", sy.getImage());
             }
-            else {
-                var.put("image",sy.getImage());
-            }
-            var.put("contentImage",sy.getContentImage());
-            var.put("createtime",sy.getCreatetime().getTime() / 1000);
+            var.put("contentImage", sy.getContentImage());
+            var.put("createtime", sy.getCreatetime().getTime() / 1000);
             data.add(var);
         }
         return data;
@@ -116,8 +118,7 @@ public class OtherServiceImpl implements OtherService {
         try {
             stream = crateQRCode(data);
             codeImgUrl = EveryUtils.upload(stream.toByteArray(), "qrcode/" + uid + "/", ".png");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return null;
         }
@@ -126,6 +127,7 @@ public class OtherServiceImpl implements OtherService {
 
     /**
      * 生成分享APP邀请二维码的图片URL
+     *
      * @param data
      * @param uid
      * @return
@@ -138,8 +140,7 @@ public class OtherServiceImpl implements OtherService {
         try {
             stream = crateQRCode(data);
             codeImgUrl = EveryUtils.upload(stream.toByteArray(), "invcode/" + uid + "/", ".png");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return null;
         }
@@ -150,11 +151,11 @@ public class OtherServiceImpl implements OtherService {
     public JSONObject payMoney(String uid, String ip) {
         String noncestr = Util.getRandomString(30);
         String body = "升级成为运营商";
-        String url2 =  settingDao.querySetting("WxPayUrl").getConfigValue();
-        String appid =  settingDao.querySetting("WxPayAppId").getConfigValue();
+        String url2 = settingDao.querySetting("WxPayUrl").getConfigValue();
+        String appid = settingDao.querySetting("WxPayAppId").getConfigValue();
         String partnerid = settingDao.querySetting("WxPartNerId").getConfigValue();
         String notifyurl = settingDao.querySetting("WxPayNotifUrl").getConfigValue();
-        Double money= Double.valueOf(settingDao.querySetting("AgentMoney").getConfigValue());
+        Double money = Double.valueOf(settingDao.querySetting("AgentMoney").getConfigValue());
         String key = settingDao.querySetting("WxApplyKey").getConfigValue();
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
@@ -176,7 +177,7 @@ public class OtherServiceImpl implements OtherService {
         parameters.put("spbill_create_ip", ip);//终端IP
         parameters.put("notify_url", notifyurl);//回调地址
         parameters.put("attach", attach);//附加参数
-        String sign = MD5Util.createSign("utf-8", parameters,key);
+        String sign = MD5Util.createSign("utf-8", parameters, key);
         String params = String.format("<xml>" + "<appid>%s</appid>"
                         + "<attach>%s</attach>"
                         + "<body>%s</body>" + "<mch_id>%s</mch_id>"
@@ -224,6 +225,26 @@ public class OtherServiceImpl implements OtherService {
     public Config querySetting(String no) {
         Config config = settingDao.querySetting(no);
         return config;
+
+    }
+
+    @Autowired
+    private SysFriendDtoMapper sysFriendDtoMapper;
+
+    @Async
+    @Override
+    public void updateFrientGoods() {
+        //先获取到所有的id
+        List<SysFriendDto> sysFriendDtos = sysFriendDtoMapper.queryListFriend(0, 200);
+        sysFriendDtos.forEach(bean -> {
+            JSONObject jsonObject=new JSONObject();
+            List<Long> goodIdList = sysFriendDtoMapper.random();
+            JSONArray jsonArray=new JSONArray();
+            jsonArray.addAll(goodIdList);
+            jsonObject.put("data",jsonArray);
+            String content = jsonObject.toJSONString();
+            sysFriendDtoMapper.updateRandom(bean.getId(),content);
+        });
 
     }
 }

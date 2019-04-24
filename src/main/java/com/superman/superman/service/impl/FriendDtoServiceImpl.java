@@ -50,7 +50,7 @@ public class FriendDtoServiceImpl implements FriendDtoService {
     @Override
     public JSONArray queryListFriend(PageParam pageParam) {
         PageParam temp = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONObject total = new JSONObject();
+
         JSONObject tempObject = null;
         JSONArray dataArray = new JSONArray();
 

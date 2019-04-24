@@ -159,6 +159,11 @@ public class OtherController {
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        //缓存
+        String key = "createCode:" +uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(redisUtil.get(key));
+        }
         if (userinfo == null || userinfo.getRoleId() == 3) {
             return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
         }
@@ -176,6 +181,8 @@ public class OtherController {
             scoreDao.updateUserScore(userinfo);
         }
         String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
+        redisUtil.set(key, QINIUURL + codeUrl);
+        redisUtil.expire(key, 30, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(QINIUURL + codeUrl);
     }
 
@@ -297,8 +304,20 @@ public class OtherController {
         }
         JSONObject map = new JSONObject();
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONArray data = friendDtoService.queryListFriend(param);
-        Integer count = sysFriendDtoMapper.count();
+
+        JSONArray data = null;
+        Integer count=0;
+        try {
+            data = friendDtoService.queryListFriend(param);
+            count = sysFriendDtoMapper.count();
+
+        } catch (Exception e) {
+            map.put("list", null);
+            map.put("count", 0);
+            otherService.updateFrientGoods();
+            e.printStackTrace();
+            return WeikeResponseUtil.fail("123323","请稍后重试");
+        }
         map.put("list", data);
         map.put("count", count);
         redisUtil.set(key, map.toJSONString());

@@ -22,7 +22,7 @@ public class SysFriendDto implements Serializable {
     private String content;
     //头像
     private String image;
-    //头像
+    //商品
     private String goodIds;
     //图片内容url数组
     private List<String> content_Images;
