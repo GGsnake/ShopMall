@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
 import com.superman.superman.dao.SysAdviceDao;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.Config;
 import com.superman.superman.model.SysAdvice;
 import com.superman.superman.service.OtherService;
@@ -31,6 +32,9 @@ public class SysAdviceController {
     private SysAdviceDao sysAdviceDao;
     @Autowired
     private OtherService otherService;
+
+    @Autowired
+    private ConfigQueryManager configQueryManager;
 
     /**
      * 列表
@@ -107,14 +111,14 @@ public class SysAdviceController {
     @GetMapping("/version")
     public WeikeResponse getVersion() {
         JSONObject data = new JSONObject();
-        data.put("version", otherService.querySetting("Version").getConfigValue());
-        data.put("ios", otherService.querySetting("Ios").getConfigValue());
-        data.put("android", otherService.querySetting("Android").getConfigValue());
-        data.put("iosversion", otherService.querySetting("IosVersion").getConfigValue());
-        data.put("apply", otherService.querySetting("Apply").getConfigValue());
-        data.put("android_apply", otherService.querySetting("android_apply").getConfigValue());
-        data.put("temp1", otherService.querySetting("temp1").getConfigValue());
-        data.put("temp2", otherService.querySetting("temp2").getConfigValue());
+        data.put("version",configQueryManager.queryForKey("Version"));
+        data.put("ios",configQueryManager.queryForKey("Ios"));
+        data.put("android",configQueryManager.queryForKey("Android"));
+        data.put("iosversion",configQueryManager.queryForKey("IosVersion"));
+        data.put("apply",configQueryManager.queryForKey("Apply"));
+        data.put("android_apply",configQueryManager.queryForKey("android_apply"));
+        data.put("temp1",configQueryManager.queryForKey("temp1"));
+        data.put("temp2",configQueryManager.queryForKey("temp2"));
         return WeikeResponseUtil.success(data);
     }
 
@@ -125,9 +129,9 @@ public class SysAdviceController {
     public WeikeResponse customer() {
         //查询列表数据
         JSONObject var1 = new JSONObject();
-        var1.put("image", otherService.querySetting("WxImage").getConfigValue());
-        var1.put("account", otherService.querySetting("Account").getConfigValue());
-        var1.put("name", otherService.querySetting("Name").getConfigValue());
+        var1.put("image",configQueryManager.queryForKey("WxImage"));
+        var1.put("account",configQueryManager.queryForKey("Account"));
+        var1.put("name",configQueryManager.queryForKey("Name"));
         return WeikeResponseUtil.success(var1);
     }
 
@@ -136,8 +140,8 @@ public class SysAdviceController {
      */
     @GetMapping("/contact")
     public WeikeResponse contactWe() {
-        Config wxAccount = otherService.querySetting("WxImage");
-        return WeikeResponseUtil.success(wxAccount.getConfigValue());
+        String wxAccount =configQueryManager.queryForKey("WxImage");
+        return WeikeResponseUtil.success(wxAccount);
     }
 
 

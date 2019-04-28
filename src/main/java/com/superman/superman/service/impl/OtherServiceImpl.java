@@ -9,15 +9,13 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.superman.superman.annotation.FastCache;
-import com.superman.superman.dao.SettingDao;
-import com.superman.superman.dao.SysAdviceDao;
-import com.superman.superman.dao.SysFriendDtoMapper;
+import com.superman.superman.dao.*;
 import com.superman.superman.dto.SysFriendDto;
-import com.superman.superman.model.Config;
-import com.superman.superman.model.SysJhAdviceDev;
-import com.superman.superman.model.SysJhTaobaoAll;
+import com.superman.superman.manager.ConfigQueryManager;
+import com.superman.superman.model.*;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
+import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
 import com.superman.superman.utils.net.HttpUtil;
 import com.superman.superman.utils.sign.MD5;
@@ -46,8 +44,21 @@ import java.util.concurrent.TimeUnit;
 public class OtherServiceImpl implements OtherService {
     @Autowired
     private SysAdviceDao sysAdviceDao;
+    @Value("${domain.qnyurl}")
+    private String QINIUURL;
+    @Value("${server.port}")
+    private Integer port;
+    @Value("${domain.codeurl}")
+    private String QINIUURLLAST;
     @Autowired
-    private SettingDao settingDao;
+    private ScoreDao scoreDao;
+
+    @Autowired
+    private ScoreService scoreService;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
+    @Autowired
+    private ConfigQueryManager configQueryManager;
 
     @Override
     public ByteArrayOutputStream crateQRCode(String content) {
@@ -93,7 +104,7 @@ public class OtherServiceImpl implements OtherService {
         map.put("limit", pageParam.getPageSize());
         List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(map);
         JSONArray data = new JSONArray();
-        String logo = settingDao.querySetting("Logo").getConfigValue();
+        String logo = configQueryManager.queryForKey("Logo");
         for (SysJhAdviceDev sy : sysJhAdviceDevs) {
             JSONObject var = new JSONObject();
             var.put("title", sy.getTitile());
@@ -151,12 +162,12 @@ public class OtherServiceImpl implements OtherService {
     public JSONObject payMoney(String uid, String ip) {
         String noncestr = Util.getRandomString(30);
         String body = "升级成为运营商";
-        String url2 = settingDao.querySetting("WxPayUrl").getConfigValue();
-        String appid = settingDao.querySetting("WxPayAppId").getConfigValue();
-        String partnerid = settingDao.querySetting("WxPartNerId").getConfigValue();
-        String notifyurl = settingDao.querySetting("WxPayNotifUrl").getConfigValue();
-        Double money = Double.valueOf(settingDao.querySetting("AgentMoney").getConfigValue());
-        String key = settingDao.querySetting("WxApplyKey").getConfigValue();
+        String url2 = configQueryManager.queryForKey("WxPayUrl");
+        String appid = configQueryManager.queryForKey("WxPayAppId");
+        String partnerid = configQueryManager.queryForKey("WxPartNerId");
+        String notifyurl = configQueryManager.queryForKey("WxPayNotifUrl");
+        Double money = Double.valueOf(configQueryManager.queryForKey("AgentMoney"));
+        String key = configQueryManager.queryForKey("WxApplyKey");
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
@@ -220,13 +231,6 @@ public class OtherServiceImpl implements OtherService {
         return map;
     }
 
-    @Override
-    @FastCache(timeOut = 18)
-    public Config querySetting(String no) {
-        Config config = settingDao.querySetting(no);
-        return config;
-
-    }
 
     @Autowired
     private SysFriendDtoMapper sysFriendDtoMapper;
@@ -237,14 +241,49 @@ public class OtherServiceImpl implements OtherService {
         //先获取到所有的id
         List<SysFriendDto> sysFriendDtos = sysFriendDtoMapper.queryListFriend(0, 200);
         sysFriendDtos.forEach(bean -> {
-            JSONObject jsonObject=new JSONObject();
+            JSONObject jsonObject = new JSONObject();
             List<Long> goodIdList = sysFriendDtoMapper.random();
-            JSONArray jsonArray=new JSONArray();
+            JSONArray jsonArray = new JSONArray();
             jsonArray.addAll(goodIdList);
-            jsonObject.put("data",jsonArray);
+            jsonObject.put("data", jsonArray);
             String content = jsonObject.toJSONString();
-            sysFriendDtoMapper.updateRandom(bean.getId(),content);
+            sysFriendDtoMapper.updateRandom(bean.getId(), content);
         });
 
     }
+
+    @Override
+    public String builderInviteCodeUrl(Userinfo userinfo) {
+        Integer code = userinfoMapper.queryCodeId(userinfo.getId());
+        if (null == code) {
+            return null;
+        }
+        String shareScore = configQueryManager.queryForKey("ShareScore");
+        if (shareScore == null) {
+            return null;
+        }
+        ScoreBean scoreBean = new ScoreBean();
+        //积分类型 为 邀请
+        scoreBean.setDataSrc(4);
+        scoreBean.setUserId(userinfo.getId());
+        //积分收益为 收入
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(Long.valueOf(shareScore));
+        if (!scoreService.isShare(userinfo.getId())) {
+            scoreDao.addScore(scoreBean);
+            userinfo.setUserscore(Integer.valueOf(shareScore));
+            scoreDao.updateUserScore(userinfo);
+        }
+        String codeUrl = QINIUURL + addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, userinfo.getId().toString());
+        return codeUrl;
+    }
+    //
+//    @Override
+//    @FastCache(timeOut = 18)
+//    public String querySetting(String no) {
+//        String config = configQueryManager.queryForKey(no);
+//        return config;
+//
+//    }
 }

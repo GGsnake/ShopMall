@@ -154,38 +154,24 @@ public class OtherController {
      */
     @LoginRequired
     @GetMapping("/createCode")
-    public WeikeResponse createCode(HttpServletRequest request) throws IOException {
+    public WeikeResponse createCode(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null)
+        if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        //缓存
-        String key = "createCode:" +uid;
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(redisUtil.get(key));
         }
+        String key = "createCode:" + uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success((redisUtil.get(key)));
+        }
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         if (userinfo == null || userinfo.getRoleId() == 3) {
             return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
         }
-        Integer code = userinfoMapper.queryCodeId(userinfo.getId());
-        ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setDataSrc(4);
-        scoreBean.setUserId(userinfo.getId());
-        scoreBean.setScoreType(1);
-        String shareScore = otherService.querySetting("ShareScore").getConfigValue();
-        scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(Long.valueOf(shareScore));
-        if (!scoreService.isShare(userinfo.getId())) {
-            scoreDao.addScore(scoreBean);
-            userinfo.setUserscore(Integer.valueOf(shareScore));
-            scoreDao.updateUserScore(userinfo);
-        }
-        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
-        redisUtil.set(key, QINIUURL + codeUrl);
-        redisUtil.expire(key, 30, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(QINIUURL + codeUrl);
+        String codeUrl = otherService.builderInviteCodeUrl(userinfo);
+        redisUtil.set(key, codeUrl);
+        redisUtil.expire(key, 200, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(codeUrl);
     }
-
 
     /**
      * 首页轮播
@@ -345,11 +331,7 @@ public class OtherController {
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
-        int expire = 6;
-        Config wxAccount = otherService.querySetting("OrderAdvice");
-        if (wxAccount != null) {
-            expire = Integer.parseInt(wxAccount.getConfigValue());
-        }
+        int expire = 15;
         redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, expire, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);

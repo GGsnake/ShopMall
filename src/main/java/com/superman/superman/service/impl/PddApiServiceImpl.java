@@ -137,8 +137,8 @@ public class PddApiServiceImpl implements PddApiService {
         int roleId = ufo.getRoleId();
         double score = ufo.getScore().doubleValue() / 100;
 
-        String KEY = otherService.querySetting("PDDKEY").getConfigValue();
-        String SECRET = otherService.querySetting("PDDSECRET").getConfigValue();
+        String KEY = configQueryManager.queryForKey("PDDKEY");
+        String SECRET = configQueryManager.queryForKey("PDDSECRET");
 
         PopClient client = new PopHttpClient(KEY, SECRET);
 

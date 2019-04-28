@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.dao.SettingDao;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
@@ -34,9 +35,9 @@ public class ScoreController {
     @Autowired
     private ScoreService scoreService;
     @Autowired
-    private OtherService otherService;
-    @Autowired
     private ScoreDao scoreDao;
+    @Autowired
+    private ConfigQueryManager configQueryManager;
     @Autowired
     RedisUtil redisUtil;
     //浏览商品积分上报
@@ -61,7 +62,7 @@ public class ScoreController {
         }
         Long sum = scoreService.countLooks(Long.valueOf(uid));
         if (sum == 9) {
-            Long signScore = Long.valueOf(otherService.querySetting("LookScore").getConfigValue());
+            Long signScore = Long.valueOf(configQueryManager.queryForKey("LookScore"));
             ScoreBean scoreBean = new ScoreBean();
             scoreBean.setUserId(Long.valueOf(uid));
             scoreBean.setScore(signScore);
@@ -86,7 +87,7 @@ public class ScoreController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         //签到积分奖励
-        String signScore1 = otherService.querySetting("SignScore").getConfigValue();
+        String signScore1 = configQueryManager.queryForKey("SignScore");
         if (StringUtils.isEmpty(signScore1)){
             log.warning("警告 签到积分奖励设置错误--------------------");
             return WeikeResponseUtil.fail("1000522", "服务器内部错误");

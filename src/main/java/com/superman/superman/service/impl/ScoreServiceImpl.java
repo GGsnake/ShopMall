@@ -1,14 +1,10 @@
 package com.superman.superman.service.impl;
-
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.ScoreDao;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.service.OtherService;
 import com.superman.superman.service.ScoreService;
-import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.WeikeResponseUtil;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

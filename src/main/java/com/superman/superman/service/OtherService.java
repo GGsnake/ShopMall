@@ -3,6 +3,7 @@ package com.superman.superman.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.model.Config;
+import com.superman.superman.model.Userinfo;
 import com.superman.superman.utils.PageParam;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +24,7 @@ public interface OtherService {
      * 创建二维码图片返回 ByteArrayOutputStream流
      *
      * @param pageParam
-     * @return
+     * @ret
      */
     JSONArray queryAdviceForDev(PageParam pageParam);
 
@@ -48,16 +49,17 @@ public interface OtherService {
      */
     JSONObject payMoney(String uid, String ip);
     /**
-     * 设置查询
-     *
-     * @param no
-     * @return
-     */
-    Config querySetting(String no);
-    /**
      * 更新朋友圈的商品
      *
      * @return
      */
     void updateFrientGoods();
+
+    /**
+     * 生成邀请二维码
+     *
+     * @param userinfo
+     * @return
+     */
+    String  builderInviteCodeUrl(Userinfo userinfo);
 }
