@@ -33,7 +33,6 @@ public class CollectServiceImpl implements CollectService {
     private UserinfoMapper userinfoMapper;
     @Value("${juanhuang.range}")
     Double rangeaa;
-
     /**
      * 查询收藏
      *

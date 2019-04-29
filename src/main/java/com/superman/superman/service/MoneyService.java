@@ -25,14 +25,6 @@ public interface MoneyService {
      */
     Long queryCashMoney(Userinfo user);
 
-    /**
-     * 查询我的收益
-     *
-     * @param uid
-     * @return
-     */
-    JSONObject queryMyIncome(Long uid);
-
 
 
 }

@@ -45,12 +45,7 @@ public class MemberServiceImpl implements MemberService {
     @Value("${juanhuang.range}")
     private Integer range;
 
-    /**
-     * 获取预估收入
-     *
-     * @param uid
-     * @return
-     */
+  
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
         Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
@@ -154,12 +149,7 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
-    /**
-     * 获取我的团队直属会员和直属代理
-     * @param userId
-     * @param pageParam 分页参数
-     * @return
-     */
+    
     @Override
     public JSONObject getMyTeam(Long userId, PageParam pageParam) {
         if (pageParam == null) {
@@ -227,13 +217,6 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
-    /**
-     * 总代的查找代理的会员下级
-     *
-     * @param userId
-     * @param pageParam
-     * @return
-     */
     @Override
     public JSONObject getMyNoFans(Long userId, PageParam pageParam) {
         JSONObject data = new JSONObject();
@@ -261,7 +244,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public JSONObject queryMemberDetail(Long userId, Integer myid) {
+    public JSONObject queryMemberDetail(Long userId, Integer myId) {
         JSONObject data = new JSONObject();
         Long todayTime = EveryUtils.getToday();
         Long todayEndTime = todayTime + 86400;
@@ -296,7 +279,7 @@ public class MemberServiceImpl implements MemberService {
 
 
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-        Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myid));
+        Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myId));
         Integer myrole = my.getRoleId();
         Integer mySc = my.getScore();
         double ranger = range / 100d;

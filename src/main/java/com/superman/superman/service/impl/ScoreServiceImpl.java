@@ -1,6 +1,7 @@
 package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.ScoreDao;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.ScoreService;
@@ -27,7 +28,7 @@ public class ScoreServiceImpl implements ScoreService {
     @Autowired
     private ScoreDao scoreDao;
     @Autowired
-    private OtherService otherService;
+    private ConfigQueryManager configQueryManager;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -92,7 +93,7 @@ public class ScoreServiceImpl implements ScoreService {
                 scoreBean.setUserId(Long.valueOf(uid));
                 scoreBean.setScoreType(1);
                 scoreBean.setDay(EveryUtils.getNowday());
-                String lookScore = otherService.querySetting("LookScore").getConfigValue();
+                String lookScore = configQueryManager.queryForKey("LookScore");
                 scoreBean.setScore(Long.valueOf(lookScore));
                 ScoreBean flag = scoreDao.isExit(scoreBean);
                 if (flag == null) {
@@ -149,7 +150,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     public Boolean isSign(Long id) {
-        Integer signscore= Integer.valueOf(otherService.querySetting("SignScore").getConfigValue());
+        Integer signscore= Integer.valueOf(configQueryManager.queryForKey("SignScore"));
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(3);
         scoreBean.setUserId(id);
@@ -174,7 +175,7 @@ public class ScoreServiceImpl implements ScoreService {
     //判断今日是否分享
     @Override
     public Boolean isShare(Long uid) {
-        String shareScore = otherService.querySetting("ShareScore").getConfigValue();
+        String shareScore = configQueryManager.queryForKey("ShareScore");
 
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(4);

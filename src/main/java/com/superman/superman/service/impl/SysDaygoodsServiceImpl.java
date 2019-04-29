@@ -18,11 +18,7 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 	@Autowired
 	private SysDaygoodsDao daygoodsDao;
 	
-	@Override
-	public SysDaygoods queryObject(Integer id){
-		return daygoodsDao.queryObject(id);
-	}
-	
+
 	@Override
 	public JSONObject queryList(PageParam pageParam){
 		PageParam temp =new PageParam(pageParam.getPageNo(),pageParam.getPageSize());
@@ -46,17 +42,7 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 		var.put("pageData",data);
 		return var;
 	}
-	
-	@Override
-	public int queryTotal(){
-		return daygoodsDao.queryTotal();
-	}
-	
-	@Override
-	public void save(SysDaygoods daygoods){
-		daygoodsDao.save(daygoods);
-	}
-	
+
 	@Override
 	public void update(SysDaygoods daygoods){
 		daygoodsDao.update(daygoods);
@@ -66,10 +52,6 @@ public class SysDaygoodsServiceImpl implements SysDaygoodsService {
 	public void delete(Integer id){
 		daygoodsDao.delete(id);
 	}
-	
-	@Override
-	public void deleteBatch(Integer[] ids){
-		daygoodsDao.deleteBatch(ids);
-	}
+
 	
 }
