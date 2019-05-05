@@ -14,46 +14,44 @@ import java.util.Map;
 public interface SysJhTaobaoHotDao extends BaseDao<SysJhTaobaoHot> {
 
     /**
-     * 上百券
+     * 京东本地搜索引擎
      * @return
      */
 
-    List<SysJhJdHot> queryPageJd(Map<String,Object> map);
+    List<SysJhJdHot> queryPageJd(Map<String, Object> map);
+
     /**
-     * 本地搜索引擎
+     * 淘宝本地搜索引擎
+     * @param map
      * @return
      */
 
-    List<SysJhTaobaoAll> queryLocalAllOpt(Map<String,Object> map);
+    List<SysJhTaobaoAll> queryLocalAllOpt(Map<String, Object> map);
+
     /**
-     * 本地搜索引擎
+     * 淘宝本地搜索引擎 统计数量
+     * @param map
      * @return
      */
+    Integer countLocalAllOpt(Map<String, Object> map);
 
-    Integer countLocalAllOpt(Map<String,Object> map);
-    /**
-     * 上百券
-     * @return
-     */
-    Integer countMaxGood();
-
-    Integer countJu();
     /**
      * 京东统计
+     *
      * @return
      */
     Integer countMaxJd();
+
     /**
-     * 京东统计
+     * 京东统计(类目)
+     *
      * @return
      */
     Integer countMaxJdCid(Integer cid);
 
-
-    List<SysJhTaobaoHot>  queryForJu(Map<String,Object> map);
-
     /**
      * 轮播图商品搜索
+     *
      * @return
      */
     @Select("SELECT * FROM jh_taobao_all where numIid=#{goodId} and status=0 limit 1")

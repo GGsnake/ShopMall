@@ -14,7 +14,6 @@ import java.util.Map;
 @Mapper
 public interface SysAdviceDao extends BaseDao<SysAdvice> {
 
-
     /**
      * 新增提现申请
      * @param applyCash

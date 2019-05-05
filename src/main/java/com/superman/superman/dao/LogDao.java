@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * Created by liujupeng on 2018/11/24.
  */
-public interface LogMapper {
+public interface LogDao {
     /**
      *  用户登录日志
      * @param userLog

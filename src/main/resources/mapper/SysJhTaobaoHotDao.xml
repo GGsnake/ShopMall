@@ -85,19 +85,9 @@
         select count(*) from jh_jd_good where cid=#{cid}
     </select>
 
-    <select id="queryForJu" resultMap="jhTaobaoHotMap">
-		select *  from jh_taobao_good where opt=6
-		  limit #{start},#{end} ;
-    </select>
-
-    <select id="countJu" resultType="java.lang.Integer">
-		select count(*) from jh_taobao_good where opt=6
-	</select>
 
 
-    <select id="countMaxGood" resultType="java.lang.Integer">
-		select count(*) from jh_taobao_good where coupon>100  and opt=0
-	</select>
+
 
     <select id="queryTotal" resultType="int">
     select count(*) from jh_taobao_hot 	where istamll=0

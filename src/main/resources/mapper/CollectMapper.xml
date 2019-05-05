@@ -8,15 +8,6 @@
 		select  <include refid="Base_Column_List" /> from collect where  userId= #{id} order by createTime limit #{star},#{end}
 	</select>
 
-    <!--<update id="updateUser">-->
-    <!--update hot_user-->
-    <!--<set>-->
-    <!--<if test="user.userName != null">userName=#{user.userName},</if>-->
-    <!--<if test="user.loginPwd != null">loginPwd=#{user.loginPwd},</if>-->
-    <!--<if test="user.userScore != null">userScore=#{user.userScore},</if>-->
-    <!--</set>-->
-    <!--where id=#{user.id}-->
-    <!--</update>-->
     <delete id="delete">
         delete  from  collect where id = #{id}
     </delete>

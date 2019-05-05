@@ -58,19 +58,11 @@ public interface AgentDao {
     @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) and  to_days(createTime) = to_days(now())")
     Integer countNoMyFansSumToday(@Param("id") Long id);
 
-
-    @Select("SELECT count(userId)FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id}) order by createTime limit #{star},#{end}")
-    Integer countRecommdToIntCount(@Param("id") Long id);
-
-    @Select("SELECT * FROM agent WHERE agentId = #{id} and status=0")
-    List<Agent> queryForAgentList(Integer id);
-
-    @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")
-    List<Agent> queryForUserList(Integer id);
-
-    @Select("SELECT userId FROM agent a,userinfo u WHERE a.userId = #{id} and status=0")
-    List<Long> queryForAgentId(Integer id);
-
+    /**
+     * 查询我的粉丝信息集合
+     * @param id
+     * @return
+     */
     @Select("Select u.Id,u.roleId,u.score from agent a left join userinfo u on a.userId=u.id and a.status=0 WHERE a.agentId=#{id}  and a.status=0")
     List<Userinfo> superQueryFansUserInfo(Integer id);
 
@@ -82,6 +74,33 @@ public interface AgentDao {
     @Select("SELECT userId FROM agent WHERE agentId = #{id} and status=0")
     List<Long> queryForAgentIdNew(Integer id);
 
+
+    /**
+     * 建立代理关系
+     * @param agent
+     * @return
+     */
+    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
+    int insert(Agent agent);
+
+    /**
+     * 给用户升级成代理
+     * @param score
+     * @param uid
+     * @return
+     */
+    @Update("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
+    Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
+
+    /**
+     * 更新代理升级时间
+     * @param uid
+     * @return
+     */
+    @Update("update agent set updateTime=now() where userId=#{uid}")
+    Integer upAgentTime(@Param("uid")Integer uid);
+
+
     @Select("SELECT score FROM userinfo WHERE pddPid=#{id}")
     Integer queryUserScore(String id);
 
@@ -90,23 +109,4 @@ public interface AgentDao {
 
     @Select("SELECT score FROM userinfo WHERE jdPid=#{id}")
     Integer queryUserScoreJd(Long id);
-
-
-    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
-    int insert(Agent agent);
-    @Update("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
-    Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
-
-    @Update("update agent set status=1,updateTime=now() where userId=#{id}")
-    Integer upbeComeBoss(Integer uid);
-
-
-    @Update("update userinfo set roleId=1 ,score=0,updateTime=now() where id=#{uid}")
-    Integer beComeBoss(Integer uid);
-
-
-    @Update("update agent set updateTime=now() where userId=#{uid}")
-    Integer upAgentTime(@Param("uid")Integer uid);
-    @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
-    int insertAgLog(Agent agent);
 }
