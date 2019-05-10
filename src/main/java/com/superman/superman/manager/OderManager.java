@@ -43,6 +43,13 @@ public class OderManager {
     @Value("${juanhuang.range}")
     private Integer range;
 
+    /**
+     * 获取拼多多订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getPddOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
@@ -86,14 +93,22 @@ public class OderManager {
         }
         return null;
     }
+    /**
+     * 获取淘宝订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
         String tbpid = userinfo.getRid();
+        JSONObject var ;
+
         if (roleId == 3) {
             return null;
         }
-        JSONObject var = null;
         if (roleId == 2) {
             var = oderService.queryTbOder(userinfo, status, pageParam);
             return var;
@@ -130,7 +145,13 @@ public class OderManager {
         var.put("data", dataArray);
         return var;
     }
-
+    /**
+     * 获取京东订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getJdOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();

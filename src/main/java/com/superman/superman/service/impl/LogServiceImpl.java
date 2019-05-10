@@ -27,7 +27,7 @@ public class LogServiceImpl implements LogService {
     @Async
     @Override
     public void addUserLoginLog(@NonNull Long uid,@NonNull String ip) {
-        var loge=new UserLog();
+        UserLog loge=new UserLog();
         loge.setUserId(uid.intValue());
         loge.setOperation(0);
         loge.setIp(ip);

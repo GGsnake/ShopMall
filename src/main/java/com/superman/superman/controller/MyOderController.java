@@ -68,7 +68,14 @@ public class MyOderController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
+        //缓存
+        String key = "queryInCome:" + uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+        }
         JSONObject data = memberService.queryMemberDetail(Long.valueOf(uid));
+        redisUtil.set(key, data.toJSONString());
+        redisUtil.expire(key, 30, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 }
