@@ -10,24 +10,16 @@ import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.redis.RedisTemplateService;
-import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.ConvertUtils;
 import com.superman.superman.utils.PageParam;
-import lombok.NonNull;
-import lombok.var;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/21.

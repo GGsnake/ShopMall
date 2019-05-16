@@ -412,6 +412,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         String appkey = configQueryManager.queryForKey("TAOBAOAPPKEY");
         String secret = configQueryManager.queryForKey("TAOBAOSECRET");
         String taobaourl = configQueryManager.queryForKey("TAOBAOURL");
+
         TaobaoClient client = new DefaultTaobaoClient(taobaourl, appkey, secret);
         TbkItemInfoGetRequest req = new TbkItemInfoGetRequest();
         req.setNumIids(goodId.toString());

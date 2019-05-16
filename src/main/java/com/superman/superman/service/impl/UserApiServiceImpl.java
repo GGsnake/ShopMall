@@ -11,13 +11,11 @@ import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.net.NetUtils;
 import lombok.NonNull;
 import lombok.extern.java.Log;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +35,7 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Autowired
     private ConfigQueryManager configQueryManager;
+
     @Override
     public Userinfo queryUserByPhone(@NonNull String userPhone) {
         Userinfo info = userinfoMapper.selectByPhone(userPhone);
@@ -45,7 +44,7 @@ public class UserApiServiceImpl implements UserApiService {
 
     @Override
     public Userinfo queryByUid(@NonNull Long uid) {
-        var userinfo = userinfoMapper.selectByPrimaryKey(uid);
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         return userinfo;
     }
 
@@ -86,8 +85,7 @@ public class UserApiServiceImpl implements UserApiService {
     @Transactional
     public Boolean invitation(Map<String, Object> map) {
         String userPhone = String.valueOf(map.get("userPhone"));
-        String code = String.valueOf(map.get("code"));
-
+        String agentId = String.valueOf(map.get("agentId"));
         UserRegiser userinfo = new UserRegiser();
         userinfo.setUserphone(userPhone);
         userinfo.setRoleId(3);
@@ -96,11 +94,12 @@ public class UserApiServiceImpl implements UserApiService {
         if (flag) {
             //获取用户Id
             Userinfo data = userinfoMapper.selectByPhone(userPhone);
-            //根据邀请码查询代理的Id
-            Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
+            data.setPid(Integer.valueOf(agentId));
+            //TODO
+            userinfoMapper.updatePid(data);
             Agent agent = new Agent();
             agent.setUserId(data.getId().intValue());
-            agent.setAgentId(agentId);
+            agent.setAgentId(Integer.valueOf(agentId));
             //关联邀请关系
             int insert = agentDao.insert(agent);
             if (insert == 0) {
@@ -115,6 +114,23 @@ public class UserApiServiceImpl implements UserApiService {
     public Userinfo queryByWx(@NonNull String wx) {
         Userinfo userinfo = userinfoMapper.queryUserWxOpenId(wx);
         return userinfo;
+    }
+
+    @Override
+    public Userinfo queryUserInfo(Userinfo userinfo) {
+        return userinfoMapper.queryUserInfoSingle(userinfo);
+    }
+
+    @Override
+    public void queryUserTree(Userinfo userinfo, StringBuilder tree) {
+        Userinfo usr = userinfoMapper.queryUserInfoSingle(userinfo);
+        tree.insert(0,usr.getId()+",");
+        if (usr.getPid()==null){
+            return;
+        }
+        Userinfo chid=new Userinfo();
+        chid.setId(usr.getPid().longValue());
+        queryUserTree(chid,tree);
     }
 
     /**
@@ -224,7 +240,7 @@ public class UserApiServiceImpl implements UserApiService {
         props.put("view", "wap");
         props.put("state", userinfo.getId().toString());
         String reqUrl = NetUtils.convertUrlParam(props);
-        return url+reqUrl;
+        return url + reqUrl;
     }
 
     @Override
@@ -237,11 +253,11 @@ public class UserApiServiceImpl implements UserApiService {
         props.put("apkey", apkey);
         props.put("infotype", "1");
         props.put("invitercode", invitercode);
-        props.put("custompar",userinfo.getId().toString());
-        props.put("return_url",encoderString);
-        props.put("oauth_style","wap");
+        props.put("custompar", userinfo.getId().toString());
+        props.put("return_url", encoderString);
+        props.put("oauth_style", "wap");
         String reqUrl = NetUtils.convertUrlParam(props);
-        return Constants.MIAO_BAK_URL +reqUrl;
+        return Constants.MIAO_BAK_URL + reqUrl;
 
     }
 

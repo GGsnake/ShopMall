@@ -257,6 +257,11 @@ public class OtherController {
         Map<String, Object> param = new HashMap<>();
         param.put("userPhone", userPhone);
         param.put("code", code);
+        Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
+        if (agentId==null){
+            return WeikeResponseUtil.fail("1000449", "邀请的用户不存在 请重试");
+        }
+        param.put("agentId", agentId);
         Boolean invitation = userApiService.invitation(param);
         if (invitation) {
             return WeikeResponseUtil.success();

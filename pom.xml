@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
+            <version>1.16.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -98,15 +98,15 @@
             <version>RELEASE</version>
         </dependency>
         <dependency>
-        <groupId>com.pdd</groupId>
-        <artifactId>pddsdk</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+            <groupId>com.pdd</groupId>
+            <artifactId>pddsdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
-        <groupId>com.sms</groupId>
-        <artifactId>sms</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+            <groupId>com.sms</groupId>
+            <artifactId>sms</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -158,8 +158,8 @@
             <scope>test</scope>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-actuator</artifactId>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-actuator</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.github.binarywang</groupId>
@@ -215,31 +215,31 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>javax.websocket</groupId>-->
-            <!--<artifactId>javax.websocket-client-api</artifactId>-->
-            <!--<version>1.0</version>-->
+        <!--<groupId>javax.websocket</groupId>-->
+        <!--<artifactId>javax.websocket-client-api</artifactId>-->
+        <!--<version>1.0</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.glassfish.tyrus.bundles</groupId>-->
-            <!--<artifactId>tyrus-standalone-client</artifactId>-->
-            <!--<version>1.13.1</version>-->
+        <!--<groupId>org.glassfish.tyrus.bundles</groupId>-->
+        <!--<artifactId>tyrus-standalone-client</artifactId>-->
+        <!--<version>1.13.1</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
+        <!--<groupId>org.springframework.cloud</groupId>-->
+        <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
         <!--</dependency>-->
 
     </dependencies>
     <!--<dependencyManagement>-->
-        <!--<dependencies>-->
-            <!--<dependency>-->
-                <!--<groupId>org.springframework.cloud</groupId>-->
-                <!--<artifactId>spring-cloud-dependencies</artifactId>-->
-                <!--<version>Dalston.SR1</version>-->
-                <!--<type>pom</type>-->
-                <!--<scope>import</scope>-->
-            <!--</dependency>-->
-        <!--</dependencies>-->
+    <!--<dependencies>-->
+    <!--<dependency>-->
+    <!--<groupId>org.springframework.cloud</groupId>-->
+    <!--<artifactId>spring-cloud-dependencies</artifactId>-->
+    <!--<version>Dalston.SR1</version>-->
+    <!--<type>pom</type>-->
+    <!--<scope>import</scope>-->
+    <!--</dependency>-->
+    <!--</dependencies>-->
     <!--</dependencyManagement>-->
 
     <build>

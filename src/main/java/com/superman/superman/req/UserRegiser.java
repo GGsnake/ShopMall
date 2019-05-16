@@ -146,6 +146,8 @@ public class UserRegiser {
 
 
         private String wxopenid;
+
+
         private String code;
 
 

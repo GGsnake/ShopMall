@@ -15,7 +15,6 @@ import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.ConvertUtils;
 import com.superman.superman.utils.PageParam;
 import lombok.NonNull;
-import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -162,7 +161,7 @@ public class OderServiceImpl implements OderService {
     public JSONObject queryTbOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();
-        var data = new JSONObject();
+        JSONObject data = new JSONObject();
         switch (roleId) {
             case 1:
                 List<Tboder> list = allDevOderMapper.queryTbPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());

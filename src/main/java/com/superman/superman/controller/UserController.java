@@ -37,8 +37,6 @@ public class UserController {
     private LogService logService;
     @Autowired
     private UserinfoMapper userinfoMapper;
-
-
     /**
      * 通过手机号登录
      *
@@ -187,7 +185,9 @@ public class UserController {
         if (phone == null || !EveryUtils.isMobile(phone)) {
             return WeikeResponseUtil.fail("1000240", "请输入正确的手机号");
         }
+        //验证码
         String vaild = Constants.SMS_LOGIN + phone;
+
         if (redisTemplate.hasKey(vaild)) {
             return WeikeResponseUtil.fail("1000241", "短信发送间隔太快，请稍后");
         }

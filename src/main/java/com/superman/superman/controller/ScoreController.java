@@ -14,7 +14,6 @@ import com.superman.superman.service.OtherService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
 import lombok.extern.java.Log;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;

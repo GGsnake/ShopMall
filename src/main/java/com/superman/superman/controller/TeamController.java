@@ -20,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/team")
 public class TeamController {
-
-
     @Autowired
     private RedisUtil redisUtil;
     @Autowired

@@ -12,7 +12,6 @@ import com.superman.superman.service.OderService;
 import com.superman.superman.utils.EveryUtils;
 import lombok.NonNull;
 import lombok.extern.java.Log;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class MoneyServiceImpl implements MoneyService {
             return null;
         }
         Long uid = user.getId();
-        var roleId = user.getRoleId();
+        Integer roleId = user.getRoleId();
         HashSet<Long> uidSet = new HashSet<>();
         uidSet.add(uid);
         switch (roleId) {

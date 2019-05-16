@@ -8,8 +8,6 @@ import com.superman.superman.utils.PageParam;
  * Created by liujupeng on 2018/11/6.
  */
 public interface PddApiService {
-
-
     /**
      *生成推广链接
      * @param goodId  需要推广的商品id列表

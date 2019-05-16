@@ -49,6 +49,14 @@ public interface UserinfoMapper {
     @Update("update userinfo set rid=#{rid}  where id=#{id}")
     Integer updateUserForRid(Userinfo userinfo);
     /**
+     * 更新PID
+     *
+     * @param userinfo
+     * @return
+     */
+    @Update("update userinfo set pid=#{pid},tree=#{tree} where id=#{id}")
+    Integer updatePid(Userinfo userinfo);
+    /**
      * 渠道检查
      *
      * @param rid
@@ -73,5 +81,11 @@ public interface UserinfoMapper {
     @Select("select id from invcode where userId=#{id}")
     Integer queryInvCodeId(Long id);
 
+
+    @Select("select pid from userinfo where id=#{id} limit 1")
+    Integer querypid(Integer id);
+
+
+    Userinfo queryUserInfoSingle(Userinfo userinfo);
 
 }

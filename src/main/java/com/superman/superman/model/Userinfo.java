@@ -9,10 +9,7 @@ import java.util.Date;
 
 @Data
 public class Userinfo {
-
     private Long id;
-
-
     private String username;
 
     private String loginname;
@@ -29,8 +26,10 @@ public class Userinfo {
 
     private Integer userscore;
     private Integer roleId;
+    private Integer pid;
 
     private String userphoto;
+    private String tree;
 
     private Integer userstatus;
 

@@ -16,7 +16,6 @@ public interface MoneyService {
      * @return
      */
     Long queryCashMoney(Integer status, Userinfo user);
-
     /**
      * 获取预估收入
      *

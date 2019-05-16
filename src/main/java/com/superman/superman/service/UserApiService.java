@@ -23,6 +23,18 @@ public interface UserApiService {
      * @return
      */
     Userinfo queryByWx(String wx);
+    /**
+     *
+     * @param userinfo
+     * @return
+     */
+    Userinfo queryUserInfo(Userinfo userinfo);
+    /**
+     *
+     * @param userinfo
+     * @return
+     */
+    void queryUserTree(Userinfo userinfo,StringBuilder tree);
 
     /**
      * 异步创建用户的邀请码

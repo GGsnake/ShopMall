@@ -148,8 +148,6 @@ public class ShopGoodController {
         JSONObject paramData = new JSONObject();
         paramData.put("start", param.getStartRow());
         paramData.put("end", param.getPageSize());
-//        paramData.put("opt", null);
-//        String orderFiled = null;
         paramData.put("istamll", type);
         if (cat != null && cat != 0) {
             paramData.put("cat", cat);

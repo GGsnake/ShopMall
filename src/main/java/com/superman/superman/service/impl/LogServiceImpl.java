@@ -5,7 +5,6 @@ import com.superman.superman.model.UserLog;
 import com.superman.superman.service.LogService;
 import lombok.NonNull;
 import lombok.extern.java.Log;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
