@@ -85,21 +85,8 @@
             <artifactId>core</artifactId>
             <version>3.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.jdcps</groupId>
-            <artifactId>jdcpsjar</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-        <groupId>com.pdd</groupId>
-        <artifactId>pddsdk</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-        <dependency>
-        <groupId>com.sms</groupId>
-        <artifactId>sms</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+
+
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -190,11 +177,23 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.37</version>
         </dependency>
+        <!--第三方SDK jar包  安装在本地仓库-->
         <dependency>
             <groupId>com.taobaosdk</groupId>
             <artifactId>taobaosdk</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.jdcps</groupId>
+            <artifactId>jdcpsjar</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pdd</groupId>
+            <artifactId>pddsdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!---->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

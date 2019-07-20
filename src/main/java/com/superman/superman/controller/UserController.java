@@ -251,12 +251,13 @@ public class UserController {
             return WeikeResponseUtil.fail("1000241", "短信发送间隔太快，请稍后");
         }
         int code = (int) ((Math.random() * 9 + 1) * 100000);
-        SmsSendResponse result = SmsSendDemo.getSms(phone, String.valueOf(code));
-        if (result.getCode().equals("0")) {
-            redisTemplate.opsForValue().set(vaild, code);
-            redisTemplate.expire(vaild, 120, TimeUnit.SECONDS);
-            return WeikeResponseUtil.success("验证码发送成功");
-        }
+        //自己写发送短信逻辑
+//        SmsSendResponse result = SmsSendDemo.getSms(phone, String.valueOf(code));
+//        if (result.getCode().equals("0")) {
+//            redisTemplate.opsForValue().set(vaild, code);
+//            redisTemplate.expire(vaild, 120, TimeUnit.SECONDS);
+//            return WeikeResponseUtil.success("验证码发送成功");
+//        }
         return WeikeResponseUtil.fail("1000242", "短信商未知错误");
     }
 
