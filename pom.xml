@@ -210,64 +210,14 @@
             <version>1.0.0</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>javax.websocket</groupId>-->
-        <!--<artifactId>javax.websocket-client-api</artifactId>-->
-        <!--<version>1.0</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.glassfish.tyrus.bundles</groupId>-->
-        <!--<artifactId>tyrus-standalone-client</artifactId>-->
-        <!--<version>1.13.1</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.cloud</groupId>-->
-        <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
-        <!--</dependency>-->
+
 
     </dependencies>
-    <!--<dependencyManagement>-->
-    <!--<dependencies>-->
-    <!--<dependency>-->
-    <!--<groupId>org.springframework.cloud</groupId>-->
-    <!--<artifactId>spring-cloud-dependencies</artifactId>-->
-    <!--<version>Dalston.SR1</version>-->
-    <!--<type>pom</type>-->
-    <!--<scope>import</scope>-->
-    <!--</dependency>-->
-    <!--</dependencies>-->
-    <!--</dependencyManagement>-->
 
     <build>
         <plugins>
 
-            <!--<plugin>-->
-            <!--&lt;!&ndash;Mybatis-generator插件,用于自动生成Mapper和POJO&ndash;&gt;-->
-            <!--<groupId>org.mybatis.generator</groupId>-->
-            <!--<artifactId>mybatis-generator-maven-plugin</artifactId>-->
-            <!--<version>1.3.2</version>-->
-            <!--<configuration>-->
-            <!--&lt;!&ndash;配置文件的位置&ndash;&gt;-->
-            <!--<configurationFile>${project.basedir}/src/main/resources/generatorConfig_mysql.xml</configurationFile>-->
-            <!--<verbose>true</verbose>-->
-            <!--<overwrite>true</overwrite>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>Generate MyBatis Artifacts</id>-->
-            <!--<goals>-->
-            <!--<goal>generate</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--<dependencies>-->
-            <!--<dependency>-->
-            <!--<groupId>org.mybatis.generator</groupId>-->
-            <!--<artifactId>mybatis-generator-core</artifactId>-->
-            <!--<version>1.3.2</version>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
