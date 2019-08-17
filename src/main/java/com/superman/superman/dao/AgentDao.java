@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by liujupeng on 2018/11/23.
@@ -17,6 +18,7 @@ public interface AgentDao {
 
     /**
      * 统计我的一级粉丝或者代理
+     *
      * @param id
      * @return
      */
@@ -25,6 +27,7 @@ public interface AgentDao {
 
     /**
      * 统计我的一级粉丝或者代理
+     *
      * @param id
      * @return
      */
@@ -45,13 +48,16 @@ public interface AgentDao {
 
     /**
      * 统计我的非直属粉丝数量
+     *
      * @param id
      * @return
      */
     @Select("SELECT IFNULL(COUNT(userId),0) FROM agent WHERE agentId in (SELECT userId FROM agent WHERE agentId= #{id})  ")
     Integer countNoMyFansSum(@Param("id") Long id);
+
     /**
      * 统计我的非直属粉丝(按时间)
+     *
      * @param id
      * @return
      */
@@ -60,6 +66,7 @@ public interface AgentDao {
 
     /**
      * 查询我的粉丝信息集合
+     *
      * @param id
      * @return
      */
@@ -68,6 +75,7 @@ public interface AgentDao {
 
     /**
      * 根据代理id查询粉丝id
+     *
      * @param id
      * @return
      */
@@ -77,28 +85,31 @@ public interface AgentDao {
 
     /**
      * 建立代理关系
+     *
      * @param agent
      * @return
      */
     @Insert("INSERT INTO agent(agentId, userId,createTime) VALUES(#{agentId}, #{userId},now())")
-    int insert(Agent agent);
+    Optional<Integer> insert(Agent agent);
 
     /**
      * 给用户升级成代理
+     *
      * @param score
      * @param uid
      * @return
      */
     @Update("update userinfo set roleId=2 ,score=#{score},updateTime=now() where id=#{uid}")
-    Integer upAgent(@Param("score") Integer score,@Param("uid")Integer uid);
+    Integer upAgent(@Param("score") Integer score, @Param("uid") Integer uid);
 
     /**
      * 更新代理升级时间
+     *
      * @param uid
      * @return
      */
     @Update("update agent set updateTime=now() where userId=#{uid}")
-    Integer upAgentTime(@Param("uid")Integer uid);
+    Integer upAgentTime(@Param("uid") Integer uid);
 
 
     @Select("SELECT score FROM userinfo WHERE pddPid=#{id}")

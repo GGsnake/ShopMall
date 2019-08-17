@@ -8,9 +8,18 @@ import java.util.Map;
 /**
  * Created by liujupeng on 2018/11/6.
  */
-public interface UserApiService {
+public interface UserService {
+    /**
+     * 创建用户
+     * @param userinfo
+     * @return
+     */
     Boolean createUser(UserRegiser userinfo);
-
+    /**
+     * 创建用户
+     * @param userinfo
+     * @return
+     */
     Userinfo queryUserByPhone(String userPhone);
 
     Userinfo queryByUid(Long uid);
@@ -36,12 +45,7 @@ public interface UserApiService {
      */
     void queryUserTree(Userinfo userinfo,StringBuilder tree);
 
-    /**
-     * 异步创建用户的邀请码
-     * @param phone
-     * @return
-     */
-    Integer createInvCode(String phone);
+
 
     /**
      * 为用户分配平台推广位接口
@@ -49,15 +53,6 @@ public interface UserApiService {
      */
     Map<String, Object> createPid();
 
-    /**
-     * 运营商升级粉丝为代理接口
-     *
-     * @param uid
-     * @param agentId
-     * @param score
-     * @return
-     */
-    Boolean upAgent(Integer uid, Integer agentId, Integer score);
     /**
      * 生成淘宝用户授权
      *

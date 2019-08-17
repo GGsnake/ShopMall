@@ -1,28 +1,11 @@
 package com.superman.superman.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.service.impl.UserApiServiceImpl;
-import com.superman.superman.utils.Constants;
-import com.superman.superman.utils.WeikeResponse;
-import com.superman.superman.utils.WeikeResponseUtil;
-import com.superman.superman.utils.net.HttpRequest;
-import com.superman.superman.utils.net.NetUtils;
 import lombok.extern.java.Log;
-import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/12/20.

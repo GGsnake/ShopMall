@@ -52,7 +52,6 @@
 
 
     <insert id="insert" parameterType="com.superman.superman.req.UserRegiser">
-
         insert into userinfo (id, userName, loginName,
         loginPwd, loginSecret, userSex,
         userScore, userPhoto, userStatus,

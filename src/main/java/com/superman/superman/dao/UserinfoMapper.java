@@ -6,6 +6,7 @@ import com.superman.superman.req.UserRegiser;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface UserinfoMapper {
@@ -15,14 +16,15 @@ public interface UserinfoMapper {
      * @param userRegiser
      * @return
      */
-    int insert(UserRegiser userRegiser);
+    Optional<Integer> insert(UserRegiser userRegiser);
+
     /**
      * @param id
      * @return
      */
     Userinfo selectByPrimaryKey(Long id);
 
-    Userinfo selectByPhone(String userPhone);
+    Optional<Userinfo> selectByPhone(String userPhone);
 
     @Select("select id,userPhone,rid,spid from userinfo where wxOpenId=#{id} limit 1")
     Userinfo queryUserWxOpenId(String id);
@@ -48,6 +50,7 @@ public interface UserinfoMapper {
      */
     @Update("update userinfo set rid=#{rid}  where id=#{id}")
     Integer updateUserForRid(Userinfo userinfo);
+
     /**
      * 更新PID
      *
@@ -56,6 +59,7 @@ public interface UserinfoMapper {
      */
     @Update("update userinfo set pid=#{pid},tree=#{tree} where id=#{id}")
     Integer updatePid(Userinfo userinfo);
+
     /**
      * 渠道检查
      *
@@ -70,7 +74,7 @@ public interface UserinfoMapper {
 
 
     @Insert("insert into invcode(userId,createTime) values (#{id},now())")
-    Integer insertCode(Long id);
+    Optional<Integer> insertCode(Long id);
 
     @Select("select ifnull(id,0) from invcode where userId=#{id}")
     Integer queryCodeId(Long id);
@@ -86,6 +90,6 @@ public interface UserinfoMapper {
     Integer querypid(Integer id);
 
 
-    Userinfo queryUserInfoSingle(Userinfo userinfo);
+    Optional<Userinfo> queryUserInfoSingle(Userinfo userinfo);
 
 }

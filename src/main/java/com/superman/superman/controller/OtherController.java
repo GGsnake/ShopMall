@@ -64,7 +64,7 @@ public class OtherController {
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    private UserApiService userApiService;
+    private UserService userService;
     @Autowired
     private MemberService memberService;
     @Autowired
@@ -250,7 +250,7 @@ public class OtherController {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
         //检测注册手机号是否存在
-        Userinfo userinfo = userApiService.queryUserByPhone(userPhone);
+        Userinfo userinfo = userService.queryUserByPhone(userPhone);
         if (userinfo != null) {
             return WeikeResponseUtil.fail("1000199", "手机号已注册");
         }
@@ -262,7 +262,7 @@ public class OtherController {
             return WeikeResponseUtil.fail("1000449", "邀请的用户不存在 请重试");
         }
         param.put("agentId", agentId);
-        Boolean invitation = userApiService.invitation(param);
+        Boolean invitation = userService.invitation(param);
         if (invitation) {
             return WeikeResponseUtil.success();
         }

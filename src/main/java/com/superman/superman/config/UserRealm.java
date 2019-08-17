@@ -1,7 +1,7 @@
 //package com.superman.superman.config;
 //
 //import com.superman.superman.model.Userinfo;
-//import com.superman.superman.service.UserApiService;
+//import com.superman.superman.service.UserService;
 //import com.superman.superman.utils.ResponseCode;
 //import com.superman.superman.utils.TokenState;
 //import com.superman.superman.utils.WeikeResponseUtil;
@@ -17,7 +17,7 @@
 // */
 //public class UserRealm  extends AuthorizingRealm {
 //    @Autowired
-//    private UserApiService userApiService;
+//    private UserService userApiService;
 //    @Override
 //    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 //        return null;

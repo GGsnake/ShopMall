@@ -11,7 +11,6 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.service.MoneyService;
 import com.superman.superman.service.OderService;
-import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
 import com.superman.superman.utils.PageParam;

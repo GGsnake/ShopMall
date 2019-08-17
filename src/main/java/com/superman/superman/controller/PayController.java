@@ -1,21 +1,14 @@
 package com.superman.superman.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.PayDao;
-import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.OtherService;
-import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
 import lombok.extern.java.Log;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +19,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * Created by liujupeng on 2019/1/11.
