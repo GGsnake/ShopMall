@@ -1,5 +1,6 @@
 package com.superman.superman.dao;
 
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.model.JdOder;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
@@ -17,24 +18,59 @@ import java.util.Map;
  */
 @Mapper
 public interface AllDevOderMapper {
-    //    @Select("select  goods_id,promotion_amount,goods_name,order_create_time,goods_thumbnail_url,order_sn" +
-//            " from oder  where pid in and order_status=5")
 
+    /**
+     * 分页查询拼多多订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<OderPdd> queryPddPageSize(@Param("status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
 
+    /**
+     * 分页查询淘宝订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<Tboder> queryTbPageSize(@Param("tk_status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
-
+    /**
+     * 分页查询京东订单
+     * @param status
+     * @param id
+     * @param star
+     * @param end
+     * @return
+     */
+    @FastCache(timeOut = 10)
     List<JdOder> queryJdPageSize(@Param("tk_status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
-
+    /**
+     * 统计拼多多订单数量
+     * @param status
+     * @param id
+     * @return
+     */
     Integer queryPddPageSizeCount(@Param("status") List status,  @Param("id") Long id);
+    /**
+     * 统计淘宝订单数量
+     * @param status
+     * @param id
+     * @return
+     */
     Integer queryTbPageSizeCount(@Param("tk_status") List status,  @Param("id") Long id);
-;
+    /**
+     * 统计京东单数量
+     * @param map
+     * @return
+     */
     Integer queryJdPageSizeCount(Map<String,Object> map);
 
-//    List<Oder> queryPddPageSizeSupreMe(@Param("status") List status, @Param("id") Long id, @Param("star") Integer star, @Param("end") Integer end);
-
-    @Select("Select pddPid from userinfo  WHERE id in (select userId from agent where agentId=#{id} and status=0) and status=0 union  Select pddPid from userinfo  WHERE id =#{id}")
-    List<Userinfo> superQAllPidInfoForUserId(Long id);
 
 
 }

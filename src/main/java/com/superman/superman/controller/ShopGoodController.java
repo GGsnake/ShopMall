@@ -35,12 +35,6 @@ public class ShopGoodController {
     private TaoBaoApiService taoBaoApiService;
     @Autowired
     RestTemplate restTemplate;
-    @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private SysJhTaobaoHotDao
-            sysJhTaobaoHotDao;
-
     /**
      * 超级搜索引擎
      *
@@ -72,7 +66,6 @@ public class ShopGoodController {
             pddSerachBean.setPage(pageNo);
             pddSerachBean.setPageSize(pageSize);
             pddSerachBean.setKeyword(keyword);
-            pddSerachBean.setWithCoupon(with_coupon == 0 ? true : false);
             pddSerachBean.setOptId(opt);
             pddSerachBean.setSortType(sort);
             data = pddApiService.serachGoodsAll(pddSerachBean, Long.valueOf(uid));
@@ -134,9 +127,9 @@ public class ShopGoodController {
     }
 
     /**
-     * 本地搜索引擎
+     * 本地淘宝搜索引擎
      *
-     * @param type 平台 0 拼多多 1 淘宝
+     * @param type 平台 0 拼多多 1
      * @param
      * @return
      */
@@ -144,6 +137,36 @@ public class ShopGoodController {
     @PostMapping("/good")
     public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
                                 @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                                @RequestParam(value = "tbcat", defaultValue = "0", required = false) Integer cat,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        PageParam param = new PageParam(pageNo, pageSize);
+        JSONObject paramData = new JSONObject();
+        paramData.put("start", param.getStartRow());
+        paramData.put("end", param.getPageSize());
+        paramData.put("istamll", type);
+        if (cat != null && cat != 0) {
+            paramData.put("cat", cat);
+        }
+        JSONObject data = taoBaoApiService.goodLocalSuperForOpt(paramData, Long.valueOf(uid), 1);
+        return WeikeResponseUtil.success(data);
+    }
+
+    /**
+     * 京东本地搜索引擎
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/jd")
+    public WeikeResponse Search(HttpServletRequest request,
+                                Integer cid,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
                                 @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
     ) {
@@ -151,24 +174,32 @@ public class ShopGoodController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        if (type == 0) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 1);
-            return WeikeResponseUtil.success(data);
-        }
-        if (type == 1) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 2);
-            return WeikeResponseUtil.success(data);
-        }
+        PageParam pageParam = new PageParam(pageNo, pageSize);
+        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1, cid);
+        return WeikeResponseUtil.success(data);
 
-        if (type == 2) {
-            PageParam pageParam = new PageParam(pageNo, pageSize);
-            JSONObject data = taoBaoApiService.goodLocal(pageParam, Long.valueOf(uid), 3);
-            return WeikeResponseUtil.success(data);
-        }
+    }
 
-        return null;
+    /**
+     * 拼多多本地搜索引擎
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @LoginRequired
+    @PostMapping("/pdd")
+    public WeikeResponse pddSearch(HttpServletRequest request,
+                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                                   @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        }
+        PageParam pageParam = new PageParam(pageNo, pageSize);
+        JSONObject data = pddApiService.getLocalGoodsAll(pageParam, Long.valueOf(uid));
+        return WeikeResponseUtil.success(data);
+
     }
 
     /**
@@ -185,10 +216,6 @@ public class ShopGoodController {
         if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        String key = "Detail:" + type.toString() + uid + goodId;
-        if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
         JSONObject data = new JSONObject();
         if (type == 0) {
             data = taoBaoApiService.deatil(goodId);
@@ -199,8 +226,6 @@ public class ShopGoodController {
         if (type == 2) {
             data = jdApiService.jdDetail(goodId);
         }
-        redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 20, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 

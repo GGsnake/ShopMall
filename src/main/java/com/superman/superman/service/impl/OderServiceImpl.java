@@ -3,6 +3,7 @@ package com.superman.superman.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.*;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.JdOder;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
@@ -14,7 +15,6 @@ import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.ConvertUtils;
 import com.superman.superman.utils.PageParam;
 import lombok.NonNull;
-import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liujupeng on 2018/11/24.
@@ -33,16 +34,9 @@ public class OderServiceImpl implements OderService {
     @Autowired
     private OderMapper oderMapper;
     @Autowired
-    private TboderMapper tboderMapper;
-
-    @Autowired
-    private AgentDao agentDao;
-
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
-    @Autowired
     private AllDevOderMapper allDevOderMapper;
+    @Autowired
+    private OrderSuperDao orderSuperDao;
     @Autowired
     private TaoBaoApiService taoBaoApiService;
     @Autowired
@@ -54,7 +48,7 @@ public class OderServiceImpl implements OderService {
     public JSONObject queryPddOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();
-        var data = new JSONObject();
+        JSONObject data = new JSONObject();
 
         switch (roleId) {
             case 1:
@@ -90,13 +84,16 @@ public class OderServiceImpl implements OderService {
         return null;
     }
 
+    @Autowired
+    private ConfigQueryManager configQueryManager;
+
     @Override
     public JSONObject queryJdOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();
         Integer score = userinfo.getScore();
         JSONObject data = new JSONObject();
-        HashMap hashMap = new HashMap();
+        Map hashMap = new HashMap();
         hashMap.put("id", uid);
         hashMap.put("jd", status);
         switch (roleId) {
@@ -107,8 +104,13 @@ public class OderServiceImpl implements OderService {
                 for (int i = 0; i < list.size(); i++) {
                     JSONObject tempData1 = new JSONObject();
                     JSONObject jdurl = jdApiService.jdDetail(list.get(i).getSkuId());
-                    JSONArray list2 = jdurl.getJSONArray("list");
-                    String url = (String) list2.get(0);
+                    String url;
+                    if (jdurl != null) {
+                        JSONArray list2 = jdurl.getJSONArray("list");
+                        url = (String) list2.get(0);
+                    } else {
+                        url = configQueryManager.queryForKey("DetailImg");
+                    }
                     tempData1.put("img", url);
                     tempData1.put("title", list.get(i).getSkuName());
                     tempData1.put("oderId", list.get(i).getOrderId());
@@ -159,7 +161,7 @@ public class OderServiceImpl implements OderService {
     public JSONObject queryTbOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();
-        var data = new JSONObject();
+        JSONObject data = new JSONObject();
         switch (roleId) {
             case 1:
                 List<Tboder> list = allDevOderMapper.queryTbPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
@@ -174,12 +176,12 @@ public class OderServiceImpl implements OderService {
                     tempData1.put("time", list.get(i).getOdercreateTime().getTime() / 1000);
                     Double commission = list.get(i).getCommission();
                     if (commission == 0) {
-                        tempData1.put("comssion", list.get(i).getPub_share_pre_fee());
+                        tempData1.put("comssion", list.get(i).getPub_share_pre_fee() * 100);
 
                     } else {
-                        tempData1.put("comssion", commission);
+                        tempData1.put("comssion", commission * 100);
                     }
-                    tempData1.put("pid", list.get(i).getAdzoneId());
+                    tempData1.put("pid", list.get(i).getRelation_id());
                     jsonObjectList.add(tempData1);
                 }
                 data.put("data", jsonObjectList);
@@ -196,13 +198,13 @@ public class OderServiceImpl implements OderService {
                         JSONObject tempData = new JSONObject();
                         Double commission = oder.getCommission();
                         if (commission == 0) {
-                            Double promotionAmount =  oder.getPub_share_pre_fee() * range / 100d;
+                            Double promotionAmount = oder.getPub_share_pre_fee() * range / 100d;
                             Double money = promotionAmount * score / 100d;
-                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue() * 100);
                         } else {
-                            Double promotionAmount =  oder.getCommission() * range / 100d;
+                            Double promotionAmount = oder.getCommission() * range / 100d;
                             Double money = promotionAmount * score / 100d;
-                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+                            tempData.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue() * 100);
                         }
                         String url = taoBaoApiService.deatilGoodList(oder.getNumIid());
                         tempData.put("img", url);
@@ -224,11 +226,12 @@ public class OderServiceImpl implements OderService {
         }
         return null;
     }
+
     /**
      * 京东    订单状态      15.待付款,16.已付款,17.已完成,18.已结算
      * 淘宝    订单状态      3：订单结算，12：订单付款， 13：订单失效，14：订单成功
      * 拼多多   订单状态      -1 未支付; 0-已支付；1-已成团；2-确认收货；3-审核成功；4-审核失败（不可提现）
-     *                      5 -已经结算；8-非多多进宝商品（无佣金订单）
+     * 5 -已经结算；8-非多多进宝商品（无佣金订单）
      *
      * @param status 0 未结算 1 已结算
      * @return
@@ -237,17 +240,27 @@ public class OderServiceImpl implements OderService {
     public Long superQueryOderForUidList(List<Long> uidList, Integer status) {
         Long money = 0l;
         if (status == 0) {
-            money = oderMapper.superQueryForListToWait(uidList);
+            long jdMoney = oderMapper.queryForAllOrderListToWait(uidList, 1);
+            long pddMoney = oderMapper.queryForAllOrderListToWait(uidList, 3);
+            long tbMoney = oderMapper.queryForAllOrderListToWait(uidList, 2);
+            money = jdMoney + pddMoney + tbMoney;
         }
         if (status == 1) {
-            money = oderMapper.superQueryForListToFinsh(uidList);
+            long jdMoney = oderMapper.queryForAllOrderListToFinsh(uidList, 1);
+            long pddMoney = oderMapper.queryForAllOrderListToFinsh(uidList, 3);
+            long tbMoney = oderMapper.queryForAllOrderListToFinsh(uidList, 2);
+            money = jdMoney + pddMoney + tbMoney;
         }
         return money;
     }
 
     @Override
     public Long superQueryOderForUidListToEstimate(List<Long> uidList) {
-        return   oderMapper.superQueryOderForUidListToEstimate(uidList);
+        //TODO 待添加redis 缓存
+        Integer jdTotal = orderSuperDao.queryAllDevOrder(uidList, 1);
+        Integer tbTotal = orderSuperDao.queryAllDevOrder(uidList, 2);
+        Integer pddTotal = orderSuperDao.queryAllDevOrder(uidList, 3);
+        return jdTotal + tbTotal + pddTotal.longValue();
     }
 
 }

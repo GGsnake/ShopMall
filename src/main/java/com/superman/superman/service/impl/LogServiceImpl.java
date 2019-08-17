@@ -1,11 +1,10 @@
 package com.superman.superman.service.impl;
 
-import com.superman.superman.dao.LogMapper;
+import com.superman.superman.dao.LogDao;
 import com.superman.superman.model.UserLog;
 import com.superman.superman.service.LogService;
 import lombok.NonNull;
 import lombok.extern.java.Log;
-import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service("logService")
 public class LogServiceImpl implements LogService {
     @Autowired
-    private LogMapper logMapper;
+    private LogDao logDao;
 
     /**
      * 异步上报用户登录
@@ -27,12 +26,12 @@ public class LogServiceImpl implements LogService {
     @Async
     @Override
     public void addUserLoginLog(@NonNull Long uid,@NonNull String ip) {
-        var loge=new UserLog();
+        UserLog loge=new UserLog();
         loge.setUserId(uid.intValue());
         loge.setOperation(0);
         loge.setIp(ip);
         try {
-            logMapper.addUserLogin(loge);
+            logDao.addUserLogin(loge);
         } catch (Exception e) {
             e.printStackTrace();
             log.warning("上报错误"+log.toString());

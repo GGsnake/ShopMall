@@ -1,14 +1,12 @@
 package com.superman.superman.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
-import com.superman.superman.dao.AgentDao;
-import com.superman.superman.dao.ScoreDao;
-import com.superman.superman.dao.SettingDao;
-import com.superman.superman.dao.UserinfoMapper;
+import com.superman.superman.dao.*;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.*;
 import com.superman.superman.redis.RedisUtil;
-import com.superman.superman.req.UserRegiser;
 import com.superman.superman.service.*;
 import com.superman.superman.utils.*;
 import com.superman.superman.utils.sign.EverySign;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,17 +38,13 @@ public class OtherController {
     @Autowired
     private ScoreService scoreService;
     @Autowired
-    private SettingDao settingDao;
-    @Autowired
-    private AgentDao agentDao;
+    private SysFriendDtoMapper sysFriendDtoMapper;
     @Autowired
     private PddApiService pddApiService;
     @Value("${domain.url}")
     private String DOMAINURL;
     @Value("${domain.codeurl}")
     private String QINIUURLLAST;
-    @Value("${juanhuang.sharescore}")
-    private Integer sharescore;
     @Value("${domain.qnyurl}")
     private String QINIUURL;
     @Value("${server.port}")
@@ -59,24 +54,28 @@ public class OtherController {
     @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
-    private SysAdviceService adviceService;
+    private AdviceService adviceService;
     @Autowired
     private ScoreDao scoreDao;
-
     @Autowired
     private SysDaygoodsService daygoodsService;
     @Autowired
-    private SysFriendDtoService sysFriendDtoService;
-
+    private FriendDtoService friendDtoService;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private UserApiService userApiService;
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    SysJhTaobaoHotDao sysJhTaobaoHotDao;
+    @Autowired
+    private SysAdviceDao sysAdviceDao;
+    @Autowired
+    private ConfigQueryManager
+            configQueryManager;
 
     /**
      * 生成推广链接
@@ -89,7 +88,7 @@ public class OtherController {
      */
     @LoginRequired
     @PostMapping("/convert")
-    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId, String jdurl) throws IOException {
+    public WeikeResponse convert(HttpServletRequest request, Long goodId, Integer devId, String jdurl, String coupon) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
@@ -97,23 +96,26 @@ public class OtherController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        JSONObject data = new JSONObject();
+        JSONObject data = null;
         //缓存
         String key = "convert:" + devId.toString() + uid + goodId + jdurl;
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
-
+        String uland_url = null;
         if (devId == 0) {
-            data = taoBaoApiService.convertTaobao(userinfo.getTbpid(), goodId);
+            data = taoBaoApiService.convertTaobao(userinfo.getRid(), goodId);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
-            if (uland_url == null) {
+            String reqUrl = configQueryManager.queryForKey("ReqUrl");
+            String tkLink = reqUrl + ":" + port + "/user/shop.html?name=";
+            String Url = EveryUtils.getURLEncoderString(data.getString("tkLink"));
+            String codeUrl = otherService.addQrCodeUrlInv(tkLink + Url, uid);
+            if (codeUrl == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            data.put("qrcode", QINIUURL + uland_url);
+            data.put("qrcode", QINIUURL + codeUrl);
         }
 
         if (devId == 1) {
@@ -121,18 +123,18 @@ public class OtherController {
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
             if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
             data.put("qrcode", QINIUURL + uland_url);
         }
         if (devId == 2) {
-            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl);
+            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl, coupon);
             if (data == null || data.getString("uland_url") == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
-            String uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
             if (uland_url == null) {
                 return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
             }
@@ -140,7 +142,7 @@ public class OtherController {
 
         }
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 500, TimeUnit.SECONDS);
+        redisUtil.expire(key, 200, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
@@ -152,29 +154,80 @@ public class OtherController {
      */
     @LoginRequired
     @GetMapping("/createCode")
-    public WeikeResponse createCode(HttpServletRequest request) throws IOException {
+    public WeikeResponse createCode(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null)
+        if (uid == null) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        String key = "createCode:" + uid;
+        if (redisUtil.hasKey(key)) {
+            return WeikeResponseUtil.success((redisUtil.get(key)));
+        }
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         if (userinfo == null || userinfo.getRoleId() == 3) {
             return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
         }
-        Integer code = userinfoMapper.queryCodeId(userinfo.getId());
-        ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setDataSrc(4);
-        scoreBean.setUserId(userinfo.getId());
-        scoreBean.setScoreType(1);
-        scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(sharescore.longValue());
-        if (!scoreService.isShare(userinfo.getId())) {
-            scoreDao.addScore(scoreBean);
-            userinfo.setUserscore(sharescore);
-            scoreDao.updateUserScore(userinfo);
-        }
-        String codeUrl = otherService.addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, uid);
-        return WeikeResponseUtil.success(QINIUURL + codeUrl);
+        String codeUrl = otherService.builderInviteCodeUrl(userinfo);
+        redisUtil.set(key, codeUrl);
+        redisUtil.expire(key, 200, TimeUnit.SECONDS);
+        return WeikeResponseUtil.success(codeUrl);
     }
+
+    /**
+     * 首页轮播
+     */
+    @LoginRequired
+    @GetMapping("/indexBanner")
+    public WeikeResponse querySysJhProblem(HttpServletRequest request) {
+        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+        if (uid == null) {
+            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+        }
+        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
+        if (userinfo == null) {
+            return WeikeResponseUtil.fail(ResponseCode.DELETE_ERROR);
+        }
+        Integer roleId = userinfo.getRoleId();
+        Integer score = userinfo.getScore();
+        List<BannerGoods> total = sysAdviceDao.queryBannerGoods();
+        if (total == null) {
+            return null;
+        }
+        JSONObject object = null;
+        JSONArray array = new JSONArray();
+        for (BannerGoods temp : total
+        ) {
+            object = new JSONObject();
+            SysJhTaobaoAll sysJhTaobaoAll = sysJhTaobaoHotDao.queryLocalSimple(temp.getGoodId());
+            if (sysJhTaobaoAll == null) {
+                continue;
+            }
+            if (roleId == 1) {
+                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * 100);
+            } else if (roleId == 2) {
+                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * score);
+
+            } else {
+                object.put("agent", 0);
+            }
+
+            object.put("zk_money", sysJhTaobaoAll.getCoupon());
+            object.put("volume", sysJhTaobaoAll.getVolume());
+            object.put("Url", temp.getImgUrl());
+            object.put("istmall", sysJhTaobaoAll.getIstamll());
+            object.put("imgUrl", sysJhTaobaoAll.getPicturl());
+            object.put("zk_price", sysJhTaobaoAll.getCouponprice());
+            object.put("price", sysJhTaobaoAll.getZkfinalprice());
+            object.put("hasCoupon", 1);
+            object.put("goodName", sysJhTaobaoAll.getTitle());
+            object.put("shopName", sysJhTaobaoAll.getShoptitle());
+            object.put("goodId", temp.getGoodId());
+            array.add(object);
+        }
+
+        return WeikeResponseUtil.success(array);
+    }
+
 
     /**
      * 处理二维码进来的注册用户
@@ -196,25 +249,25 @@ public class OtherController {
         if (isVaild == null || !isVaild.toString().equals(vaild)) {
             return WeikeResponseUtil.fail("1000134", "验证码错误");
         }
-        UserRegiser userinfo = new UserRegiser();
-        userinfo.setUserphone(userPhone);
-        userinfo.setLoginpwd(code);
-        Integer status = userApiService.createUserByPhone(userinfo);
-        if (status == 2) {
-            return WeikeResponseUtil.fail("1000200", "该手机号已经注册过");
+        //检测注册手机号是否存在
+        Userinfo userinfo = userApiService.queryUserByPhone(userPhone);
+        if (userinfo != null) {
+            return WeikeResponseUtil.fail("1000199", "手机号已注册");
         }
-        if (status == 4) {
-            return WeikeResponseUtil.fail("1000201", "未知错误 请重试");
-        }
-        //获取用户Id
-        Userinfo data = userinfoMapper.selectByPhone(userPhone);
-        //根据邀请码查询代理的Id
+        Map<String, Object> param = new HashMap<>();
+        param.put("userPhone", userPhone);
+        param.put("code", code);
         Integer agentId = userinfoMapper.queryUserCode(Long.valueOf(code));
-        Agent agent = new Agent();
-        agent.setUserId(data.getId().intValue());
-        agent.setAgentId(agentId);
-        agentDao.insert(agent);
-        return WeikeResponseUtil.success("注册成功");
+        if (agentId==null){
+            return WeikeResponseUtil.fail("1000449", "邀请的用户不存在 请重试");
+        }
+        param.put("agentId", agentId);
+        Boolean invitation = userApiService.invitation(param);
+        if (invitation) {
+            return WeikeResponseUtil.success();
+        }
+        return WeikeResponseUtil.fail("1000699", "创建用户失败 请重试");
+
     }
 
     //每日爆款
@@ -232,6 +285,7 @@ public class OtherController {
         return WeikeResponseUtil.success(data);
     }
 
+    //朋友圈图片
     @PostMapping("/friend")
     public WeikeResponse friend(PageParam pageParam) {
         //查询列表数据
@@ -239,11 +293,27 @@ public class OtherController {
         if (redisUtil.hasKey(key)) {
             return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
+        JSONObject map = new JSONObject();
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        JSONObject data = sysFriendDtoService.queryList(param);
-        redisUtil.set(key, data.toJSONString());
+
+        JSONArray data = null;
+        Integer count=0;
+        try {
+            data = friendDtoService.queryListFriend(param);
+            count = sysFriendDtoMapper.count();
+
+        } catch (Exception e) {
+            map.put("list", null);
+            map.put("count", 0);
+            otherService.updateFrientGoods();
+            e.printStackTrace();
+            return WeikeResponseUtil.fail("123323","请稍后重试");
+        }
+        map.put("list", data);
+        map.put("count", count);
+        redisUtil.set(key, map.toJSONString());
         redisUtil.expire(key, 50, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(data);
+        return WeikeResponseUtil.success(map);
     }
 
     /**
@@ -266,21 +336,15 @@ public class OtherController {
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
+        int expire = 15;
         redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, 5, TimeUnit.SECONDS);
+        redisUtil.expire(key, expire, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);
     }
 
-    /**
-     * 首页轮播图
-     */
-    @GetMapping("/banner")
-    public WeikeResponse banner() {
-        List<String> data = settingDao.queryBanner();
-        return WeikeResponseUtil.success(data);
-    }
 
     /**
+     * 对外接口
      * show
      */
     @GetMapping("/show/{name}")
@@ -296,6 +360,7 @@ public class OtherController {
     }
 
     /**
+     * 对外接口
      * money
      */
     @GetMapping("/money/{name}")

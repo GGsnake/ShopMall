@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.utils.PageParam;
 import jd.union.open.goods.query.request.GoodsReq;
 
 /**
@@ -13,7 +14,7 @@ public interface JdApiService {
      * @param materialId
      * @return
      */
-    JSONObject convertJd(String pid, String materialId);
+    JSONObject convertJd(String pid, String materialId,String coupon);
 
 
     /**
@@ -23,6 +24,20 @@ public interface JdApiService {
      * @return
      */
     JSONObject serachGoodsAllJd(GoodsReq goodsReq, Long uid);
+    /**
+     * 京东搜索引擎
+     * @param
+     * @param uid
+     * @return
+     */
+    JSONObject goodLocal(PageParam pageParam, Long uid, Integer status);
+    /**
+     * 京东搜索引擎
+     * @param
+     * @param uid
+     * @return
+     */
+    JSONObject goodLocal(PageParam pageParam, Long uid, Integer status,Integer cid);
 
     /** 京东商品详情
      * 商品ID

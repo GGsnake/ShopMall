@@ -10,19 +10,21 @@ import com.superman.superman.utils.PageParam;
  * @date 2019-01-04 20:47:50
  */
 public interface SysDaygoodsService {
-	
-	SysDaygoods queryObject(Integer id);
-	
+	/**
+	 * 查询每日爆款
+	 * @param pageParam
+	 * @return
+	 */
 	JSONObject queryList(PageParam pageParam);
-	
-	int queryTotal();
-	
-	void save(SysDaygoods daygoods);
-	
+	/**
+	 * 更新
+	 * @param daygoods
+	 */
 	void update(SysDaygoods daygoods);
-	
+	/**
+	 * 删除
+	 * @param id
+	 */
 	void delete(Integer id);
-	
-	void deleteBatch(Integer[] ids);
 
 }

@@ -1,19 +1,18 @@
 package com.superman.superman.service.impl;
-
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.ScoreDao;
+import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.service.ScoreService;
-import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
-import com.superman.superman.utils.WeikeResponseUtil;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,8 @@ import java.util.Date;
 public class ScoreServiceImpl implements ScoreService {
     @Autowired
     private ScoreDao scoreDao;
+    @Autowired
+    private ConfigQueryManager configQueryManager;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -35,15 +36,6 @@ public class ScoreServiceImpl implements ScoreService {
     private String read_key;
     @Value("${juanhuang.sign}")
     private String sign_key;
-    @Value("${juanhuang.signscore}")
-    private Integer signscore;
-
-    @Value("${juanhuang.sharescore}")
-    private Integer sharescore;
-
-    @Value("${juanhuang.lookscore}")
-    private Integer lookscore;
-
     //查询今天是否已经领取 过每日浏览积分
     public Boolean isExitSign(ScoreBean scoreBean) {
         ScoreBean exit = scoreDao.isExit(scoreBean);
@@ -89,6 +81,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     @Override
+    @Async
     public String recordBrowse(String uid, Long goodId) {
         SetOperations setOperations = redisTemplate.opsForSet();
         String kv = read_key + uid + EveryUtils.getToday();
@@ -100,13 +93,14 @@ public class ScoreServiceImpl implements ScoreService {
                 scoreBean.setUserId(Long.valueOf(uid));
                 scoreBean.setScoreType(1);
                 scoreBean.setDay(EveryUtils.getNowday());
-                scoreBean.setScore(lookscore.longValue());
+                String lookScore = configQueryManager.queryForKey("LookScore");
+                scoreBean.setScore(Long.valueOf(lookScore));
                 ScoreBean flag = scoreDao.isExit(scoreBean);
                 if (flag == null) {
                     Userinfo user = new Userinfo();
                     scoreDao.addScore(scoreBean);
                     user.setId(Long.valueOf(uid));
-                    user.setUserscore(lookscore);
+                    user.setUserscore(Integer.valueOf(lookScore));
                     scoreDao.updateUserScore(user);
                 }
                 return null;
@@ -156,6 +150,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     public Boolean isSign(Long id) {
+        Integer signscore= Integer.valueOf(configQueryManager.queryForKey("SignScore"));
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(3);
         scoreBean.setUserId(id);
@@ -180,12 +175,14 @@ public class ScoreServiceImpl implements ScoreService {
     //判断今日是否分享
     @Override
     public Boolean isShare(Long uid) {
+        String shareScore = configQueryManager.queryForKey("ShareScore");
+
         ScoreBean scoreBean = new ScoreBean();
         scoreBean.setDataSrc(4);
         scoreBean.setUserId(uid);
         scoreBean.setScoreType(1);
         scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(sharescore.longValue());
+        scoreBean.setScore(Long.valueOf(shareScore));
         ScoreBean flag = scoreDao.isExit(scoreBean);
         if (flag != null) {
             return true;

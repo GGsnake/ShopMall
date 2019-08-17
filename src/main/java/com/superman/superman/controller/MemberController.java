@@ -16,9 +16,6 @@ import com.superman.superman.service.MoneyService;
 import com.superman.superman.service.PddApiService;
 import com.superman.superman.service.UserApiService;
 import com.superman.superman.utils.*;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import me.hao0.wepay.core.Wepay;
 import me.hao0.wepay.core.WepayBuilder;
@@ -44,15 +41,12 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/member")
 public class MemberController {
-
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
     private AgentDao agentDao;
-    //    @Autowired
-//    PddApiService pddApiService;
     @Autowired
     MemberService memberService;
     @Autowired
@@ -61,13 +55,6 @@ public class MemberController {
     MoneyService moneyService;
     @Autowired
     SysAdviceDao sysAdviceDao;
-    @Value("${domain.codeurl}")
-    private String URL;
-
-    @ApiOperation(value = "我的个人页面")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "Token", required = true, dataType = "String", paramType = "/me"),
-    })
     @LoginRequired
     @PostMapping("/me")
     public WeikeResponse myIndex(HttpServletRequest request) {
@@ -166,6 +153,7 @@ public class MemberController {
         }
         ApplyCash applyCash = new ApplyCash();
         applyCash.setUserid(user.getId().intValue());
+        applyCash.setRoleid(user.getRoleId());
         applyCash.setMoney(money);
         applyCash.setAccount(account);
         applyCash.setName(name);
@@ -191,7 +179,11 @@ public class MemberController {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
-        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(Integer.valueOf(uid), param.getStartRow(), pageParam.getPageSize());
+        Map<String,Object> map=new HashMap<>();
+        map.put("offset",param.getStartRow());
+        map.put("limit",param.getPageSize());
+        map.put("uid",uid);
+        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(map);
         return WeikeResponseUtil.success(temp);
     }
 
@@ -225,7 +217,7 @@ public class MemberController {
         redisUtil.set(key, var.toJSONString());
         redisUtil.expire(key, 20, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(var);
-    }   //
+    }
 
     /**
      * 升级代理接口
@@ -246,7 +238,7 @@ public class MemberController {
             return WeikeResponseUtil.fail(ResponseCode.INT_CUSY);
         }
         Boolean var = userApiService.upAgent(id, Integer.valueOf(uid), score);
-        if (var == false) {
+        if (!var) {
             return WeikeResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
         }
         return WeikeResponseUtil.success(var);

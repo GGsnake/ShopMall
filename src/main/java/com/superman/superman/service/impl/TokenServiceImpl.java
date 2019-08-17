@@ -1,5 +1,6 @@
 package com.superman.superman.service.impl;
 
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.model.TokenModel;
 import com.superman.superman.service.TokenService;
 import com.superman.superman.utils.Constants;
@@ -41,7 +42,6 @@ public class TokenServiceImpl implements TokenService {
         redis.boundValueOps(userId).set(token, Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
         return model;
     }
-
     public boolean checkToken(TokenModel model) {
         if (model == null) {
             return false;

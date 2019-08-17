@@ -2,60 +2,58 @@ package com.superman.superman.dao;
 
 import com.superman.superman.dto.SysJhProblem;
 import com.superman.superman.dto.SysJhVideoTutorial;
-import com.superman.superman.model.ApplyCash;
-import com.superman.superman.model.SysAdvice;
-import com.superman.superman.model.SysJhAdviceDev;
-import com.superman.superman.model.SysJhAdviceOder;
+import com.superman.superman.model.*;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SysAdviceDao extends BaseDao<SysAdvice> {
-
 
     /**
      * 新增提现申请
      * @param applyCash
      * @return
      */
-    @Insert("insert into jh_cash_apply (`userId`, `money`,  `audit`,  `createtime` )value(#{userid},#{money}, 0,now()) ")
+    @Insert("insert into jh_cash_apply (`userId`, `money`,  `audit`,  `createtime`,  `roleid` )value(#{userid},#{money}, 0,now(),#{roleid}) ")
     Integer applyCash(ApplyCash applyCash);
 
 
     /**
      * 查询提现申请记录
      *
-     * @param uid
-     * @param offset
-     * @param limit
      * @return
      */
-    @Select("select id,userId,money,audit,createTime from jh_cash_apply  where userId=#{uid} limit #{offset}, #{limit} ")
-    List<ApplyCash> queryApplyCash(@Param("uid") Integer uid, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    @Select("select *  from jh_cash_apply  where userId=#{uid} limit #{offset}, #{limit} ")
+    List<ApplyCash> queryApplyCash(Map<String,Object> map);
 
     /**
      * 查询官方通知
      *
-     * @param offset
-     * @param limit
      * @return
      */
     @Select("select * from jh_advice_dev limit #{offset}, #{limit} ")
-    List<SysJhAdviceDev> queryAdviceDev(@Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<SysJhAdviceDev> queryAdviceDev(Map<String,Object> map);
+
+    /**
+     * 轮播图
+     *
+     * @return
+     */
+    @Select("select * from jh_banner_good order by id limit 3")
+    List<BannerGoods> queryBannerGoods();
 
     /**
      * 查询常见问题
      *
-     * @param offset
-     * @param limit
      * @return
      */
     @Select("select * from jh_problem   limit #{offset}, #{limit} ")
-    List<SysJhProblem> querySysJhProblem(@Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<SysJhProblem> querySysJhProblem(Map<String,Object> map);
 
     /**
      * 查询视频教程

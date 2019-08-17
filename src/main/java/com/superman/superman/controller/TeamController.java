@@ -1,35 +1,25 @@
 package com.superman.superman.controller;
-
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.PayDao;
 import com.superman.superman.dao.UserinfoMapper;
-import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.MemberService;
 import com.superman.superman.utils.*;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
-
 /**
  * Created by liujupeng on 2018/11/29.
  */
 @RestController
 @RequestMapping("/team")
 public class TeamController {
-
-
     @Autowired
     private RedisUtil redisUtil;
     @Autowired

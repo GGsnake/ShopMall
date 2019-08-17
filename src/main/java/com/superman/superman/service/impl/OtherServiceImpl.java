@@ -8,9 +8,14 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.superman.superman.dao.SysAdviceDao;
-import com.superman.superman.model.SysJhAdviceDev;
+import com.superman.superman.annotation.FastCache;
+import com.superman.superman.dao.*;
+import com.superman.superman.dto.SysFriendDto;
+import com.superman.superman.manager.ConfigQueryManager;
+import com.superman.superman.model.*;
+import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.service.OtherService;
+import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
 import com.superman.superman.utils.net.HttpUtil;
 import com.superman.superman.utils.sign.MD5;
@@ -20,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -28,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/20.
@@ -37,17 +44,22 @@ import java.util.*;
 public class OtherServiceImpl implements OtherService {
     @Autowired
     private SysAdviceDao sysAdviceDao;
+    @Value("${domain.qnyurl}")
+    private String QINIUURL;
+    @Value("${server.port}")
+    private Integer port;
+    @Value("${domain.codeurl}")
+    private String QINIUURLLAST;
+    @Autowired
+    private ScoreDao scoreDao;
 
-    @Value("${weixin.wx-pay-url}")
-    private String pay_url;
-    @Value("${weixin.wx-pay-appid}")
-    private String pay_appid;
-    @Value("${weixin.wx-pay-partnerid}")
-    private String partner_id;
-    @Value("${weixin.wx-pay-notify-url}")
-    private String notify_url;
-    @Value("${juanhuang.logo}")
-    private String logo;
+    @Autowired
+    private ScoreService scoreService;
+    @Autowired
+    private UserinfoMapper userinfoMapper;
+    @Autowired
+    private ConfigQueryManager configQueryManager;
+
     @Override
     public ByteArrayOutputStream crateQRCode(String content) {
         if (!StringUtils.isEmpty(content)) {
@@ -85,36 +97,39 @@ public class OtherServiceImpl implements OtherService {
     }
 
     @Override
+
     public JSONArray queryAdviceForDev(PageParam pageParam) {
-        List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(pageParam.getStartRow(), pageParam.getPageSize());
-        JSONArray data=new JSONArray();
-        for (SysJhAdviceDev sy:sysJhAdviceDevs)
-        {
-            JSONObject var=new JSONObject();
-            var.put("title",sy.getTitile());
-            var.put("content",sy.getContent());
-            if (sy.getImage()==null){
-                var.put("image",logo);
+        Map<String, Object> map = new HashMap<>();
+        map.put("offset", pageParam.getStartRow());
+        map.put("limit", pageParam.getPageSize());
+        List<SysJhAdviceDev> sysJhAdviceDevs = sysAdviceDao.queryAdviceDev(map);
+        JSONArray data = new JSONArray();
+        String logo = configQueryManager.queryForKey("Logo");
+        for (SysJhAdviceDev sy : sysJhAdviceDevs) {
+            JSONObject var = new JSONObject();
+            var.put("title", sy.getTitile());
+            var.put("content", sy.getContent());
+            if (sy.getImage() == null) {
+                var.put("image", logo);
+            } else {
+                var.put("image", sy.getImage());
             }
-            else {
-                var.put("image",sy.getImage());
-            }
-            var.put("contentImage",sy.getContentImage());
-            var.put("createtime",sy.getCreatetime().getTime() / 1000);
+            var.put("contentImage", sy.getContentImage());
+            var.put("createtime", sy.getCreatetime().getTime() / 1000);
             data.add(var);
         }
         return data;
     }
 
     @Override
+    @FastCache(timeOut = 600)
     public String addQrCodeUrl(String data, String uid) {
         ByteArrayOutputStream stream = null;
         String codeImgUrl = null;
         try {
             stream = crateQRCode(data);
             codeImgUrl = EveryUtils.upload(stream.toByteArray(), "qrcode/" + uid + "/", ".png");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return null;
         }
@@ -123,19 +138,20 @@ public class OtherServiceImpl implements OtherService {
 
     /**
      * 生成分享APP邀请二维码的图片URL
+     *
      * @param data
      * @param uid
      * @return
      * @throws IOException
      */
+    @FastCache(timeOut = 60)
     public String addQrCodeUrlInv(String data, String uid) {
         ByteArrayOutputStream stream = null;
         String codeImgUrl = null;
         try {
             stream = crateQRCode(data);
             codeImgUrl = EveryUtils.upload(stream.toByteArray(), "invcode/" + uid + "/", ".png");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return null;
         }
@@ -144,22 +160,18 @@ public class OtherServiceImpl implements OtherService {
 
     @Override
     public JSONObject payMoney(String uid, String ip) {
-        //        微信支付商户号 1521764621
-//        应用APPID wxc7df701f4d4f1eab
-//        API秘钥：hzshop12345678912345678912345678
-        String url2 = pay_url;
-        //TODO
-        String appid = pay_appid;
-        String body = "升级成为运营商";
-        String partnerid = partner_id;
         String noncestr = Util.getRandomString(30);
-        String notifyurl = notify_url;
-        double money=2188;
+        String body = "升级成为运营商";
+        String url2 = configQueryManager.queryForKey("WxPayUrl");
+        String appid = configQueryManager.queryForKey("WxPayAppId");
+        String partnerid = configQueryManager.queryForKey("WxPartNerId");
+        String notifyurl = configQueryManager.queryForKey("WxPayNotifUrl");
+        Double money = Double.valueOf(configQueryManager.queryForKey("AgentMoney"));
+        String key = configQueryManager.queryForKey("WxApplyKey");
         int totalfee = (int) (100 * money);
         String attach = uid;//附加参数:用户id
         String tradetype = "APP";
         String prepayid;
-        String key = "hzshop12345678912345678912345678";
         // 时间戳
         Long times = System.currentTimeMillis();
         String outtradeno = "hj" + times + "" + attach;
@@ -176,7 +188,7 @@ public class OtherServiceImpl implements OtherService {
         parameters.put("spbill_create_ip", ip);//终端IP
         parameters.put("notify_url", notifyurl);//回调地址
         parameters.put("attach", attach);//附加参数
-        String sign = MD5Util.createSign("utf-8", parameters,key);
+        String sign = MD5Util.createSign("utf-8", parameters, key);
         String params = String.format("<xml>" + "<appid>%s</appid>"
                         + "<attach>%s</attach>"
                         + "<body>%s</body>" + "<mch_id>%s</mch_id>"
@@ -218,4 +230,60 @@ public class OtherServiceImpl implements OtherService {
         map.put("attach", attach);
         return map;
     }
+
+
+    @Autowired
+    private SysFriendDtoMapper sysFriendDtoMapper;
+
+    @Async
+    @Override
+    public void updateFrientGoods() {
+        //先获取到所有的id
+        List<SysFriendDto> sysFriendDtos = sysFriendDtoMapper.queryListFriend(0, 200);
+        sysFriendDtos.forEach(bean -> {
+            JSONObject jsonObject = new JSONObject();
+            List<Long> goodIdList = sysFriendDtoMapper.random();
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(goodIdList);
+            jsonObject.put("data", jsonArray);
+            String content = jsonObject.toJSONString();
+            sysFriendDtoMapper.updateRandom(bean.getId(), content);
+        });
+
+    }
+
+    @Override
+    public String builderInviteCodeUrl(Userinfo userinfo) {
+        Integer code = userinfoMapper.queryCodeId(userinfo.getId());
+        if (null == code) {
+            return null;
+        }
+        String shareScore = configQueryManager.queryForKey("ShareScore");
+        if (shareScore == null) {
+            return null;
+        }
+        ScoreBean scoreBean = new ScoreBean();
+        //积分类型 为 邀请
+        scoreBean.setDataSrc(4);
+        scoreBean.setUserId(userinfo.getId());
+        //积分收益为 收入
+        scoreBean.setScoreType(1);
+        scoreBean.setDay(EveryUtils.getNowday());
+        scoreBean.setScore(Long.valueOf(shareScore));
+        if (!scoreService.isShare(userinfo.getId())) {
+            scoreDao.addScore(scoreBean);
+            userinfo.setUserscore(Integer.valueOf(shareScore));
+            scoreDao.updateUserScore(userinfo);
+        }
+        String codeUrl = QINIUURL + addQrCodeUrlInv(QINIUURLLAST + ":" + port + "/user/index.html?code=" + code, userinfo.getId().toString());
+        return codeUrl;
+    }
+    //
+//    @Override
+//    @FastCache(timeOut = 18)
+//    public String querySetting(String no) {
+//        String config = configQueryManager.queryForKey(no);
+//        return config;
+//
+//    }
 }

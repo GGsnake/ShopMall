@@ -3,30 +3,23 @@ package com.superman.superman.manager;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.AgentDao;
 import com.superman.superman.dao.OderMapper;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.redis.RedisTemplateService;
-import com.superman.superman.redis.RedisUtil;
 import com.superman.superman.req.OderPdd;
 import com.superman.superman.service.OderService;
 import com.superman.superman.utils.ConvertUtils;
 import com.superman.superman.utils.PageParam;
-import lombok.NonNull;
-import lombok.var;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liujupeng on 2018/11/21.
@@ -42,6 +35,13 @@ public class OderManager {
     @Value("${juanhuang.range}")
     private Integer range;
 
+    /**
+     * 获取拼多多订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getPddOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
@@ -85,15 +85,22 @@ public class OderManager {
         }
         return null;
     }
-
+    /**
+     * 获取淘宝订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getTaobaoOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();
-        Long tbpid = userinfo.getTbpid();
+        String tbpid = userinfo.getRid();
+        JSONObject var ;
+
         if (roleId == 3) {
             return null;
         }
-        JSONObject var = null;
         if (roleId == 2) {
             var = oderService.queryTbOder(userinfo, status, pageParam);
             return var;
@@ -106,20 +113,21 @@ public class OderManager {
         }
         for (int i = 0; i < json.size(); i++) {
             JSONObject chid = (JSONObject) json.get(i);
-            if (chid.getLong("pid")==tbpid){
+            String pid = chid.getString("pid");
+            if (tbpid.equals(pid)) {
                 //获得原始佣金
-                Double promotionAmount = chid.getDouble("comssion") * 100d;
+                Double promotionAmount = chid.getDouble("comssion") ;
                 //平台抽成后的运营商佣金
-                Double money = (promotionAmount * range / 100) ;
+                Double money = (promotionAmount * range / 100);
                 chid.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
                 chid.remove("pid");
                 dataArray.add(chid);
                 continue;
             }
-            Integer score = agentDao.queryUserScoreTb(chid.getLong("pid"));
+            Integer score = agentDao.queryUserScoreTb(pid);
             Long sc = 100l - score;
             //获得原始佣金
-            Double promotionAmount = chid.getDouble("comssion") * 100d;
+            Double promotionAmount = chid.getDouble("comssion") ;
             //平台抽成后的运营商佣金
             Double money = (promotionAmount * range / 100) * sc / 100d;
             chid.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
@@ -129,7 +137,13 @@ public class OderManager {
         var.put("data", dataArray);
         return var;
     }
-
+    /**
+     * 获取京东订单
+     * @param uid
+     * @param status
+     * @param pageParam
+     * @return
+     */
     public JSONObject getJdOder(Long uid, List status, PageParam pageParam) {
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = userinfo.getRoleId();

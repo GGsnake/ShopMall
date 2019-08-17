@@ -1,17 +1,16 @@
 package com.superman.superman.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
 
-/**
+/** 代理表
  * Created by liujupeng on 2018/11/23.
  */
-@ToString
-@Setter
-@Getter
+@Data
 public class Agent {
     private Integer id;
     private Integer userId;

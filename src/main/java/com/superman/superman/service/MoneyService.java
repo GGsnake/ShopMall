@@ -16,7 +16,6 @@ public interface MoneyService {
      * @return
      */
     Long queryCashMoney(Integer status, Userinfo user);
-
     /**
      * 获取预估收入
      *
@@ -24,14 +23,6 @@ public interface MoneyService {
      * @return
      */
     Long queryCashMoney(Userinfo user);
-
-    /**
-     * 查询我的收益
-     *
-     * @param uid
-     * @return
-     */
-    JSONObject queryMyIncome(Long uid);
 
 
 

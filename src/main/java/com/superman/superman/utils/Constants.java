@@ -51,8 +51,19 @@ public class Constants {
      */
     public static final String INV_LOG="inv_log";
     /**
-     * 邀请记录
+     * 登录key
      */
     public static final String SMS_LOGIN="login:";
-
+    /**
+     * 淘宝授权请求地址
+     */
+    public static final String TAOBAO_OAUTH_TOKEN_URL="https://oauth.taobao.com/token";
+    /**
+     * APP官方域名
+     */
+    public static final String APP_URL="http://www.quanhuangmaoyi.com";
+    /**
+     * 喵有券渠道备案URL
+     */
+    public static final String MIAO_BAK_URL="https://open.21ds.cn/index/extapi/tbkrelationbeian?";
 }

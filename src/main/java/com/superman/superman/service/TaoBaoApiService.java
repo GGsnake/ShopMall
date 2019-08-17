@@ -1,6 +1,7 @@
 package com.superman.superman.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.superman.superman.req.OptReq;
 import com.superman.superman.utils.PageParam;
 import com.taobao.api.request.TbkDgMaterialOptionalRequest;
 import com.taobao.api.request.TbkDgOptimusMaterialRequest;
@@ -14,6 +15,7 @@ import java.util.List;
 public interface TaoBaoApiService {
     /**
      * 淘宝搜索引擎
+     *
      * @param request
      * @param uid
      * @return
@@ -21,21 +23,16 @@ public interface TaoBaoApiService {
     JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
 
     /**
-     * 本地淘宝搜索引擎
+     * 本地淘宝搜索引擎加强版
+     *
      * @return
      */
-    JSONObject goodLocal(PageParam pageParam,Long uid,Integer status);
+    JSONObject goodLocalSuperForOpt(JSONObject pageParam,Long uid, Integer status);
 
-    /**
-     * 淘宝搜索首页专用
-     * @param request
-     * @param req
-     * @return
-     */
-    JSONObject indexSearch(TbkDgMaterialOptionalRequest request, Long req);
 
     /**
      * 查询淘宝商品单个的缩略图
+     *
      * @param goodId
      * @return
      */
@@ -44,20 +41,20 @@ public interface TaoBaoApiService {
     /**
      * 生成淘口令推广链接
      *
-     * @param pid
+     * @param rid
      * @param good_id
      * @return
      */
-    JSONObject convertTaobao(Long pid, Long good_id);
+    JSONObject convertTaobao(String rid, Long good_id);
 
 
     /**
      * 解析淘口令
+     *
      * @param tkl
      * @return
      */
     JSONObject convertTaobaoTkl(String tkl);
-
 
 
     /**
@@ -67,10 +64,4 @@ public interface TaoBaoApiService {
      */
     JSONObject deatil(Long goodId);
 
-    /**
-     * 查询淘宝的店铺详情
-     *
-     * @return
-     */
-    JSONObject shopDeatil(Long shopId);
 }

@@ -9,7 +9,8 @@
       skuId,estimateFee,skuName,orderTime,orderId,positionId
   </sql>
     <sql id="Base_Column_Tb">
-    income_rate,pub_share_pre_fee,odercreate_time as odercreateTime,num_iid as numIid ,commission,item_title as itemTitle,trade_id as tradeId,adzone_id as adzoneId
+    income_rate,pub_share_pre_fee,odercreate_time as odercreateTime,num_iid as
+     numIid ,commission,item_title as itemTitle,trade_id as tradeId,relation_id,special_id
   </sql>
 
     <select id="queryPddPageSize" resultType="com.superman.superman.req.OderPdd">
@@ -38,11 +39,13 @@
             </foreach>
         </if>
     </select>
+
+
     <select id="queryTbPageSizeCount" resultType="java.lang.Integer">
         SELECT IFNULL(count(id),0)
         FROM tboder
-        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
-        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        WHERE relation_id in (Select rid from userinfo WHERE id in (select userId from agent where agentId=#{id}
+        and status=0) and status=0 union Select rid from userinfo WHERE id =#{id})
         <if test="tk_status!= null">
             and tk_status in
             <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
@@ -50,20 +53,25 @@
             </foreach>
         </if>
     </select>
+
     <select id="queryTbPageSize" resultType="com.superman.superman.model.Tboder">
         SELECT
         <include refid="Base_Column_Tb"/>
         FROM tboder
-        WHERE adzone_id in (Select tbPid from userinfo WHERE id in (select userId from agent where agentId=#{id}
-        and status=0) and status=0 union Select tbPid from userinfo WHERE id =#{id})
+        WHERE relation_id in
+        (SELECT rid FROM userinfo
+        WHERE id in (SELECT userId FROM agent WHERE agentId=#{id} and status=0) and status=0
+        UNION
+        SELECT rid FROM userinfo WHERE id =#{id})
         <if test="tk_status!= null">
-            and tk_status in
+            AND tk_status IN
             <foreach item="item" index="index" collection="tk_status" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        limit #{star},#{end}
+        LIMIT #{star},#{end}
     </select>
+
     <select id="queryJdPageSize" resultType="com.superman.superman.model.JdOder">
         SELECT
         <include refid="Base_Column_Jd"/>

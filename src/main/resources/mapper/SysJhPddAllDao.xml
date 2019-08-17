@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superman.superman.dao.SysJhPddAllDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.superman.superman.model.SysJhPddAll" id="jhPddAllMap">
+        <result property="id" column="id"/>
+        <result property="picturl" column="pictUrl"/>
+        <result property="shoptitle" column="shopTitle"/>
+        <result property="title" column="title"/>
+        <result property="commissionrate" column="commissionRate"/>
+        <result property="commission" column="commission"/>
+        <result property="coupon" column="coupon"/>
+        <result property="zkfinalprice" column="zkFinalPrice"/>
+        <result property="couponprice" column="couponPrice"/>
+        <result property="volume" column="volume"/>
+        <result property="numiid" column="numIid"/>
+        <result property="opt" column="opt"/>
+        <result property="cat" column="cat"/>
+        <result property="status" column="status"/>
+        <result property="createtime" column="createTime"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.superman.superman.model.SysJhPddAll">
+		select * from jh_pdd_all where id = #{value}
+	</select>
+	<select id="queryPageJd" resultMap="jhPddAllMap">
+		select * from jh_pdd_all
+		ORDER BY createTime desc limit #{start},#{end} ;
+	</select>
+	<!--<select id="countPdd" resultMap="jhPddAllMap">-->
+		<!--select * from jh_pdd_all-->
+	<!---->
+	<!--</select>-->
+	<select id="queryList" resultType="com.superman.superman.model.SysJhPddAll">
+		select * from jh_pdd_all
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from jh_pdd_all 
+	</select>
+	 
+	<insert id="save" parameterType="com.superman.superman.model.SysJhPddAll" useGeneratedKeys="true" keyProperty="id">
+		insert into jh_pdd_all
+		(
+			`pictUrl`, 
+			`shopTitle`, 
+			`title`, 
+			`commissionRate`, 
+			`commission`, 
+			`coupon`, 
+			`zkFinalPrice`, 
+			`couponPrice`, 
+			`volume`, 
+			`numIid`, 
+			`opt`, 
+			`cat`, 
+			`status`, 
+			`createTime`
+		)
+		values
+		(
+			#{picturl}, 
+			#{shoptitle}, 
+			#{title}, 
+			#{commissionrate}, 
+			#{commission}, 
+			#{coupon}, 
+			#{zkfinalprice}, 
+			#{couponprice}, 
+			#{volume}, 
+			#{numiid}, 
+			#{opt}, 
+			#{cat}, 
+			#{status}, 
+			#{createtime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.superman.superman.model.SysJhPddAll">
+		update jh_pdd_all 
+		<set>
+			<if test="picturl != null">`pictUrl` = #{picturl}, </if>
+			<if test="shoptitle != null">`shopTitle` = #{shoptitle}, </if>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="commissionrate != null">`commissionRate` = #{commissionrate}, </if>
+			<if test="commission != null">`commission` = #{commission}, </if>
+			<if test="coupon != null">`coupon` = #{coupon}, </if>
+			<if test="zkfinalprice != null">`zkFinalPrice` = #{zkfinalprice}, </if>
+			<if test="couponprice != null">`couponPrice` = #{couponprice}, </if>
+			<if test="volume != null">`volume` = #{volume}, </if>
+			<if test="numiid != null">`numIid` = #{numiid}, </if>
+			<if test="opt != null">`opt` = #{opt}, </if>
+			<if test="cat != null">`cat` = #{cat}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="createtime != null">`createTime` = #{createtime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from jh_pdd_all where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from jh_pdd_all where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

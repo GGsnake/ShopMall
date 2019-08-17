@@ -45,15 +45,9 @@ public class MemberServiceImpl implements MemberService {
     @Value("${juanhuang.range}")
     private Integer range;
 
-    /**
-     * 获取预估收入
-     *
-     * @param uid
-     * @return
-     */
+  
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
-        JSONObject myJson = new JSONObject();
         Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
         Integer roleId = user.getRoleId();
         String userphoto = user.getUserphoto();
@@ -61,19 +55,23 @@ public class MemberServiceImpl implements MemberService {
         //存储用户集合
         HashSet<Long> uidSet = new HashSet<>();
         uidSet.add(uid);
+
+        JSONObject myJson = new JSONObject();
         myJson.put("roleId", roleId);
         myJson.put("image", userphoto == null ? Constants.IMG_DEFAUT : userphoto);
         myJson.put("name", username == null ? Constants.USERNAME_DEFAUT : username);
         switch (roleId) {
             case 1:
-                //查询自己的订单预估收入
+                //先统计自己的订单预估收入
                 Long myMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(uidSet));
                 if (myMoney != 0) {
                     myMoney = myMoney * range / 100;
                 }
                 //查询自己直属粉丝的订单预估收入
                 Long AllMoney = moneyService.queryCashMoney(user);
-                myJson.put("myMoney", AllMoney + myMoney);
+                //合并直属粉丝和自己的总收入
+                long tempMoney = AllMoney + myMoney;
+                myJson.put("myMoney", tempMoney);
                 myJson.put("myTeamMoney", AllMoney);
                 //代理用户信息列表
                 ArrayList<Userinfo> agentIdList = new ArrayList<>(20);
@@ -112,11 +110,12 @@ public class MemberServiceImpl implements MemberService {
                 Long isMyMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(uidSet));
                 if (isMyMoney != 0) {
                     //代理的收入经过平台扣费后再根据代理的佣金比率进行计算
-                    isMyMoney = isMyMoney * (range / 100) * (score / 100);
+                    isMyMoney = isMyMoney * range / 100 * score / 100;
                 }
                 //查询自己的粉丝下级
                 List<Long> fansIdList = agentDao.queryForAgentIdNew(uid.intValue());
                 uidSet.addAll(fansIdList);
+                //团队人数
                 int teamCount = uidSet.size();
                 if (fansIdList == null || fansIdList.size() == 0) {
                     myJson.put("myMoney", isMyMoney);
@@ -127,7 +126,7 @@ public class MemberServiceImpl implements MemberService {
                     //粉丝贡献的预估收入
                     Long fansMoney = oderService.superQueryOderForUidListToEstimate(EveryUtils.setToList(uidSet));
                     if (fansMoney != 0) {
-                        fansMoney = fansMoney * (range / 100) * (score / 100);
+                        fansMoney = fansMoney * range / 100 * score / 100;
                     }
                     myJson.put("myMoney", isMyMoney + fansMoney);
                     myJson.put("myTeamMoney", fansMoney);
@@ -150,13 +149,7 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
-    /**
-     * 获取我的团队直属会员和直属代理
-     *
-     * @param userId
-     * @param pageParam 分页参数
-     * @return
-     */
+    
     @Override
     public JSONObject getMyTeam(Long userId, PageParam pageParam) {
         if (pageParam == null) {
@@ -224,13 +217,6 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
-    /**
-     * 总代的查找代理的会员下级
-     *
-     * @param userId
-     * @param pageParam
-     * @return
-     */
     @Override
     public JSONObject getMyNoFans(Long userId, PageParam pageParam) {
         JSONObject data = new JSONObject();
@@ -258,7 +244,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public JSONObject queryMemberDetail(Long userId, Integer myid) {
+    public JSONObject queryMemberDetail(Long userId, Integer myId) {
         JSONObject data = new JSONObject();
         Long todayTime = EveryUtils.getToday();
         Long todayEndTime = todayTime + 86400;
@@ -293,10 +279,10 @@ public class MemberServiceImpl implements MemberService {
 
 
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
-        Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myid));
+        Userinfo my = userinfoMapper.selectByPrimaryKey(Long.valueOf(myId));
         Integer myrole = my.getRoleId();
         Integer mySc = my.getScore();
-        double ranger=range / 100d;
+        double ranger = range / 100d;
 
         //判断是粉丝
         if (userinfo.getRoleId() == 3) {
@@ -308,7 +294,7 @@ public class MemberServiceImpl implements MemberService {
 
             }
             if (myrole == 2) {
-                todayMoneyCount = (var1.getMoney() *ranger) * (mySc / 100d);
+                todayMoneyCount = (var1.getMoney() * ranger) * (mySc / 100d);
             }
             todayCount = var1.getSums();
 
@@ -316,7 +302,7 @@ public class MemberServiceImpl implements MemberService {
             String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
             MemberDetail var2 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
             if (myrole == 1) {
-                yesDayMoneyCount = (var2.getMoney() *ranger);
+                yesDayMoneyCount = (var2.getMoney() * ranger);
             }
             if (myrole == 2) {
                 yesDayMoneyCount = (var2.getMoney() * ranger) * (mySc / 100d);
@@ -328,7 +314,7 @@ public class MemberServiceImpl implements MemberService {
             String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
             MemberDetail var3 = oderMapper.sumAllDevOderByOderCreateTimeForMb(userId.intValue(), tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
             if (myrole == 1) {
-                yesMonthMoneyvarCount = (var3.getMoney() *ranger);
+                yesMonthMoneyvarCount = (var3.getMoney() * ranger);
 
             }
             if (myrole == 2) {
@@ -466,7 +452,7 @@ public class MemberServiceImpl implements MemberService {
         Double settle4 = 0d;
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(userId);
         if (userinfo.getRoleId() == 3) {
-            data.put("oderSum",yesMonthCount);
+            data.put("oderSum", yesMonthCount);
             data.put("inCome", 0);
             data.put("today", 0);
             data.put("todayOder", todayCount);
@@ -501,7 +487,7 @@ public class MemberServiceImpl implements MemberService {
             todayCount = var1.getSums();
 
             MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
-            settle1 =  mb1.getMoney() * range / 100d * agentSc / 100d;
+            settle1 = mb1.getMoney() * range / 100d * agentSc / 100d;
 
             String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayTime), null);
             String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
@@ -570,15 +556,15 @@ public class MemberServiceImpl implements MemberService {
             String tbe = EveryUtils.timeStamp2Date(String.valueOf(todayEndTime), null);
             MemberDetail bossToday = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
             MemberDetail bossTodaymb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
-            Double  bossTodaymb1Settlex =  bossTodaymb1.getMoney() * range / 100d;
-            Double todayBossMoney = bossToday.getMoney() * range / 100d ;
+            Double bossTodaymb1Settlex = bossTodaymb1.getMoney() * range / 100d;
+            Double todayBossMoney = bossToday.getMoney() * range / 100d;
             Integer todayBossCount = bossToday.getSums();
             Long agentMoneyTemp = 0l;
             Double todayAgentCount = 0d;
-            Double settlex= 0d;
-            Double todayAgentMoney =0d;
+            Double settlex = 0d;
+            Double todayAgentMoney = 0d;
             for (Userinfo userio : agentIdList) {
-                Integer agentSc = 100-userio.getScore();
+                Integer agentSc = 100 - userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
                 uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
@@ -587,27 +573,27 @@ public class MemberServiceImpl implements MemberService {
                 }
                 MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist1, tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
                 todayAgentMoney += var1.getMoney() * range / 100d * agentSc / 100d;
-                todayAgentCount +=var1.getSums();
+                todayAgentCount += var1.getSums();
                 MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist1, tbs, tbe, todayTime, todayEndTime, todayTime * 1000, todayEndTime * 1000);
-                settlex +=  mb1.getMoney() * range / 100d * agentSc / 100d;
+                settlex += mb1.getMoney() * range / 100d * agentSc / 100d;
             }
-            todayMoneyCount=todayBossMoney.intValue()+todayAgentMoney;
-            todayCount=todayBossCount+todayAgentCount.intValue();
-            Double s1=bossTodaymb1Settlex+settlex;
+            todayMoneyCount = todayBossMoney.intValue() + todayAgentMoney;
+            todayCount = todayBossCount + todayAgentCount.intValue();
+            Double s1 = bossTodaymb1Settlex + settlex;
             //今日
             String tbs1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayTime), null);
             String tbe1 = EveryUtils.timeStamp2Date(String.valueOf(yesDayEndTime), null);
             MemberDetail bossToday2 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
             MemberDetail bossTodaymb2 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbe1, tbe, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
-            Double  bossTodaymb1Settlex2 =  bossTodaymb2.getMoney() * range / 100d;
-            Double todayBossMoney2 = bossToday2.getMoney() * range / 100d ;
+            Double bossTodaymb1Settlex2 = bossTodaymb2.getMoney() * range / 100d;
+            Double todayBossMoney2 = bossToday2.getMoney() * range / 100d;
             Integer todayBossCount2 = bossToday2.getSums();
             Long agentMoneyTemp2 = 0l;
             Double todayAgentCount2 = 0d;
-            Double settlex2= 0d;
-            Double todayAgentMoney2 =0d;
+            Double settlex2 = 0d;
+            Double todayAgentMoney2 = 0d;
             for (Userinfo userio : agentIdList) {
-                Integer agentSc = 100-userio.getScore();
+                Integer agentSc = 100 - userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
                 uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
@@ -616,28 +602,28 @@ public class MemberServiceImpl implements MemberService {
                 }
                 MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist1, tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
                 todayAgentMoney2 += var1.getMoney() * range / 100d * agentSc / 100d;
-                todayAgentCount2 +=var1.getSums();
+                todayAgentCount2 += var1.getSums();
                 MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist1, tbs1, tbe1, yesDayTime, yesDayEndTime, yesDayTime * 1000, yesDayEndTime * 1000);
-                settlex2 +=  mb1.getMoney() * range / 100d * agentSc / 100d;
+                settlex2 += mb1.getMoney() * range / 100d * agentSc / 100d;
             }
-            yesDayMoneyCount=todayBossMoney2.intValue()+todayAgentMoney2;
-            yesDayCount=todayBossCount2+todayAgentCount2.intValue();
-            Double s2=bossTodaymb1Settlex2+settlex2;
+            yesDayMoneyCount = todayBossMoney2.intValue() + todayAgentMoney2;
+            yesDayCount = todayBossCount2 + todayAgentCount2.intValue();
+            Double s2 = bossTodaymb1Settlex2 + settlex2;
 
             //今日
             String tbs2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorning), null);
             String tbe2 = EveryUtils.timeStamp2Date(String.valueOf(timesMonthmorningLast), null);
             MemberDetail bossToday3 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
             MemberDetail bossTodaymb3 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
-            Double  bossTodaymb1Settlex3 =  bossTodaymb3.getMoney() * range / 100d;
-            Double todayBossMoney3 = bossToday3.getMoney() * range / 100d ;
+            Double bossTodaymb1Settlex3 = bossTodaymb3.getMoney() * range / 100d;
+            Double todayBossMoney3 = bossToday3.getMoney() * range / 100d;
             Integer todayBossCount3 = bossToday3.getSums();
             Long agentMoneyTemp3 = 0l;
             Double todayAgentCount3 = 0d;
-            Double settlex3= 0d;
-            Double todayAgentMoney3 =0d;
+            Double settlex3 = 0d;
+            Double todayAgentMoney3 = 0d;
             for (Userinfo userio : agentIdList) {
-                Integer agentSc = 100-userio.getScore();
+                Integer agentSc = 100 - userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
                 uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
@@ -646,27 +632,27 @@ public class MemberServiceImpl implements MemberService {
                 }
                 MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist1, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
                 todayAgentMoney3 += var1.getMoney() * range / 100d * agentSc / 100d;
-                todayAgentCount3 +=var1.getSums();
+                todayAgentCount3 += var1.getSums();
                 MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist1, tbs2, tbe2, timesMonthmorning, timesMonthmorningLast, timesMonthmorning * 1000, timesMonthmorningLast * 1000);
-                settlex3 +=  mb1.getMoney() * range / 100d * agentSc / 100d;
+                settlex3 += mb1.getMoney() * range / 100d * agentSc / 100d;
             }
-            yesMonthMoneyvarCount=todayBossMoney3.intValue()+todayAgentMoney3;
-            yesMonthCount=todayBossCount3+todayAgentCount3.intValue();  //今日
-            Double s3=bossTodaymb1Settlex3+settlex3;
+            yesMonthMoneyvarCount = todayBossMoney3.intValue() + todayAgentMoney3;
+            yesMonthCount = todayBossCount3 + todayAgentCount3.intValue();  //今日
+            Double s3 = bossTodaymb1Settlex3 + settlex3;
 
             String tbs3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTime), null);
             String tbe3 = EveryUtils.timeStamp2Date(String.valueOf(lastMonthTimeEnd), null);
             MemberDetail bossToday4 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
             MemberDetail bossTodaymb4 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
-            Double  bossTodaymb1Settlex4 =  bossTodaymb4.getMoney() * range / 100d;
-            Double todayBossMoney4 = bossToday4.getMoney() * range / 100d ;
+            Double bossTodaymb1Settlex4 = bossTodaymb4.getMoney() * range / 100d;
+            Double todayBossMoney4 = bossToday4.getMoney() * range / 100d;
             Integer todayBossCount4 = bossToday4.getSums();
             Long agentMoneyTemp4 = 0l;
             Double todayAgentCount4 = 0d;
-            Double settlex4= 0d;
-            Double todayAgentMoney4 =0d;
+            Double settlex4 = 0d;
+            Double todayAgentMoney4 = 0d;
             for (Userinfo userio : agentIdList) {
-                Integer agentSc = 100-userio.getScore();
+                Integer agentSc = 100 - userio.getScore();
                 List<Long> uidlist1 = new ArrayList<>(10);
                 uidlist1.add(userio.getId());
                 List<Long> agents1 = agentDao.queryForAgentIdNew(userio.getId().intValue());
@@ -675,13 +661,13 @@ public class MemberServiceImpl implements MemberService {
                 }
                 MemberDetail var1 = oderMapper.sumAllDevOderByOderCreateTimeForAgent(uidlist1, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
                 todayAgentMoney4 += var1.getMoney() * range / 100d * agentSc / 100d;
-                todayAgentCount4 +=var1.getSums();
+                todayAgentCount4 += var1.getSums();
                 MemberDetail mb1 = oderMapper.sumAllDevOderByOderCreateTimeForAgentToSettle(uidlist1, tbs3, tbe3, lastMonthTime, lastMonthTimeEnd, lastMonthTime * 1000, lastMonthTimeEnd * 1000);
-                settlex3 +=  mb1.getMoney() * range / 100d * agentSc / 100d;
+                settlex3 += mb1.getMoney() * range / 100d * agentSc / 100d;
             }
-            yesLastMonthMoneyCount=todayBossMoney4.intValue()+todayAgentMoney4;
-            yesLastMonthCount=todayBossCount4+todayAgentCount4.intValue();
-            Double s4=bossTodaymb1Settlex4+settlex4;
+            yesLastMonthMoneyCount = todayBossMoney4.intValue() + todayAgentMoney4;
+            yesLastMonthCount = todayBossCount4 + todayAgentCount4.intValue();
+            Double s4 = bossTodaymb1Settlex4 + settlex4;
 
 //            //今日
 //            String tbs = EveryUtils.timeStamp2Date(String.valueOf(todayTime), null);
@@ -714,7 +700,7 @@ public class MemberServiceImpl implements MemberService {
 //            MemberDetail all = oderMapper.sumAllDevAllOder(uidlist);
 //            Double settle5 = (all.getMoney() * range / 100d) * (agentSc / 100d);
             Long myMoney = getMyMoney(userId).getLong("myMoney");
-            data.put("oderSum",yesMonthCount);
+            data.put("oderSum", yesMonthCount);
             data.put("inCome", myMoney);
             data.put("today", todayMoneyCount);
             data.put("todayOder", todayCount);
