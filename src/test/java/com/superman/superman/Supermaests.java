@@ -217,7 +217,7 @@
 //    }
 //
 //    @Autowired
-//    UserApiService userApiService;
+//    UserService userApiService;
 //
 //    @Test
 //    public void queryFinishMoney() {

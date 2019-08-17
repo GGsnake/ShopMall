@@ -5,6 +5,7 @@ import com.superman.superman.req.UpdateWxOpenId;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.model.TokenModel;
+import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.BindWxToUser;
 import com.superman.superman.req.UserRegiser;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 @CrossOrigin(origins = "*")
 @RestController
 public class UserController {
+
     @Autowired
     private TokenService tokenService;
     @Autowired
@@ -37,6 +39,52 @@ public class UserController {
     private LogService logService;
     @Autowired
     private UserinfoMapper userinfoMapper;
+
+
+    @LoginRequired
+    @PostMapping("/index")
+    public User redisIndex(HttpServletRequest request) {
+        request.getHeader("token");
+        return null;
+    }
+
+//    @PostMapping(value = "/createUser")
+//    public Result createUser(@RequestParam(value = "mobile") String mobile,
+//                             @RequestParam(value = "pwd") String pwd,
+////                             @RequestParam(value = "code") String code,
+//                             @RequestParam(value = "pid", required = false) String pid) {
+//
+//        Userinfo user = new Userinfo();
+//        user.setUserphone(mobile);
+//        user.setLoginpwd(pwd);
+//        user.set(code);
+//        Boolean flag = userServiceApi.createUserByPhone(user);
+//
+//        JSONObject jsonObject = SmsUtil.sendLoginSmsVcode("13692939345");
+//
+//        return Result.error("验证码错误");
+//    }
+
+//    @PostMapping("/login")
+//    public Object Login(HttpServletRequest request, @RequestBody String body) {
+//        JSONObject data = JSONObject.parseObject(body);
+//        String userName = data.getString("user_name");
+//        String passWord = data.getString("pass_word");
+//        Userinfo user = userServiceApi.queryUserByPhone(userName);
+//        if (user == null) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//        }
+//        //获取数据库中的密码，与输入的密码加密后比对
+//        if (!DigestUtils.md5DigestAsHex(passWord.getBytes()).equals(user.getLoginpwd())) {
+//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_PASSWORD_ERROR);
+//        }
+//        //异步上报登录记录
+//        logService.addUserLoginLog(user.getId(), request.getRemoteAddr());
+//        //生成一个token，保存用户登录状态
+//        TokenModel model = tokenService.createToken(String.valueOf(user.getId()));
+//        return WeikeResponseUtil.success(model);
+//    }
+
     /**
      * 通过手机号登录
      *
@@ -96,6 +144,48 @@ public class UserController {
     }
 
 
+
+//    /**
+//     * 通过wx登陆
+//     *
+//     * @param reqMap
+//     * @return
+//     */
+//    @PostMapping("/wxlogin")
+//    public Object LoginWX(@RequestBody Map<String, Object> reqMap) {
+//        String code = RequestUtil.getMapString(reqMap.get("wx_code").toString());
+//        //微信接口
+//        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + Constants.APPID +
+//                "&secret=" + Constants.SECRET + "&js_code=" + code + "&grant_type=authorization_code";
+//        //restTemplate请求微信的接口，获取微信的sessionId
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+//                null, String.class);
+//        if (responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK) {
+//            String response = responseEntity.getBody();
+//            /*
+//            //string转jsonObject,
+//            正常返回的JSON数据包{"openid": "OPENID","session_key": "SESSIONKEY"}
+//             */
+//            JSONObject responseObject = JSONObject.parseObject(response);
+//            String wxOpenId = responseObject.get("openid").toString();
+//            String sessionKey = responseObject.get("session_key").toString();
+//            User user = userServer.findUserByWxId(wxOpenId);
+//            //wxOpenId与id都不存在则创建一个新用户
+//            if (user == null) {
+//                UserDto userDto = userServer.autoRegisterUser(wxOpenId);
+//                //生成一个token，保存用户登录状态
+//                TokenModel model = tokenManager.createToken(userDto.getUser().getId());
+//                return ResultUtil.ok(model);
+//            }else {
+//                //生成一个token，保存用户登录状态
+//                TokenModel model = tokenManager.createToken(user.getId());
+//                return ResultUtil.ok(model);
+//            }
+//        }
+//        return ResultUtil.fail();
+//    }
+
     /**
      * 通过微信登陆
      *
@@ -119,6 +209,7 @@ public class UserController {
         //生成一个token，保存用户登录状态
         return WeikeResponseUtil.success(tokenService.createToken(userinfo.getId().toString()));
     }
+
 
     /**
      * 绑定微信
@@ -160,13 +251,6 @@ public class UserController {
         if (flag == 0) {
             return WeikeResponseUtil.fail("1000127", "绑定手机号失败");
         }
-        if (var.getRid()==null){
-            String redirect_uri = userServiceApi.relationBak(var);
-            JSONObject data = new JSONObject();
-            data.put("message", "请继续绑定淘宝渠道");
-            data.put("url",redirect_uri);
-            return WeikeResponseUtil.success(data);
-        }
         logService.addUserLoginLog(var.getId(), request.getRemoteAddr());
         //生成一个token，保存用户登录状态
         TokenModel model = tokenService.createToken(var.getId().toString());
@@ -192,8 +276,9 @@ public class UserController {
             return WeikeResponseUtil.fail("1000241", "短信发送间隔太快，请稍后");
         }
         int code = (int) ((Math.random() * 9 + 1) * 100000);
-        //自己写发送短信逻辑
 //        SmsSendResponse result = SmsSendDemo.getSms(phone, String.valueOf(code));
+        //自己写验证码逻辑
+
 //        if (result.getCode().equals("0")) {
 //            redisTemplate.opsForValue().set(vaild, code);
 //            redisTemplate.expire(vaild, 120, TimeUnit.SECONDS);
@@ -201,6 +286,5 @@ public class UserController {
 //        }
         return WeikeResponseUtil.fail("1000242", "短信商未知错误");
     }
-
 
 }
