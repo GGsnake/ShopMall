@@ -2,7 +2,6 @@ package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.pdd.pop.sdk.http.PopClient;
 import com.pdd.pop.sdk.http.PopHttpClient;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsDetailRequest;
 import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
@@ -95,7 +94,7 @@ public class PddApiServiceImpl implements PddApiService {
         String KEY = configQueryManager.queryForKey("PDDKEY");
         String SECRET = configQueryManager.queryForKey("PDDSECRET");
 
-        PopClient client = new PopHttpClient(KEY, SECRET);
+        PopHttpClient client = new PopHttpClient(KEY, SECRET);
         PddDdkGoodsDetailRequest request = new PddDdkGoodsDetailRequest();
         List gd = new ArrayList();
         gd.add(goodIdList);
@@ -140,7 +139,7 @@ public class PddApiServiceImpl implements PddApiService {
         String KEY = configQueryManager.queryForKey("PDDKEY");
         String SECRET = configQueryManager.queryForKey("PDDSECRET");
 
-        PopClient client = new PopHttpClient(KEY, SECRET);
+        PopHttpClient client = new PopHttpClient(KEY, SECRET);
 
         JSONArray dataArray = new JSONArray();
         JSONObject data = new JSONObject();
@@ -160,71 +159,71 @@ public class PddApiServiceImpl implements PddApiService {
                 return data;
             }
             JSONObject dataJson;
-
-            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
-            if (roleId == 1) {
-                for (int i = 0, len = goodsList.size(); i < len; i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    //佣金比率
-                    Long promotion_rate = item.getPromotionRate();
-                    //最小团购价
-                    Long min_group_price = item.getMinGroupPrice();
-                    //优惠券额度
-                    Long coupon_discount = item.getCouponDiscount();
-                    //券后价
-                    Long after = (min_group_price - coupon_discount);
-                    //佣金
-                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
-                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("shopName", item.getMallName());
-                    dataJson.put("zk_price", after);
-                    dataJson.put("agent", comssion.intValue());
-                    dataArray.add(dataJson);
-                }
-            }
-            if (roleId == 2) {
-                for (int i = 0; i < goodsList.size(); i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    //佣金比率
-                    Long promotion_rate = item.getPromotionRate();
-                    //最小团购价
-                    Long min_group_price = item.getMinGroupPrice();
-                    //优惠券额度
-                    Long coupon_discount = item.getCouponDiscount();
-                    //券后价
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    //佣金
-                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
-                    Double agent = comssion * score;
-                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("shopName", item.getMallName());
-                    dataJson.put("zk_price", after);
-                    dataJson.put("agent", agent.intValue());
-                    dataArray.add(dataJson);
-                }
-            }
-            if (roleId == 3) {
-                for (int i = 0; i < goodsList.size(); i++) {
-                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
-                    //最小团购价
-                    Long min_group_price = item.getMinGroupPrice();
-                    //优惠券额度
-                    Long coupon_discount = item.getCouponDiscount();
-                    //券后价
-                    Float after = Float.valueOf(min_group_price - coupon_discount);
-                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
-                    dataJson.put("zk_money", coupon_discount);
-                    dataJson.put("price", min_group_price);
-                    dataJson.put("zk_price", after);
-                    dataJson.put("shopName", item.getMallName());
-                    dataJson.put("agent", 0);
-                    dataArray.add(dataJson);
-                }
-            }
+//
+//            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
+//            if (roleId == 1) {
+//                for (int i = 0, len = goodsList.size(); i < len; i++) {
+//                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+//                    //佣金比率
+//                    Long promotion_rate = item.getPromotionRate();
+//                    //最小团购价
+//                    Long min_group_price = item.getMinGroupPrice();
+//                    //优惠券额度
+//                    Long coupon_discount = item.getCouponDiscount();
+//                    //券后价
+//                    Long after = (min_group_price - coupon_discount);
+//                    //佣金
+//                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
+//                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
+//                    dataJson.put("zk_money", coupon_discount);
+//                    dataJson.put("price", min_group_price);
+//                    dataJson.put("shopName", item.getMallName());
+//                    dataJson.put("zk_price", after);
+//                    dataJson.put("agent", comssion.intValue());
+//                    dataArray.add(dataJson);
+//                }
+//            }
+//            if (roleId == 2) {
+//                for (int i = 0; i < goodsList.size(); i++) {
+//                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+//                    //佣金比率
+//                    Long promotion_rate = item.getPromotionRate();
+//                    //最小团购价
+//                    Long min_group_price = item.getMinGroupPrice();
+//                    //优惠券额度
+//                    Long coupon_discount = item.getCouponDiscount();
+//                    //券后价
+//                    Float after = Float.valueOf(min_group_price - coupon_discount);
+//                    //佣金
+//                    Float comssion = Float.valueOf(after * promotion_rate / 1000);
+//                    Double agent = comssion * score;
+//                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
+//                    dataJson.put("zk_money", coupon_discount);
+//                    dataJson.put("price", min_group_price);
+//                    dataJson.put("shopName", item.getMallName());
+//                    dataJson.put("zk_price", after);
+//                    dataJson.put("agent", agent.intValue());
+//                    dataArray.add(dataJson);
+//                }
+//            }
+//            if (roleId == 3) {
+//                for (int i = 0; i < goodsList.size(); i++) {
+//                    PddDdkGoodsSearchResponse.GoodsListItem item = goodsList.get(i);
+//                    //最小团购价
+//                    Long min_group_price = item.getMinGroupPrice();
+//                    //优惠券额度
+//                    Long coupon_discount = item.getCouponDiscount();
+//                    //券后价
+//                    Float after = Float.valueOf(min_group_price - coupon_discount);
+//                    dataJson = ConvertUtils.convertPddSearchForSdk(item);
+//                    dataJson.put("zk_money", coupon_discount);
+//                    dataJson.put("price", min_group_price);
+//                    dataJson.put("zk_price", after);
+//                    dataJson.put("shopName", item.getMallName());
+//                    dataJson.put("agent", 0);
+//                    dataArray.add(dataJson);
+//                }
+//            }
             data.put("data", dataArray);
             data.put("count", totalCount);
             return data;

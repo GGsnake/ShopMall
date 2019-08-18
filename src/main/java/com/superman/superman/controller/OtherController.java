@@ -129,18 +129,18 @@ public class OtherController {
             }
             data.put("qrcode", QINIUURL + uland_url);
         }
-        if (devId == 2) {
-            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl, coupon);
-            if (data == null || data.getString("uland_url") == null) {
-                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-            }
-            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
-            if (uland_url == null) {
-                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-            }
-            data.put("qrcode", QINIUURL + uland_url);
-
-        }
+//        if (devId == 2) {
+//            data = jdApiService.convertJd(userinfo.getJdpid(), jdurl, coupon);
+//            if (data == null || data.getString("uland_url") == null) {
+//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            }
+//            uland_url = otherService.addQrCodeUrl(data.getString("uland_url"), uid);
+//            if (uland_url == null) {
+//                return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            }
+//            data.put("qrcode", QINIUURL + uland_url);
+//
+//        }
         redisUtil.set(key, data.toJSONString());
         redisUtil.expire(key, 200, TimeUnit.SECONDS);
         return WeikeResponseUtil.success(data);

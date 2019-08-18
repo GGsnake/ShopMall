@@ -3,8 +3,6 @@ package com.superman.superman.service;
 import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.req.OptReq;
 import com.superman.superman.utils.PageParam;
-import com.taobao.api.request.TbkDgMaterialOptionalRequest;
-import com.taobao.api.request.TbkDgOptimusMaterialRequest;
 
 import java.util.List;
 
@@ -20,7 +18,7 @@ public interface TaoBaoApiService {
      * @param uid
      * @return
      */
-    JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
+//    JSONObject serachGoodsAll(TbkDgMaterialOptionalRequest request, Long uid);
 
     /**
      * 本地淘宝搜索引擎加强版
