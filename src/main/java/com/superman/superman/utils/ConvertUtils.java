@@ -120,21 +120,21 @@ public class ConvertUtils {
         return var;
     }
 
-
-
-    public static JSONObject convertPddSearchForSdk(PddDdkGoodsSearchResponse.GoodsListItem o) {
-        JSONObject dataJson = new JSONObject();
-        if (o == null) {
-            return null;
-        }
-        dataJson.put("commissionRate", o.getPromotionRate());
-        dataJson.put("imgUrl", o.getGoodsImageUrl());
-        dataJson.put("volume", o.getSoldQuantity());
-        dataJson.put("goodName", o.getGoodsName());
-        dataJson.put("goodId", o.getGoodsId());
-        dataJson.put("istmall", "false");
-        return dataJson;
-    }
+//
+//
+//    public static JSONObject convertPddSearchForSdk(PddDdkGoodsSearchResponse.GoodsListItem o) {
+//        JSONObject dataJson = new JSONObject();
+//        if (o == null) {
+//            return null;
+//        }
+//        dataJson.put("commissionRate", o.getPromotionRate());
+//        dataJson.put("imgUrl", o.getGoodsImageUrl());
+//        dataJson.put("volume", o.getSoldQuantity());
+//        dataJson.put("goodName", o.getGoodsName());
+//        dataJson.put("goodId", o.getGoodsId());
+//        dataJson.put("istmall", "false");
+//        return dataJson;
+//    }
 
 
 }

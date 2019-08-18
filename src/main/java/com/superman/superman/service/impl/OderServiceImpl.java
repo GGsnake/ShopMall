@@ -9,7 +9,6 @@ import com.superman.superman.model.Oder;
 import com.superman.superman.model.Tboder;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.req.OderPdd;
-import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.OderService;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.ConvertUtils;
@@ -39,8 +38,8 @@ public class OderServiceImpl implements OderService {
     private OrderSuperDao orderSuperDao;
     @Autowired
     private TaoBaoApiService taoBaoApiService;
-    @Autowired
-    private JdApiService jdApiService;
+//    @Autowired
+//    private JdApiService jdApiService;
     @Value("${juanhuang.range}")
     private Integer range;
 
@@ -84,80 +83,85 @@ public class OderServiceImpl implements OderService {
         return null;
     }
 
+    @Override
+    public JSONObject queryJdOder(Userinfo userinfo, List status, PageParam pageParam) {
+        return null;
+    }
+
     @Autowired
     private ConfigQueryManager configQueryManager;
 
     @Override
-    public JSONObject queryJdOder(Userinfo userinfo, List status, PageParam pageParam) {
-        Long uid = userinfo.getId();
-        Integer roleId = userinfo.getRoleId();
-        Integer score = userinfo.getScore();
-        JSONObject data = new JSONObject();
-        Map hashMap = new HashMap();
-        hashMap.put("id", uid);
-        hashMap.put("jd", status);
-        switch (roleId) {
-            case 1:
-                List<JdOder> list = allDevOderMapper.queryJdPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
-                Integer count = allDevOderMapper.queryJdPageSizeCount(hashMap);
-                JSONArray jsonObjectList = new JSONArray();
-                for (int i = 0; i < list.size(); i++) {
-                    JSONObject tempData1 = new JSONObject();
-                    JSONObject jdurl = jdApiService.jdDetail(list.get(i).getSkuId());
-                    String url;
-                    if (jdurl != null) {
-                        JSONArray list2 = jdurl.getJSONArray("list");
-                        url = (String) list2.get(0);
-                    } else {
-                        url = configQueryManager.queryForKey("DetailImg");
-                    }
-                    tempData1.put("img", url);
-                    tempData1.put("title", list.get(i).getSkuName());
-                    tempData1.put("oderId", list.get(i).getOrderId());
-                    tempData1.put("time", list.get(i).getOrderTime() / 1000);
-                    tempData1.put("comssion", list.get(i).getEstimateFee());
-                    tempData1.put("pid", list.get(i).getPositionId());
-                    jsonObjectList.add(tempData1);
-                }
-                data.put("data", jsonObjectList);
-                data.put("count", count);
+//    public JSONObject queryJdOder(Userinfo userinfo, List status, PageParam pageParam) {
+//        Long uid = userinfo.getId();
+//        Integer roleId = userinfo.getRoleId();
+//        Integer score = userinfo.getScore();
+//        JSONObject data = new JSONObject();
+//        Map hashMap = new HashMap();
+//        hashMap.put("id", uid);
+//        hashMap.put("jd", status);
+//        switch (roleId) {
+//            case 1:
+//                List<JdOder> list = allDevOderMapper.queryJdPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+//                Integer count = allDevOderMapper.queryJdPageSizeCount(hashMap);
+//                JSONArray jsonObjectList = new JSONArray();
+//                for (int i = 0; i < list.size(); i++) {
+//                    JSONObject tempData1 = new JSONObject();
+//                    JSONObject jdurl = jdApiService.jdDetail(list.get(i).getSkuId());
+//                    String url;
+//                    if (jdurl != null) {
+//                        JSONArray list2 = jdurl.getJSONArray("list");
+//                        url = (String) list2.get(0);
+//                    } else {
+//                        url = configQueryManager.queryForKey("DetailImg");
+//                    }
+//                    tempData1.put("img", url);
+//                    tempData1.put("title", list.get(i).getSkuName());
+//                    tempData1.put("oderId", list.get(i).getOrderId());
+//                    tempData1.put("time", list.get(i).getOrderTime() / 1000);
+//                    tempData1.put("comssion", list.get(i).getEstimateFee());
+//                    tempData1.put("pid", list.get(i).getPositionId());
+//                    jsonObjectList.add(tempData1);
+//                }
+//                data.put("data", jsonObjectList);
+//                data.put("count", count);
+//
+//                return data;
+//            case 2:
+//                List<JdOder> list1 = allDevOderMapper.queryJdPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
+//                Integer count1 = allDevOderMapper.queryJdPageSizeCount(hashMap);
+//                if (count1 != 0) {
+//                    JSONArray var23 = new JSONArray();
+//                    for (int i = 0; i < list1.size(); i++) {
+//                        JSONObject tempData1 = new JSONObject();
+//                        Double promotionAmount = list1.get(i).getEstimateFee() * 100 * range / 100d;
+//                        Double money = promotionAmount * score / 100d;
+//                        JSONObject jdurl = jdApiService.jdDetail(list1.get(i).getSkuId());
+//                        JSONArray list2 = jdurl.getJSONArray("list");
+//                        String url = (String) list2.get(0);
+//                        tempData1.put("img", url);
+//                        tempData1.put("title", list1.get(i).getSkuName());
+//                        tempData1.put("oderId", list1.get(i).getOrderId());
+//                        tempData1.put("time", list1.get(i).getOrderTime() / 1000);
+//                        tempData1.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
+//                        tempData1.put("pid", list1.get(i).getPositionId());
+//                        var23.add(tempData1);
+//                    }
+//                    data.put("data", var23);
+//                    data.put("count", count1);
+//                    return data;
+//                }
+//                data.put("data", null);
+//                data.put("count", 0);
+//                return data;
+//            case 3:
+//                break;
+//        }
+//
+//        return null;
+//    }
 
-                return data;
-            case 2:
-                List<JdOder> list1 = allDevOderMapper.queryJdPageSize(status, uid, pageParam.getStartRow(), pageParam.getPageSize());
-                Integer count1 = allDevOderMapper.queryJdPageSizeCount(hashMap);
-                if (count1 != 0) {
-                    JSONArray var23 = new JSONArray();
-                    for (int i = 0; i < list1.size(); i++) {
-                        JSONObject tempData1 = new JSONObject();
-                        Double promotionAmount = list1.get(i).getEstimateFee() * 100 * range / 100d;
-                        Double money = promotionAmount * score / 100d;
-                        JSONObject jdurl = jdApiService.jdDetail(list1.get(i).getSkuId());
-                        JSONArray list2 = jdurl.getJSONArray("list");
-                        String url = (String) list2.get(0);
-                        tempData1.put("img", url);
-                        tempData1.put("title", list1.get(i).getSkuName());
-                        tempData1.put("oderId", list1.get(i).getOrderId());
-                        tempData1.put("time", list1.get(i).getOrderTime() / 1000);
-                        tempData1.put("comssion", new BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-                        tempData1.put("pid", list1.get(i).getPositionId());
-                        var23.add(tempData1);
-                    }
-                    data.put("data", var23);
-                    data.put("count", count1);
-                    return data;
-                }
-                data.put("data", null);
-                data.put("count", 0);
-                return data;
-            case 3:
-                break;
-        }
-
-        return null;
-    }
-
-    @Override
+//    @Override
     public JSONObject queryTbOder(Userinfo userinfo, List status, PageParam pageParam) {
         Long uid = userinfo.getId();
         Integer roleId = userinfo.getRoleId();

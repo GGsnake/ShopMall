@@ -92,16 +92,7 @@
             <artifactId>core</artifactId>
             <version>3.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.jdcps</groupId>
-            <artifactId>jdcpsjar</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pdd</groupId>
-            <artifactId>pddsdk</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
         
         <dependency>
             <groupId>com.google.zxing</groupId>
@@ -153,10 +144,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-actuator</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-open</artifactId>
@@ -203,14 +190,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
-
         <dependency>
-            <groupId>com.taobaosdk</groupId>
-            <artifactId>taobaosdk</artifactId>
-            <version>1.0.0</version>
+            <groupId>com.pdd</groupId>
+            <artifactId>pddsdkd</artifactId>
+            <version>2.0.0</version>
         </dependency>
-
-
 
     </dependencies>
 
