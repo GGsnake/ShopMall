@@ -1,5 +1,6 @@
 package com.superman.superman.utils;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -13,7 +14,7 @@ public class PageParam implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -6712010429290414297L;
-
+	@NotNull
 	int pageNo;
 	
 	int pageSize;
