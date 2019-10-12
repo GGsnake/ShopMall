@@ -50,8 +50,6 @@ public class OtherController {
     @Value("${server.port}")
     private Integer port;
     @Autowired
-    private JdApiService jdApiService;
-    @Autowired
     private UserinfoMapper userinfoMapper;
     @Autowired
     private AdviceService adviceService;

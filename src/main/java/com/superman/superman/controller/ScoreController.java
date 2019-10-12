@@ -9,7 +9,6 @@ import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.ScoreBean;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
-import com.superman.superman.service.JdApiService;
 import com.superman.superman.service.OtherService;
 import com.superman.superman.service.ScoreService;
 import com.superman.superman.utils.*;
