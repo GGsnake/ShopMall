@@ -1,7 +1,9 @@
 package com.superman.superman.platform;
 
-import com.superman.superman.platform.dto.baseGoodSearchRequest;
-import com.superman.superman.platform.dto.BaseGoodSearchResponse;
+import com.superman.superman.model.enums.Platform;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 公用服务抽象
@@ -12,5 +14,18 @@ public interface CommonService {
      * @param baseGoodSearchRequest
      * @return
      */
-    BaseGoodSearchResponse <T>   searchGoods(T baseGoodSearchRequest );
+    void  searchGoods(Object baseGoodSearchRequest);
+    /**
+     * 执行授权操作
+     * @return
+     */
+    void authLogin(HttpServletRequest request, HttpServletResponse response);
+    /**
+     * 转链操作
+     * @return
+     */
+    void convertUrl(HttpServletRequest request, HttpServletResponse response);
+
+
+    Platform getPlatform();
 }
