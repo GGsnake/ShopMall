@@ -57,11 +57,15 @@ logging:
 
 
 server:
-  port: 8080
+  port: 8088
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.superman.superman.model
+mybatis-plus:
+  typeEnumsPackage: com.superman.superman.model.enums
+
+#
+#mybatis:
+#  mapper-locations: classpath:mapper/*.xml
+#  type-aliases-package: com.superman.superman.model
 
 juanhuang:
   range: 90
@@ -103,4 +107,3 @@ weixin:
   wx-key: "bbc1737d63e44e278dbffa9e96a7eca3"
   wx-secret: "5e1a03eb561bac0c63c5efc8c1472119fc3ad405"
   wx-access_token: "fd5d312adc6e4200bcf314cf943a287593ee3f07"
-

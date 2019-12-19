@@ -21,16 +21,16 @@ public class TaobaoController {
 
 //    @LoginRequired
 //    @GetMapping("/index")
-//    public WeikeResponse index(HttpServletRequest request, TbkDgMaterialOptionalRequest taoBaoSerachBean) {
+//    public Response index(HttpServletRequest request, TbkDgMaterialOptionalRequest taoBaoSerachBean) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        if (taoBaoSerachBean.getQ() == null) {
 //            taoBaoSerachBean.setQ("");
 //        }
 //        JSONObject data = taoBaoApiServicel.serachGoodsAll(taoBaoSerachBean, Long.valueOf(uid));
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
 //
 //    /**
@@ -41,14 +41,14 @@ public class TaobaoController {
 //     */
 //    @LoginRequired
 //    @GetMapping("/superTaoBao")
-//    public WeikeResponse superTaoBao(HttpServletRequest request, TbkDgMaterialOptionalRequest taoBaoSerachBean) {
+//    public Response superTaoBao(HttpServletRequest request, TbkDgMaterialOptionalRequest taoBaoSerachBean) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //
 //        JSONObject data = taoBaoApiServicel.serachGoodsAll(taoBaoSerachBean, Long.valueOf(uid));
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
     /**
      * 淘口令解析
@@ -59,14 +59,14 @@ public class TaobaoController {
      */
     @LoginRequired
     @GetMapping("/convertTb")
-    public WeikeResponse convertTKl(HttpServletRequest request, String tkl) {
+    public Response convertTKl(HttpServletRequest request, String tkl) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null || tkl == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         JSONObject data = taoBaoApiServicel.convertTaobaoTkl(tkl);
         Optional.ofNullable(data).orElseGet(JSONObject::new);
-        return WeikeResponseUtil.success(data);
+        return ResponseUtil.success(data);
 
     }
 

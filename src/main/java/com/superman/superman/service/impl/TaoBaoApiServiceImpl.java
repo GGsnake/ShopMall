@@ -7,6 +7,7 @@ import com.superman.superman.annotation.FastCache;
 import com.superman.superman.dao.SysJhTaobaoHotDao;
 import com.superman.superman.dao.UserinfoMapper;
 import com.superman.superman.manager.ConfigQueryManager;
+import com.superman.superman.model.BaseBean;
 import com.superman.superman.model.SysJhTaobaoAll;
 import com.superman.superman.model.Userinfo;
 import com.superman.superman.redis.RedisUtil;
@@ -206,6 +207,7 @@ public class TaoBaoApiServiceImpl implements TaoBaoApiService {
         if (count == 0) {
             return new JSONObject();
         }
+        BaseBean baseBean = new BaseBean();
         param.clear();
         JSONArray dataArray = new JSONArray();
         JSONObject data = param;

@@ -1,19 +1,20 @@
 package com.superman.superman.event;
 
-import com.superman.superman.req.UserRegiser;
+import com.superman.superman.dto.UserCreateReq;
+import com.superman.superman.model.User;
 import org.springframework.context.ApplicationEvent;
 
 public class CreateUserEvent extends ApplicationEvent {
     private static final long serialVersionUID = 4385004033026265719L;
 
-    private final UserRegiser regiser;
+    private final UserCreateReq user;
 
-    public CreateUserEvent(Object source, UserRegiser regiser) {
+    public CreateUserEvent(Object source, UserCreateReq user) {
         super(source);
-        this.regiser = regiser;
+        this.user = user;
     }
 
-    public UserRegiser getRegiser() {
-        return regiser;
+    public UserCreateReq getUser() {
+        return user;
     }
 }

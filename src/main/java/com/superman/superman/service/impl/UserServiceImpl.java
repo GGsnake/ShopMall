@@ -1,17 +1,21 @@
 package com.superman.superman.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.superman.superman.dao.*;
+import com.superman.superman.dto.UserCreateReq;
 import com.superman.superman.event.CreateUserEvent;
 import com.superman.superman.manager.ConfigQueryManager;
 import com.superman.superman.model.*;
-import com.superman.superman.req.UserRegiser;
+import com.superman.superman.model.enums.UserLevel;
 import com.superman.superman.service.UserService;
 import com.superman.superman.utils.Constants;
 import com.superman.superman.utils.EveryUtils;
+import com.superman.superman.utils.ShareCodeUtils;
 import com.superman.superman.utils.net.NetUtils;
-import lombok.NonNull;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -23,115 +27,84 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
- * Created by liujupeng on 2018/11/6.
+ * Created by snake on 2018/11/6.
  */
 @Log
 @Service("userServiceApi")
-public class UserServiceImpl implements UserService, ApplicationEventPublisherAware {
-    @Autowired
-    private AgentDao agentDao;
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService, ApplicationEventPublisherAware {
     @Autowired
     private HotUserMapper hotUserMapper;
-    @Autowired
-    private UserinfoMapper userinfoMapper;
-
     @Autowired
     private ConfigQueryManager configQueryManager;
 
     private ApplicationEventPublisher eventPublisher;
 
     @Override
-    public Userinfo queryUserByPhone(String userPhone) {
-        Objects.requireNonNull(userPhone);
-        Optional<Userinfo> info = userinfoMapper.selectByPhone(userPhone);
-        return info.get();
-    }
-
-    @Override
-    public Userinfo queryByUid(@NonNull Long uid) {
-        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(uid);
-        return userinfo;
-    }
-
-    /**
-     * 创建新用户
-     *
-     * @param regiser
-     * @return
-     */
-    @Override
     @Transactional
-    public Boolean createUser(UserRegiser regiser) {
-        Objects.requireNonNull(regiser);
-        Integer present = userinfoMapper.insert(regiser).get();
-        if (present == 0)
-            new RuntimeException("新增用户失败");
-        eventPublisher.publishEvent(new CreateUserEvent(this, regiser));
-        return true;
+    public void createUser(UserCreateReq req) {
+        existUserByPhone(req.getPhone()).ifPresent(ex -> {
+            throw new RuntimeException("手机号已被注册");
+        });
+        User user = new User();
+        user.setMobile(req.getPhone()).setUserlevel(UserLevel.LOW);
+        save(user);
+        eventPublisher.publishEvent(new CreateUserEvent(this, req));
     }
 
-    /**
-     * 邀请用户注册
-     *
-     * @param map
-     * @return
-     */
-    @Override
-    @Transactional
-    public Boolean invitation(Map<String, Object> map) {
-        String userPhone = String.valueOf(map.get("userPhone"));
-        String agentId = String.valueOf(map.get("agentId"));
-        UserRegiser userinfo = new UserRegiser();
-        userinfo.setUserphone(userPhone);
-        userinfo.setRoleId(3);
-        //创建用户(未关联微信)
-        if (createUser(userinfo)) {
-            //获取用户Id
-            userinfoMapper.selectByPhone(userPhone).ifPresent(usr -> {
-                usr.setPid(Integer.valueOf(agentId));
-                Integer update = Optional.ofNullable(userinfoMapper.updatePid(usr)).get();
-                if (update == 0) {
-                    throw new RuntimeException("关联用户失败");
-                }
-                Agent agent = new Agent();
-                agent.setUserId(usr.getId().intValue());
-                agent.setAgentId(Integer.valueOf(agentId));
-                //关联邀请关系
-                Optional<Integer> insert = agentDao.insert(agent);
-                if (insert.get() == 0) {
-                    throw new RuntimeException("关联用户失败");
-                }
-            });
-            return true;
-
-        }
-        throw new RuntimeException("创建新用户失败");
-    }
-
-    @Override
-    public Userinfo queryByWx(@NonNull String wx) {
-        Userinfo userinfo = userinfoMapper.queryUserWxOpenId(wx);
-        return userinfo;
-    }
-
-    @Override
-    public Userinfo queryUserInfo(Userinfo userinfo) {
-        Objects.requireNonNull(userinfo);
-        return userinfoMapper.queryUserInfoSingle(userinfo).get();
-    }
-
-    @Override
-    public void queryUserTree(Userinfo userinfo, StringBuilder tree) {
-        Optional<Userinfo> userinfo1 = userinfoMapper.queryUserInfoSingle(userinfo);
-        tree.insert(0, userinfo1.get().getId() + ",");
-        if (userinfo1.get().getPid() == null) {
+    @Async
+    @EventListener
+    public void handleCreateUserEvent(CreateUserEvent event) {
+        UserCreateReq req = event.getUser();
+        User user = existUserByPhone(req.getPhone()).orElse(null);
+        if (user == null) {
+            log.warning("用户不存在");
             return;
         }
-        Userinfo chid = new Userinfo();
-        chid.setId(userinfo1.get().getPid().longValue());
-        queryUserTree(chid, tree);
+        String invCode = ShareCodeUtils.idToCode(user.getUserId());
+        User existSuperUser = findSuperUserByCode(req.getInviteCode()).orElse(null);
+        int treeLevel = 1;
+        LinkedList<Long> userList=new LinkedList<>();
+        userList.add(user.getUserId());
+        if (existSuperUser != null) {
+            changeUserTree(existSuperUser.getUserId(), userList);
+            treeLevel =userList.size();
+            user.setInviterUser(existSuperUser.getUserId());
+            user.setSuperUser(existSuperUser.getUserId());
+            String tree = StringUtils.join(userList, ",");
+            user.setUserTree(tree);
+        }
+        user.setTreeLevel(treeLevel);
+        user.setInviterCode(invCode);
+        saveOrUpdate(user);
     }
 
+    private void changeUserTree(Long userId,LinkedList<Long> userList) {
+        combineUserLevel(userId, userList);
+        //TODO会员其他奖励逻辑
+    }
+
+
+    private void combineUserLevel(Long userId, LinkedList<Long> userList) {
+        User user =getById(userId);
+        if (user == null)
+            return;
+        userList.addFirst(userId);
+        combineUserLevel(user.getSuperUser(), userList);
+    }
+
+    @Override
+    public Optional<User> existUserByPhone(String phone) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("mobile", phone);
+        return Optional.ofNullable(getOne(queryWrapper));
+    }
+
+    @Override
+    public Optional<User> findSuperUserByCode(String code) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("inviter_code", code);
+        return Optional.ofNullable(getOne(queryWrapper));
+    }
 
     /**
      * 从pid池里取出pid
@@ -189,31 +162,9 @@ public class UserServiceImpl implements UserService, ApplicationEventPublisherAw
         return Constants.MIAO_BAK_URL + reqUrl;
 
     }
-
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.eventPublisher = applicationEventPublisher;
     }
 
-
-    @Async
-    @EventListener
-    public void handleCreateUserEvent(CreateUserEvent event) {
-        String userphone = event.getRegiser().getUserphone();
-        Objects.requireNonNull(userphone);
-        userinfoMapper.selectByPhone(userphone).ifPresent(tx -> {
-            userinfoMapper.insertCode(tx.getId());
-            return;
-        });
-        log.warning("用户创建邀请码表 失败 手机号===" + userphone);
-//        JSONObject data = (JSONObject) createPid();
-//        String pdd = data.getString("pdd");
-//        String jd = data.getString("jd");
-//        if (data == null || pdd == null || jd == null) {
-//            log.warning("警告PId不足" + EveryUtils.getNowday());
-//            throw new RuntimeException("新增用户失败原因 PID不足");
-//        }
-//        regiser.setPddpid(pdd);
-//        regiser.setJdpid(jd);
-    }
 }

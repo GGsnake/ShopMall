@@ -43,19 +43,19 @@
 //    SysAdviceDao sysAdviceDao;
 //    @LoginRequired
 //    @PostMapping("/me")
-//    public WeikeResponse myIndex(HttpServletRequest request) {
+//    public Response myIndex(HttpServletRequest request) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //        String key = "me:" + uid;
 //        if (redisUtil.hasKey(key)) {
-//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+//            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
 //        }
 //        JSONObject data = memberService.getMyMoney(Long.valueOf(uid));
 //        redisUtil.set(key, data.toJSONString());
 //        redisUtil.expire(key, 10, TimeUnit.SECONDS);
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
 //
 //    /**
@@ -65,20 +65,20 @@
 //     */
 //    @LoginRequired
 //    @PostMapping("/memberDetail")
-//    public WeikeResponse memberDetail(HttpServletRequest request) {
+//    public Response memberDetail(HttpServletRequest request) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //
 //        Long aLong = Long.valueOf(uid);
 //        Userinfo userinfo = userService.queryByUid(aLong);
 //        if (userinfo == null||userinfo.getRoleId()!=1) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //        String key = "memberDetail:" + uid;
 //        if (redisUtil.hasKey(key)) {
-//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+//            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
 //        }
 //        Integer under = agentDao.queryForUserIdCount(aLong);
 //        Integer sub = agentDao.countNoMyFansSum(aLong);
@@ -92,7 +92,7 @@
 //        data.put("joinTime", userinfo.getCreatetime());
 //        redisUtil.set(key, data.toJSONString());
 //        redisUtil.expire(key, 10, TimeUnit.SECONDS);
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
 //    /**
 //     * 个人佣金提现接口
@@ -102,10 +102,10 @@
 //     */
 //    @LoginRequired
 //    @PostMapping("/cash")
-//    public WeikeResponse getCash(HttpServletRequest request) {
+//    public Response getCash(HttpServletRequest request) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //        JSONObject data = new JSONObject();
 //        Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
@@ -114,7 +114,7 @@
 //        data.put("waitMoney", waitMoney);
 //        data.put("finishMoney", finishMoney);
 //        data.put("cash", user.getCash()*100);
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
 //
 //    /**
@@ -125,17 +125,17 @@
 //     */
 //    @LoginRequired
 //    @GetMapping("/apply")
-//    public WeikeResponse apply(HttpServletRequest request, Long money, String account, String name) {
+//    public Response apply(HttpServletRequest request, Long money, String account, String name) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null || money == null || account == null || name == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        if (money < 0 || money > 99999) {
-//            return WeikeResponseUtil.fail(ResponseCode.MONEY_MAX);
+//            return ResponseUtil.fail(ResponseCode.MONEY_MAX);
 //        }
 //        Userinfo user = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
 //        if (user == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //        ApplyCash applyCash = new ApplyCash();
 //        applyCash.setUserid(user.getId().intValue());
@@ -145,10 +145,10 @@
 //        applyCash.setName(name);
 //        Integer temp = sysAdviceDao.applyCash(applyCash);
 //        if (temp == 1) {
-//            return WeikeResponseUtil.success();
+//            return ResponseUtil.success();
 //        }
 //        log.warning("用户提现失败-UID=" + uid);
-//        return WeikeResponseUtil.fail("100063", "申请提现失败请重试");
+//        return ResponseUtil.fail("100063", "申请提现失败请重试");
 //    }
 //
 //    /**
@@ -159,10 +159,10 @@
 //     */
 //    @LoginRequired
 //    @GetMapping("/queryApply")
-//    public WeikeResponse queryApply(HttpServletRequest request, PageParam pageParam) {
+//    public Response queryApply(HttpServletRequest request, PageParam pageParam) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
 //        Map<String,Object> map=new HashMap<>();
@@ -170,7 +170,7 @@
 //        map.put("limit",param.getPageSize());
 //        map.put("uid",uid);
 //        List<ApplyCash> temp = sysAdviceDao.queryApplyCash(map);
-//        return WeikeResponseUtil.success(temp);
+//        return ResponseUtil.success(temp);
 //    }
 //
 //    /**
@@ -182,14 +182,14 @@
 //     */
 //    @LoginRequired
 //    @PostMapping("/child")
-//    public WeikeResponse getChild(HttpServletRequest request, Long id) {
+//    public Response getChild(HttpServletRequest request, Long id) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+//            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 //        }
 //        String key = "child:"+id.toString()+uid;
 //        if (redisUtil.hasKey(key)) {
-//            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+//            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
 //        }
 //        JSONObject var ;
 //
@@ -197,12 +197,12 @@
 //        Integer roleId = userinfo.getRoleId();
 //
 //        if (roleId == 3) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        var = memberService.queryMemberDetail(id, userinfo.getId().intValue());
 //        redisUtil.set(key, var.toJSONString());
 //        redisUtil.expire(key, 20, TimeUnit.SECONDS);
-//        return WeikeResponseUtil.success(var);
+//        return ResponseUtil.success(var);
 //    }
 //
 ////    /**
@@ -215,19 +215,19 @@
 ////     */
 ////    @LoginRequired
 ////    @PostMapping("/upAgent")
-////    public WeikeResponse upAgent(HttpServletRequest request, Integer id, Integer score) {
+////    public Response upAgent(HttpServletRequest request, Integer id, Integer score) {
 ////        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 ////        if (uid == null) {
-////            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+////            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
 ////        }
 ////        if (score < 0 || score > 100) {
-////            return WeikeResponseUtil.fail(ResponseCode.INT_CUSY);
+////            return ResponseUtil.fail(ResponseCode.INT_CUSY);
 ////        }
 ////        Boolean var = userService.upAgent(id, Integer.valueOf(uid), score);
 ////        if (!var) {
-////            return WeikeResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
+////            return ResponseUtil.fail(ResponseCode.COMMON_AUTHORITY_ERROR);
 ////        }
-////        return WeikeResponseUtil.success(var);
+////        return ResponseUtil.success(var);
 ////    }
 ////
 //

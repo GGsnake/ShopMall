@@ -1,18 +1,65 @@
 package com.superman.superman.model;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.superman.superman.model.enums.LogOperationEnum;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
- * Created by liujupeng on 2018/11/24.
+ * Created by sanke on 2018/11/24.
  */
-@Data
-public class UserLog extends BaseBean {
-    private Integer userId;
-    private Integer operation;
+@TableName
+public class UserLog  {
+    @TableId
+    private Long id;
+    private Long userId;
+    private LogOperationEnum operationEnum;
     private String ip;
+    public Instant createTime=Instant.now();
+
+    public Long getId() {
+        return id;
+    }
+
+    public UserLog setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public UserLog setUserId(Long userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public LogOperationEnum getOperationEnum() {
+        return operationEnum;
+    }
+
+    public UserLog setOperationEnum(LogOperationEnum operationEnum) {
+        this.operationEnum = operationEnum;
+        return this;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public UserLog setIp(String ip) {
+        this.ip = ip;
+        return this;
+    }
+
+    public Instant getCreateTime() {
+        return createTime;
+    }
+
+    public UserLog setCreateTime(Instant createTime) {
+        this.createTime = createTime;
+        return this;
+    }
 }

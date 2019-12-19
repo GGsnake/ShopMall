@@ -1,51 +1,34 @@
 package com.superman.superman.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.superman.superman.dto.UserCreateReq;
+import com.superman.superman.model.User;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.req.UserRegiser;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by liujupeng on 2018/11/6.
  */
-public interface UserService {
+public interface UserService  extends IService<User> {
     /**
      * 创建用户
-     * @param userinfo
+     * @param req
      * @return
      */
-    Boolean createUser(UserRegiser userinfo);
-    /**
-     * 创建用户
-     * @param userinfo
+    void createUser(UserCreateReq req);
+
+    /**用户是否存在
      * @return
      */
-    Userinfo queryUserByPhone(String userPhone);
+    Optional<User> existUserByPhone(String phone);
 
-    Userinfo queryByUid(Long uid);
 
-    Boolean invitation(Map<String, Object> map);
-
-    /**
-     * 根据
-     * @param wx
+    /**查找用户的直属上级
      * @return
      */
-    Userinfo queryByWx(String wx);
-    /**
-     *
-     * @param userinfo
-     * @return
-     */
-    Userinfo queryUserInfo(Userinfo userinfo);
-    /**
-     *
-     * @param userinfo
-     * @return
-     */
-    void queryUserTree(Userinfo userinfo,StringBuilder tree);
-
-
+    Optional<User> findSuperUserByCode(String code);
 
     /**
      * 为用户分配平台推广位接口

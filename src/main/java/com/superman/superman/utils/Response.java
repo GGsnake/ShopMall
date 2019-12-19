@@ -8,7 +8,7 @@ package com.superman.superman.utils;
  *
  * @param <T>
  */
-public class WeikeResponse<T> {
+public class Response<T> {
 	private boolean success;
 	private ResponseCode error;
 	private T data;

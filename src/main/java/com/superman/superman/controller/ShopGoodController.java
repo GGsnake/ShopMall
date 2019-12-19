@@ -33,20 +33,20 @@ public class ShopGoodController {
      */
     @LoginRequired
     @PostMapping("/Search")
-    public WeikeResponse Search(HttpServletRequest request,Mall mall,
-                                @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
-                                @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
-                                @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,
-                                @RequestParam(value = "jd_coupon", defaultValue = "0", required = false) Integer jd_coupon,
-                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
-                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
-                                @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort,
-                                @RequestParam(value = "jdsort", required = false, defaultValue = "inOrderCount30Days") String jdsort,
-                                @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder,
-                                String tbcat, Integer cid, Long opt) {
+    public Response Search(HttpServletRequest request, Mall mall,
+                           @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
+                           @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
+                           @RequestParam(value = "with_coupon", defaultValue = "0", required = false) Integer with_coupon,
+                           @RequestParam(value = "jd_coupon", defaultValue = "0", required = false) Integer jd_coupon,
+                           @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+                           @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                           @RequestParam(value = "tbsort", required = false, defaultValue = "total_sales_des") String tbsort,
+                           @RequestParam(value = "jdsort", required = false, defaultValue = "inOrderCount30Days") String jdsort,
+                           @RequestParam(value = "jdorder", required = false, defaultValue = "desc") String jdorder,
+                           String tbcat, Integer cid, Long opt) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null)
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 
         JSONObject data;
 
@@ -59,7 +59,7 @@ public class ShopGoodController {
             pddSerachBean.setOptId(opt);
             pddSerachBean.setSortType(sort);
             data = pddApiService.serachGoodsAll(pddSerachBean, Long.valueOf(uid));
-            return WeikeResponseUtil.success(data);
+            return ResponseUtil.success(data);
         }
 //        if (type == 1) {
 //            //淘宝搜索引擎
@@ -77,7 +77,7 @@ public class ShopGoodController {
 //                req.setQ(keyword);
 //            }
 //            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
-//            return WeikeResponseUtil.success(data);
+//            return ResponseUtil.success(data);
 //        }
 //        if (type == 2) {
 //            //京东搜索引擎
@@ -92,7 +92,7 @@ public class ShopGoodController {
 //            goodsReq.setPageSize(pageSize);
 //            goodsReq.setIsCoupon(jd_coupon);
 //            data = jdApiService.serachGoodsAllJd(goodsReq, Long.valueOf(uid));
-//            return WeikeResponseUtil.success(data);
+//            return ResponseUtil.success(data);
 //        }
 //        if (type == 3) {
 //            //天猫
@@ -111,7 +111,7 @@ public class ShopGoodController {
 //            }
 //            req.setQ(keyword);
 //            data = taoBaoApiService.serachGoodsAll(req, Long.valueOf(uid));
-//            return WeikeResponseUtil.success(data);
+//            return ResponseUtil.success(data);
 //        }
         return null;
     }
@@ -125,14 +125,14 @@ public class ShopGoodController {
 //     */
 //    @LoginRequired
 //    @PostMapping("/good")
-//    public WeikeResponse Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
+//    public Response Search(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0", required = false) Integer type,
 //                                @RequestParam(value = "sort", defaultValue = "0", required = false) Integer sort,
 //                                @RequestParam(value = "tbcat", defaultValue = "0", required = false) Integer cat,
 //                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
 //                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        PageParam param = new PageParam(pageNo, pageSize);
 //        JSONObject paramData = new JSONObject();
@@ -143,7 +143,7 @@ public class ShopGoodController {
 //            paramData.put("cat", cat);
 //        }
 //        JSONObject data = taoBaoApiService.goodLocalSuperForOpt(paramData, Long.valueOf(uid), 1);
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //    }
 //
 //    /**
@@ -155,18 +155,18 @@ public class ShopGoodController {
 //     */
 //    @LoginRequired
 //    @PostMapping("/jd")
-//    public WeikeResponse Search(HttpServletRequest request,
+//    public Response Search(HttpServletRequest request,
 //                                Integer cid,
 //                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
 //                                @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo
 //    ) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        PageParam pageParam = new PageParam(pageNo, pageSize);
 //        JSONObject data = jdApiService.goodLocal(pageParam, Long.valueOf(uid), 1, cid);
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //
 //    }
 //
@@ -179,16 +179,16 @@ public class ShopGoodController {
 //     */
 //    @LoginRequired
 //    @PostMapping("/pdd")
-//    public WeikeResponse pddSearch(HttpServletRequest request,
+//    public Response pddSearch(HttpServletRequest request,
 //                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
 //                                   @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo) {
 //        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
 //        if (uid == null) {
-//            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
 //        }
 //        PageParam pageParam = new PageParam(pageNo, pageSize);
 //        JSONObject data = pddApiService.getLocalGoodsAll(pageParam, Long.valueOf(uid));
-//        return WeikeResponseUtil.success(data);
+//        return ResponseUtil.success(data);
 //
 //    }
 
@@ -201,10 +201,10 @@ public class ShopGoodController {
      */
     @LoginRequired
     @GetMapping("/Detail")
-    public WeikeResponse Detail(HttpServletRequest request, Long goodId, Mall mall) {
+    public Response Detail(HttpServletRequest request, Long goodId, Mall mall) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
         JSONObject data = new JSONObject();
         if (mall == Mall.TAOBAO) {
@@ -216,7 +216,7 @@ public class ShopGoodController {
         if (mall == Mall.JD) {
 //            data = jdApiService.jdDetail(goodId);
         }
-        return WeikeResponseUtil.success(data);
+        return ResponseUtil.success(data);
     }
 
 

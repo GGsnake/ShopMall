@@ -51,22 +51,22 @@
     </select>
 
 
-    <insert id="insert" parameterType="com.superman.superman.req.UserRegiser">
-        insert into userinfo (id, userName, loginName,
-        loginPwd, loginSecret, userSex,
-        userScore, userPhoto, userStatus,
-        userTotalScore, jdPid, pddPid,
-        tbPid, wphPid, createTime
-        , userPhone,
-        wxOpenId,roleId,score)
-        values (#{id,jdbcType=BIGINT}, #{userphone,jdbcType=VARCHAR}, #{loginname,jdbcType=VARCHAR},
-        #{loginpwd,jdbcType=VARCHAR}, 0, 0,
-        0, #{userphoto,jdbcType=VARCHAR}, 0,
-       0, #{jdpid,jdbcType=VARCHAR}, #{pddpid,jdbcType=VARCHAR},
-        #{tbpid,jdbcType=VARCHAR}, #{wphpid,jdbcType=VARCHAR}, now(),
-        #{userphone,jdbcType=VARCHAR},
-        #{wxopenid,jdbcType=VARCHAR}, #{roleId},0)
-    </insert>
+    <!--<insert id="insert" parameterType="com.superman.superman.req.UserRegiser">-->
+        <!--insert into userinfo (id, userName, loginName,-->
+        <!--loginPwd, loginSecret, userSex,-->
+        <!--userScore, userPhoto, userStatus,-->
+        <!--userTotalScore, jdPid, pddPid,-->
+        <!--tbPid, wphPid, createTime-->
+        <!--, userPhone,-->
+        <!--wxOpenId,roleId,score)-->
+        <!--values (#{id,jdbcType=BIGINT}, #{userphone,jdbcType=VARCHAR}, #{loginname,jdbcType=VARCHAR},-->
+        <!--#{loginpwd,jdbcType=VARCHAR}, 0, 0,-->
+        <!--0, #{userphoto,jdbcType=VARCHAR}, 0,-->
+       <!--0, #{jdpid,jdbcType=VARCHAR}, #{pddpid,jdbcType=VARCHAR},-->
+        <!--#{tbpid,jdbcType=VARCHAR}, #{wphpid,jdbcType=VARCHAR}, now(),-->
+        <!--#{userphone,jdbcType=VARCHAR},-->
+        <!--#{wxopenid,jdbcType=VARCHAR}, #{roleId},0)-->
+    <!--</insert>-->
     <insert id="insertSelective" parameterType="com.superman.superman.model.Userinfo">
 
         insert into userinfo

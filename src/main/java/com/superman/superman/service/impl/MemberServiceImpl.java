@@ -44,7 +44,7 @@ public class MemberServiceImpl implements MemberService {
     @Value("${juanhuang.range}")
     private Integer range;
 
-  
+
     @Override
     public JSONObject getMyMoney(@NonNull Long uid) {
         Userinfo user = userinfoMapper.selectByPrimaryKey(uid);
@@ -148,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
-    
+
     @Override
     public JSONObject getMyTeam(Long userId, PageParam pageParam) {
         if (pageParam == null) {

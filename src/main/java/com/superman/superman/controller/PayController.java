@@ -39,14 +39,14 @@ public class PayController {
      */
     @LoginRequired
     @RequestMapping("/wechatOrderPay")
-    public WeikeResponse wechatOrderPay(HttpServletRequest request) throws IOException {
+    public Response wechatOrderPay(HttpServletRequest request) throws IOException {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid != null) {
             request.setCharacterEncoding("utf-8");
             JSONObject data = otherService.payMoney(uid, request.getRemoteAddr());
-            return WeikeResponseUtil.success(data);
+            return ResponseUtil.success(data);
         }
-        return WeikeResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+        return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
     }
 
 

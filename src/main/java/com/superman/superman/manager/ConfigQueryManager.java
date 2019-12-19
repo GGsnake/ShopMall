@@ -1,11 +1,8 @@
 package com.superman.superman.manager;
 
-import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.dao.SettingDao;
 import com.superman.superman.redis.RedisUtil;
-import com.superman.superman.utils.WeikeResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;

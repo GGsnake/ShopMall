@@ -36,21 +36,21 @@ public class TeamController {
      */
     @LoginRequired
     @PostMapping("/myTeam")
-    public WeikeResponse getMyTeam(HttpServletRequest request,PageParam pageParam) {
+    public Response getMyTeam(HttpServletRequest request, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
 
         String key = "myTeam:"+uid+ pageParam.getPageNo();
         if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
         PageParam var1 = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = memberService.getMyTeam(Long.valueOf(uid), var1);
         redisUtil.set(key,data.toJSONString());
         redisUtil.expire(key,6, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(data);
+        return ResponseUtil.success(data);
     }
 
 
@@ -62,20 +62,20 @@ public class TeamController {
      */
     @LoginRequired
     @PostMapping("/myFans")
-    public WeikeResponse getMyFansNoMe(HttpServletRequest request,PageParam pageParam) {
+    public Response getMyFansNoMe(HttpServletRequest request, PageParam pageParam) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         String key = "myFans:"+uid+ pageParam.getPageNo();
         if (redisUtil.hasKey(key)) {
-            return WeikeResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
+            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
         }
         PageParam var = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         JSONObject data = memberService.getMyNoFans(Long.valueOf(uid), var);
         redisUtil.set(key,data.toJSONString());
         redisUtil.expire(key,5, TimeUnit.SECONDS);
-        return WeikeResponseUtil.success(data);
+        return ResponseUtil.success(data);
     }
     /**
      * 查看我的手机号和邀请码
@@ -84,20 +84,20 @@ public class TeamController {
      */
     @LoginRequired
     @PostMapping("/message")
-    public WeikeResponse message(HttpServletRequest request) {
+    public Response message(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         Integer code = userinfoMapper.queryInvCodeId(Long.valueOf(uid));
         Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
         if (userinfo==null){
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         JSONObject data=new JSONObject();
         data.put("phone",userinfo.getUserphone());
         data.put("code",code);
-        return WeikeResponseUtil.success(data);
+        return ResponseUtil.success(data);
     }
 
     /**
@@ -107,16 +107,16 @@ public class TeamController {
      */
     @LoginRequired
     @PostMapping("/myRole")
-    public WeikeResponse queryRole(HttpServletRequest request) {
+    public Response queryRole(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         Integer myRole = userinfoMapper.queryMyRole(Integer.valueOf(uid));
         if (myRole==null){
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
-        return WeikeResponseUtil.success(myRole);
+        return ResponseUtil.success(myRole);
     }
     /**
      * 查看会员支付状态
@@ -125,19 +125,19 @@ public class TeamController {
      */
     @LoginRequired
     @PostMapping("/isPay")
-    public WeikeResponse isPay(HttpServletRequest request) {
+    public Response isPay(HttpServletRequest request) {
         String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
         if (uid == null) {
-            return WeikeResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
+            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         Integer accept = payDao.queryAccept(Integer.valueOf(uid));
         if (accept==null){
-            return WeikeResponseUtil.success(0);
+            return ResponseUtil.success(0);
         }
         if (accept==0){
-            return WeikeResponseUtil.success(1);
+            return ResponseUtil.success(1);
         }
-        return WeikeResponseUtil.success(2);
+        return ResponseUtil.success(2);
     }
 
 

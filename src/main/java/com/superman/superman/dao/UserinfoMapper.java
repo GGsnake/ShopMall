@@ -2,7 +2,6 @@ package com.superman.superman.dao;
 
 import com.superman.superman.req.UpdateWxOpenId;
 import com.superman.superman.model.Userinfo;
-import com.superman.superman.req.UserRegiser;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -10,14 +9,6 @@ import java.util.Optional;
 
 @Mapper
 public interface UserinfoMapper {
-    /**
-     * 创建新用户
-     *
-     * @param userRegiser
-     * @return
-     */
-    Optional<Integer> insert(UserRegiser userRegiser);
-
     /**
      * @param id
      * @return

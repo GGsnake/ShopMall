@@ -1,10 +1,11 @@
 package com.superman.superman.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.superman.superman.model.User;
 import com.superman.superman.model.UserLog;
 
 /**
- * Created by snake on 2018/11/24.
+ * Created by snake on 2019/12/18.
  */
-public interface LogDao extends BaseMapper<UserLog> {
+public interface UserMapper extends BaseMapper<User> {
 }
