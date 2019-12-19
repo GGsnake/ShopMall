@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by liujupeng on 2018/11/14.
+ * Created by snake on 2018/11/14.
  */
 @Log
 @RestController
@@ -31,18 +31,6 @@ public class ScoreController {
     private ConfigQueryManager configQueryManager;
     @Autowired
     RedisUtil redisUtil;
-    //浏览商品积分上报
-    @LoginRequired
-    @GetMapping("/upVis")
-    public Response upVis(Long goodId, HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid != null && goodId != null) {
-            scoreService.recordBrowse(uid, goodId);
-            return ResponseUtil.success();
-        }
-        return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-    }
-
     // 每日浏览商品 积分领取
     @LoginRequired
     @PostMapping("/dayScore")
