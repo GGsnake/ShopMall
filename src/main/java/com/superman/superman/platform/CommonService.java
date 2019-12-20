@@ -1,5 +1,6 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.model.User;
 import com.superman.superman.model.enums.Platform;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public interface CommonService {
      * 执行授权操作
      * @return
      */
-    void authLogin(HttpServletRequest request, HttpServletResponse response);
+    String authLogin(User user);
     /**
      * 转链操作
      * @return

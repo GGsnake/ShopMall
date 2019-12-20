@@ -1,5 +1,6 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.model.User;
 import com.superman.superman.service.OderService;
 import com.superman.superman.service.ScoreService;
 import org.slf4j.Logger;
@@ -27,6 +28,16 @@ abstract  class AbstractCommonService implements CommonService {
     protected final OderService getOderService() {
         return oderServiceObjectProvider.getIfAvailable();
     }
+    /**
+     * 获取积分服务
+     *
+     * @return
+     */
+    @Override
+    public String authLogin(User user) {
+        return "该平台暂时不支持授权操作";
+    }
+
     /**
      * 获取积分服务
      *

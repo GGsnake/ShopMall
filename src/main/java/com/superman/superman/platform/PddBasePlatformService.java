@@ -19,11 +19,6 @@ class PddBasePlatformService extends AbstractCommonService {
     }
 
     @Override
-    public void authLogin(HttpServletRequest request, HttpServletResponse response) {
-
-    }
-
-    @Override
     public void convertUrl(HttpServletRequest request, HttpServletResponse response) {
 
     }

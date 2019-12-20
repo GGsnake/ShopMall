@@ -1,5 +1,6 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.model.User;
 import com.superman.superman.model.enums.Platform;
 import com.superman.superman.platform.dto.PddGoodSearchRequest;
 import com.superman.superman.platform.dto.baseGoodSearchRequest;
@@ -22,10 +23,6 @@ class JdBasePlatformService extends AbstractCommonService {
 
     }
 
-    @Override
-    public void authLogin(HttpServletRequest request, HttpServletResponse response) {
-
-    }
 
     @Override
     public void convertUrl(HttpServletRequest request, HttpServletResponse response) {
