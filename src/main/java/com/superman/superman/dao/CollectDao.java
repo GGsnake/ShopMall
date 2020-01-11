@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * Created by liujupeng on 2018/11/20.
+ * Created by snake on 2018/11/20.
  */
 @Mapper
 public interface CollectDao {

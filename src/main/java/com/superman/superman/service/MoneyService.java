@@ -6,7 +6,7 @@ import com.superman.superman.model.Userinfo;
 import java.util.Map;
 
 /**
- * Created by liujupeng on 2018/12/13.
+ * Created by snake on 2018/12/13.
  */
 public interface MoneyService {
     /**

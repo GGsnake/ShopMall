@@ -5,7 +5,7 @@ import com.superman.superman.model.CollectBean;
 import com.superman.superman.utils.PageParam;
 
 /**
- * Created by liujupeng on 2018/11/20.
+ * Created by snake on 2018/11/20.
  */
 public interface CollectService  {
     /**

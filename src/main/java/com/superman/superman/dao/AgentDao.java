@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by liujupeng on 2018/11/23.
+ * Created by snake on 2018/11/23.
  */
 public interface AgentDao {
     @Select("SELECT * FROM agent WHERE userId = #{id} and status=0")

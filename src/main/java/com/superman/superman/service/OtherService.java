@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * Created by liujupeng on 2018/11/20.
+ * Created by snake on 2018/11/20.
  */
 public interface OtherService {
     /**

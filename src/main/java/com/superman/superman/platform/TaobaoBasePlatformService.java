@@ -1,5 +1,7 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.dto.GoodsSearchReq;
+import com.superman.superman.dto.GoodsSearchResponse;
 import com.superman.superman.model.enums.Platform;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 class TaobaoBasePlatformService extends AbstractCommonService {
 
     @Override
-    public void searchGoods(Object baseGoodSearchRequest) {
-
+    public GoodsSearchResponse searchGoods(GoodsSearchReq baseGoodSearchRequest) {
+        return null;
     }
 
 

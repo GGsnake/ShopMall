@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
+
 /**
- * Created by GGsnake on 2019-10-16.
+ * Created by snake on 2019-10-16.
  * 基础功能
  */
 abstract  class AbstractCommonService implements CommonService {
@@ -18,6 +20,8 @@ abstract  class AbstractCommonService implements CommonService {
     private ObjectProvider<OderService> oderServiceObjectProvider;
     @Autowired
     private ObjectProvider<ScoreService> scoreServiceObjectProvider;
+    @Autowired
+    private ObjectProvider<RestTemplate> restTemplate;
     @Autowired
     private Environment environment;
     /**
@@ -45,6 +49,15 @@ abstract  class AbstractCommonService implements CommonService {
      */
     protected final ScoreService getScoreService() {
         return scoreServiceObjectProvider.getIfAvailable();
+    }
+
+    /**
+     * 网络服务
+     *
+     * @return
+     */
+    protected final RestTemplate getRestTemplate() {
+        return restTemplate.getIfAvailable();
     }
 
 }

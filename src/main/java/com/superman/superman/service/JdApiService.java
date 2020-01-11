@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.utils.PageParam;
 
 /**
- * Created by liujupeng on 2018/11/14.
+ * Created by snake on 2018/11/14.
  */
 public interface JdApiService {
 //    /**

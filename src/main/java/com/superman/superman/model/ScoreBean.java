@@ -8,7 +8,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * Created by liujupeng on 2018/11/14.
+ * Created by snake on 2018/11/14.
  积分表
  */
 @Data

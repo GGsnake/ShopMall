@@ -8,7 +8,7 @@ import lombok.ToString;
 import java.util.Date;
 
 /**
- * Created by liujupeng on 2018/12/15.
+ * Created by snake on 2018/12/15.
  */
 @Data
 public class Collect {

@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Created by liujupeng on 2018/11/6.
+ * Created by snake on 2018/11/6.
  */
 @CrossOrigin(origins = "*")
 @RestController

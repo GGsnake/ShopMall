@@ -1,5 +1,7 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.dto.GoodsSearchReq;
+import com.superman.superman.dto.GoodsSearchResponse;
 import com.superman.superman.model.User;
 import com.superman.superman.model.enums.Platform;
 import com.superman.superman.platform.dto.PddGoodSearchRequest;
@@ -19,8 +21,8 @@ class JdBasePlatformService extends AbstractCommonService {
 
 
     @Override
-    public void searchGoods(Object baseGoodSearchRequest) {
-
+    public GoodsSearchResponse searchGoods(GoodsSearchReq req) {
+        return null;
     }
 
 

@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Created by liujupeng on 2018/11/14.
+ * Created by snake on 2018/11/14.
  */
 @Log
 @Service("ScoreService")
@@ -72,50 +72,6 @@ public class ScoreServiceImpl implements ScoreService {
         return var;
     }
 
-
-    /**
-     * 记录浏览商品次数
-     *
-     * @param uid
-     * @param goodId
-     * @return
-     */
-    @Override
-    @Async
-    public String recordBrowse(String uid, Long goodId) {
-        SetOperations setOperations = redisTemplate.opsForSet();
-        String kv = read_key + uid + EveryUtils.getToday();
-        if (redisTemplate.hasKey(kv)) {
-            long number = setOperations.size(kv);
-            if (number == 10) {
-                ScoreBean scoreBean = new ScoreBean();
-                scoreBean.setDataSrc(2);
-                scoreBean.setUserId(Long.valueOf(uid));
-                scoreBean.setScoreType(1);
-                scoreBean.setDay(EveryUtils.getNowday());
-                String lookScore = configQueryManager.queryForKey("LookScore");
-                scoreBean.setScore(Long.valueOf(lookScore));
-                ScoreBean flag = scoreDao.isExit(scoreBean);
-                if (flag == null) {
-                    Userinfo user = new Userinfo();
-                    scoreDao.addScore(scoreBean);
-                    user.setId(Long.valueOf(uid));
-                    user.setUserscore(Integer.valueOf(lookScore));
-                    scoreDao.updateUserScore(user);
-                }
-                return null;
-            }
-            if (number < 11) {
-                setOperations.add(kv, goodId.toString());
-//                redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
-                return null;
-            }
-            return null;
-        }
-        setOperations.add(kv, goodId.toString());
-        redisTemplate.boundSetOps(kv).expireAt(new Date(EveryUtils.getDayEndUnix()));
-        return null;
-    }
 
     /**
      * 增加积分
@@ -172,46 +128,10 @@ public class ScoreServiceImpl implements ScoreService {
         return size > 10 ? 10 : size;
     }
 
-    //判断今日是否分享
     @Override
     public Boolean isShare(Long uid) {
-        String shareScore = configQueryManager.queryForKey("ShareScore");
-
-        ScoreBean scoreBean = new ScoreBean();
-        scoreBean.setDataSrc(4);
-        scoreBean.setUserId(uid);
-        scoreBean.setScoreType(1);
-        scoreBean.setDay(EveryUtils.getNowday());
-        scoreBean.setScore(Long.valueOf(shareScore));
-        ScoreBean flag = scoreDao.isExit(scoreBean);
-        if (flag != null) {
-            return true;
-        }
-        return false;
+        return null;
     }
 
-    @Transactional
-    public Boolean scoreToCash(Long id) {
-        Integer score = scoreDao.countScore(id);
-        if (score == 0) {
-            return true;
-        }
-        if (score < 1000) {
-            return false;
-        }
-        BigDecimal scoreBg = new BigDecimal(score).divide(new BigDecimal(1000));
-        Userinfo userinfo = new Userinfo();
-        userinfo.setCash(scoreBg.setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
-        userinfo.setId(id);
-        Integer flag = scoreDao.updateCash(userinfo);
-        if (flag == 0) {
-            throw new RuntimeException("积分提现异常");
-        }
-        Integer flag1 = scoreDao.updateScoreZero(userinfo);
-        if (flag1 == 0) {
-            throw new RuntimeException("积分提现异常");
-        }
-        return true;
-    }
 
 }

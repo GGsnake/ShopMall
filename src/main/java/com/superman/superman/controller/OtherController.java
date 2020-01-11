@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by liujupeng on 2018/12/17.
+ * Created by snake on 2018/12/17.
  */
 @CrossOrigin(origins = "*")
 @Log
@@ -164,61 +164,6 @@ public class OtherController {
         return ResponseUtil.success(codeUrl);
     }
 
-    /**
-     * 首页轮播
-     */
-    @LoginRequired
-    @GetMapping("/indexBanner")
-    public Response querySysJhProblem(HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        }
-        Userinfo userinfo = userinfoMapper.selectByPrimaryKey(Long.valueOf(uid));
-        if (userinfo == null) {
-            return ResponseUtil.fail(ResponseCode.DELETE_ERROR);
-        }
-        Integer roleId = userinfo.getRoleId();
-        Integer score = userinfo.getScore();
-        List<BannerGoods> total = sysAdviceDao.queryBannerGoods();
-        if (total == null) {
-            return null;
-        }
-        JSONObject object = null;
-        JSONArray array = new JSONArray();
-        for (BannerGoods temp : total
-        ) {
-            object = new JSONObject();
-            SysJhTaobaoAll sysJhTaobaoAll = sysJhTaobaoHotDao.queryLocalSimple(temp.getGoodId());
-            if (sysJhTaobaoAll == null) {
-                continue;
-            }
-            if (roleId == 1) {
-                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * 100);
-            } else if (roleId == 2) {
-                object.put("agent", sysJhTaobaoAll.getCommission().doubleValue() * score);
-
-            } else {
-                object.put("agent", 0);
-            }
-
-            object.put("zk_money", sysJhTaobaoAll.getCoupon());
-            object.put("volume", sysJhTaobaoAll.getVolume());
-            object.put("Url", temp.getImgUrl());
-            object.put("istmall", sysJhTaobaoAll.getIstamll());
-            object.put("imgUrl", sysJhTaobaoAll.getPicturl());
-            object.put("zk_price", sysJhTaobaoAll.getCouponprice());
-            object.put("price", sysJhTaobaoAll.getZkfinalprice());
-            object.put("hasCoupon", 1);
-            object.put("goodName", sysJhTaobaoAll.getTitle());
-            object.put("shopName", sysJhTaobaoAll.getShoptitle());
-            object.put("goodId", temp.getGoodId());
-            array.add(object);
-        }
-
-        return ResponseUtil.success(array);
-    }
-
 
     /**
      * 处理二维码进来的注册用户
@@ -234,7 +179,6 @@ public class OtherController {
 //        }
         userService.createUser(req);
         return ResponseUtil.success();
-
     }
 
     //每日爆款
@@ -294,18 +238,12 @@ public class OtherController {
             return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
         }
         String key = "oderAdvice:" + uid + pageParam.getPageNo();
-        if (redisUtil.hasKey(key)) {
-            return ResponseUtil.success(JSONObject.parseObject(redisUtil.get(key)));
-        }
         PageParam param = new PageParam(pageParam.getPageNo(), pageParam.getPageSize());
         List<SysJhAdviceOder> total = adviceService.queryListOderAdvice(Long.valueOf(uid), param);
         Integer sum = adviceService.countListOderAdvice(Long.valueOf(uid));
         JSONObject data = new JSONObject();
         data.put("pageData", total);
         data.put("pageCount", sum);
-        int expire = 15;
-        redisUtil.set(key, data.toJSONString());
-        redisUtil.expire(key, expire, TimeUnit.SECONDS);
         return ResponseUtil.success(data);
     }
 

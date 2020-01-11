@@ -8,7 +8,7 @@ import lombok.ToString;
 import java.util.Date;
 
 /** 代理表
- * Created by liujupeng on 2018/11/23.
+ * Created by snake on 2018/11/23.
  */
 @Data
 public class Agent {

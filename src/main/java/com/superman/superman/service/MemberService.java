@@ -5,7 +5,7 @@ import com.superman.superman.model.Userinfo;
 import com.superman.superman.utils.PageParam;
 
 /**
- * Created by liujupeng on 2018/11/8.
+ * Created by snake on 2018/11/8.
  */
 public interface MemberService {
     /**

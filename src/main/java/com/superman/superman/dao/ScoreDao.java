@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * Created by liujupeng on 2018/11/15.
+ * Created by snake on 2018/11/15.
  */
 @Mapper
 public interface ScoreDao {

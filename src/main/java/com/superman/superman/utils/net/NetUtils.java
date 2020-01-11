@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by liujupeng on 2018/12/12.
+ * Created by snake on 2018/12/12.
  */
 public class NetUtils {
     //Map转换成 URL

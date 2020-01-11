@@ -8,7 +8,7 @@ import java.util.List;
 
 
 /**
- * Created by liujupeng on 2018/12/4.
+ * Created by snake on 2018/12/4.
  */
 public interface TaoBaoApiService {
     /**

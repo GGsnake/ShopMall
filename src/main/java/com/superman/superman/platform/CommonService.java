@@ -1,5 +1,7 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.dto.GoodsSearchReq;
+import com.superman.superman.dto.GoodsSearchResponse;
 import com.superman.superman.model.User;
 import com.superman.superman.model.enums.Platform;
 
@@ -12,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 public interface CommonService {
     /**
      * 商品搜索服务
-     * @param baseGoodSearchRequest
+     * @param GoodsSearchReq
      * @return
      */
-    void  searchGoods(Object baseGoodSearchRequest);
+    GoodsSearchResponse searchGoods(GoodsSearchReq GoodsSearchReq);
     /**
      * 执行授权操作
      * @return

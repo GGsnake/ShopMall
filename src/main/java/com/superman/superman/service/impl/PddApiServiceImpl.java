@@ -31,7 +31,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * Created by liujupeng on 2018/11/6.
+ * Created by snake on 2018/11/6.
  */
 
 @Log
@@ -129,36 +129,32 @@ public class PddApiServiceImpl implements PddApiService {
 
     @Override
     public JSONObject serachGoodsAll(PddDdkGoodsSearchRequest request, Long uid) {
-        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
-        if (ufo == null) {
-            return null;
-        }
-        int roleId = ufo.getRoleId();
-        double score = ufo.getScore().doubleValue() / 100;
-
-        String KEY = configQueryManager.queryForKey("PDDKEY");
-        String SECRET = configQueryManager.queryForKey("PDDSECRET");
-
-        PopHttpClient client = new PopHttpClient(KEY, SECRET);
-
-        JSONArray dataArray = new JSONArray();
-        JSONObject data = new JSONObject();
-        PddDdkGoodsSearchResponse response = null;
-
-        try {
-            response = client.syncInvoke(request);
-            if (response == null) {
-                data.put("data", dataArray);
-                data.put("count", 0);
-                return data;
-            }
-            Integer totalCount = response.getGoodsSearchResponse().getTotalCount();
-            if (totalCount == 0) {
-                data.put("data", dataArray);
-                data.put("count", 0);
-                return data;
-            }
-            JSONObject dataJson;
+//        Userinfo ufo = userinfoMapper.selectByPrimaryKey(uid);
+//        if (ufo == null) {
+//            return null;
+//        }
+//        int roleId = ufo.getRoleId();
+//        double score = ufo.getScore().doubleValue() / 100;
+//
+//
+//        JSONArray dataArray = new JSONArray();
+//        JSONObject data = new JSONObject();
+//        PddDdkGoodsSearchResponse response = null;
+//
+//        try {
+//            response = client.syncInvoke(request);
+//            if (response == null) {
+//                data.put("data", dataArray);
+//                data.put("count", 0);
+//                return data;
+//            }
+//            Integer totalCount = response.getGoodsSearchResponse().getTotalCount();
+//            if (totalCount == 0) {
+//                data.put("data", dataArray);
+//                data.put("count", 0);
+//                return data;
+//            }
+//            JSONObject dataJson;
 //
 //            List<PddDdkGoodsSearchResponse.GoodsListItem> goodsList = response.getGoodsSearchResponse().getGoodsList();
 //            if (roleId == 1) {
@@ -224,12 +220,12 @@ public class PddApiServiceImpl implements PddApiService {
 //                    dataArray.add(dataJson);
 //                }
 //            }
-            data.put("data", dataArray);
-            data.put("count", totalCount);
-            return data;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//            data.put("data", dataArray);
+//            data.put("count", totalCount);
+//            return data;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 

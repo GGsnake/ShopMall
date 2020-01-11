@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by liujupeng on 2018/12/4.
+ * Created by snake on 2018/12/4.
  */
 @Log
 @Service("taoBaoApiService")

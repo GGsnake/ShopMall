@@ -35,26 +35,26 @@ public class ScoreController {
     @LoginRequired
     @PostMapping("/dayScore")
     public Response dayScore(HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
-        }
-        Long sum = scoreService.countLooks(Long.valueOf(uid));
-        if (sum == 9) {
-            Long signScore = Long.valueOf(configQueryManager.queryForKey("LookScore"));
-            ScoreBean scoreBean = new ScoreBean();
-            scoreBean.setUserId(Long.valueOf(uid));
-            scoreBean.setScore(signScore);
-            scoreBean.setScoreType(1);
-            scoreBean.setDataSrc(2);
-            if (scoreService.isExitSign(scoreBean)) {
-                return ResponseUtil.fail("100042", "今日已经签到");
-            }
-            Boolean flag = scoreService.addScore(scoreBean);
-            if (flag) {
-                return ResponseUtil.success();
-            }
-        }
+//        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
+//        if (uid == null) {
+//            return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
+//        }
+//        Long sum = scoreService.countLooks(Long.valueOf(uid));
+//        if (sum == 9) {
+//            Long signScore = Long.valueOf(configQueryManager.queryForKey("LookScore"));
+//            ScoreBean scoreBean = new ScoreBean();
+//            scoreBean.setUserId(Long.valueOf(uid));
+//            scoreBean.setScore(signScore);
+//            scoreBean.setScoreType(1);
+//            scoreBean.setDataSrc(2);
+//            if (scoreService.isExitSign(scoreBean)) {
+//                return ResponseUtil.fail("100042", "今日已经签到");
+//            }
+//            Boolean flag = scoreService.addScore(scoreBean);
+//            if (flag) {
+//                return ResponseUtil.success();
+//            }
+//        }
         return ResponseUtil.fail("100041", "浏览次数不足");
     }
     //每日签到 积分领取
@@ -123,8 +123,8 @@ public class ScoreController {
         if (uid == null) {
             return ResponseUtil.fail(ResponseCode.COMMON_PARAMS_MISSING);
         }
-        Boolean data = scoreService.scoreToCash(Long.valueOf(uid));
-        return ResponseUtil.success(data);
+//        Boolean data = scoreService.scoreToCash(Long.valueOf(uid));
+        return ResponseUtil.success(null);
     }
 
 

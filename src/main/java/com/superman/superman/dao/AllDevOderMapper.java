@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by liujupeng on 2018/12/19.
+ * Created by snake on 2018/12/19.
  */
 @Mapper
 public interface AllDevOderMapper {

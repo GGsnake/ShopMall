@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * Created by liujupeng on 2018/11/8.
+ * Created by snake on 2018/11/8.
  */
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {

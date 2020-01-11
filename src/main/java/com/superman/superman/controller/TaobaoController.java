@@ -4,14 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.superman.superman.annotation.LoginRequired;
 import com.superman.superman.service.TaoBaoApiService;
 import com.superman.superman.utils.*;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
- * Created by liujupeng on 2018/12/10.
+ * Created by snake on 2018/12/10.
  */
 @RestController
 @RequestMapping("taobao")
@@ -67,7 +70,6 @@ public class TaobaoController {
         JSONObject data = taoBaoApiServicel.convertTaobaoTkl(tkl);
         Optional.ofNullable(data).orElseGet(JSONObject::new);
         return ResponseUtil.success(data);
-
     }
 
 

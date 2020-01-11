@@ -5,7 +5,7 @@ import com.pdd.pop.sdk.http.api.request.PddDdkGoodsSearchRequest;
 import com.superman.superman.utils.PageParam;
 
 /**
- * Created by liujupeng on 2018/11/6.
+ * Created by snake on 2018/11/6.
  */
 public interface PddApiService {
     /**

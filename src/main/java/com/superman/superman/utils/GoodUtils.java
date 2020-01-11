@@ -8,7 +8,7 @@ import com.superman.superman.model.SysJhTaobaoAll;
 import java.math.BigDecimal;
 
 /**
- * Created by liujupeng on 2018/12/18.
+ * Created by snake on 2018/12/18.
  */
 public class GoodUtils {
 //    public static JSONObject convertTaobao(TbkDgMaterialOptionalResponse.MapData dataObj) {

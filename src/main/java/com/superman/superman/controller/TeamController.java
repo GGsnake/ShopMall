@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 /**
- * Created by liujupeng on 2018/11/29.
+ * Created by snake on 2018/11/29.
  */
 @RestController
 @RequestMapping("/team")
@@ -100,24 +100,6 @@ public class TeamController {
         return ResponseUtil.success(data);
     }
 
-    /**
-     * 查看我的权限
-     * @param request
-     * @return
-     */
-    @LoginRequired
-    @PostMapping("/myRole")
-    public Response queryRole(HttpServletRequest request) {
-        String uid = (String) request.getAttribute(Constants.CURRENT_USER_ID);
-        if (uid == null) {
-            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        }
-        Integer myRole = userinfoMapper.queryMyRole(Integer.valueOf(uid));
-        if (myRole==null){
-            return ResponseUtil.fail(ResponseCode.COMMON_USER_NOT_EXIST);
-        }
-        return ResponseUtil.success(myRole);
-    }
     /**
      * 查看会员支付状态
      * @param request
