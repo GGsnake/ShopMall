@@ -1,5 +1,7 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.dto.GoodsDetailReq;
+import com.superman.superman.dto.GoodsDetailResponse;
 import com.superman.superman.dto.GoodsSearchReq;
 import com.superman.superman.dto.GoodsSearchResponse;
 import com.superman.superman.model.User;
@@ -18,6 +20,12 @@ public interface CommonService {
      * @return
      */
     GoodsSearchResponse searchGoods(GoodsSearchReq GoodsSearchReq);
+    /**
+     * 商品搜索服务
+     * @param GoodsSearchReq
+     * @return
+     */
+    GoodsDetailResponse goodDetail(GoodsDetailReq GoodsSearchReq);
     /**
      * 执行授权操作
      * @return

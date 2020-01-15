@@ -1,5 +1,7 @@
 package com.superman.superman.platform;
 
+import com.superman.superman.dto.GoodsDetailReq;
+import com.superman.superman.dto.GoodsDetailResponse;
 import com.superman.superman.model.User;
 import com.superman.superman.service.OderService;
 import com.superman.superman.service.ScoreService;
@@ -14,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
  * Created by snake on 2019-10-16.
  * 基础功能
  */
-abstract  class AbstractCommonService implements CommonService {
+abstract class AbstractCommonService implements CommonService {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ObjectProvider<OderService> oderServiceObjectProvider;
@@ -24,6 +26,7 @@ abstract  class AbstractCommonService implements CommonService {
     private ObjectProvider<RestTemplate> restTemplate;
     @Autowired
     private Environment environment;
+
     /**
      * 获取订单服务
      *
@@ -32,6 +35,7 @@ abstract  class AbstractCommonService implements CommonService {
     protected final OderService getOderService() {
         return oderServiceObjectProvider.getIfAvailable();
     }
+
     /**
      * 获取积分服务
      *
@@ -59,5 +63,17 @@ abstract  class AbstractCommonService implements CommonService {
     protected final RestTemplate getRestTemplate() {
         return restTemplate.getIfAvailable();
     }
+
+
+    /**
+     * 获取积分服务
+     *
+     * @return
+     */
+    @Override
+    public GoodsDetailResponse goodDetail(GoodsDetailReq req) {
+        return null;
+    }
+
 
 }
