@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.superman</groupId>
-    <artifactId>quanhuang</artifactId>
+    <artifactId>qqqqqq</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>superman</name>
@@ -50,7 +50,20 @@
             <artifactId>emoji-java</artifactId>
             <version>4.0.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.pdd</groupId>
+            <artifactId>pdd</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/pdd-sdk.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.taobao</groupId>
+            <artifactId>taobao</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/tb-sdk.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>me.hao0</groupId>
             <artifactId>wepay-core</artifactId>
@@ -61,12 +74,7 @@
             <artifactId>common</artifactId>
             <version>1.1.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
-            <scope>provided</scope>
-        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -82,7 +90,7 @@
             <version>3.2.0</version>
         </dependency>
 
-        
+
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -175,11 +183,7 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
-        <dependency>
-            <groupId>com.pddnew</groupId>
-            <artifactId>pddnew</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -201,6 +205,12 @@
             <artifactId>springfox-swagger2</artifactId>
             <version>2.9.2</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.projectlombok</groupId>-->
+        <!--            <artifactId>lombok</artifactId>-->
+        <!--            <version>1.16.20</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -208,6 +218,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.2.RELEASE</version>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
 

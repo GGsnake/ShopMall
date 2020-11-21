@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created by snake on 2019-10-16.
  * 基础功能
@@ -26,6 +29,11 @@ abstract class AbstractCommonService implements CommonService {
     private ObjectProvider<RestTemplate> restTemplate;
     @Autowired
     private Environment environment;
+
+    @Override
+    public void convertUrl(HttpServletRequest request, HttpServletResponse response) {
+
+    }
 
     /**
      * 获取订单服务

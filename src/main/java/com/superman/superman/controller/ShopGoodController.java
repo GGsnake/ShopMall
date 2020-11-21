@@ -18,10 +18,8 @@ import java.util.*;
  * Created by snake on 2018/11/8.
  */
 @RestController
-@RequestMapping("/Shop")
+@RequestMapping("/Goods")
 public class ShopGoodController {
-    @Autowired
-    RestTemplate restTemplate;
 
     private List<CommonService> platformCommonServices;
 

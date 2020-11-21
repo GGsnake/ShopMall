@@ -10,16 +10,19 @@ import java.util.List;
 @ApiModel
 public class GoodsSearchResponse {
 
-    private List<GoodDeatil> goodDeatilList;
+    private List<GoodDetail> goodsDetailList;
 
     private Integer pageSize;
 
     private Integer pageNo;
 
+    private Integer totalCount;
+
     @ApiModelProperty("来源")
     private Platform platform;
 
-    public static class GoodDeatil {
+
+    public static class GoodDetail {
         @ApiModelProperty("商品名")
         private String goodName;
         @ApiModelProperty("排序")
@@ -33,7 +36,7 @@ public class GoodsSearchResponse {
             return goodName;
         }
 
-        public GoodDeatil setGoodName(String goodName) {
+        public GoodDetail setGoodName(String goodName) {
             this.goodName = goodName;
             return this;
         }
@@ -42,7 +45,7 @@ public class GoodsSearchResponse {
             return sort;
         }
 
-        public GoodDeatil setSort(String sort) {
+        public GoodDetail setSort(String sort) {
             this.sort = sort;
             return this;
         }
@@ -51,7 +54,7 @@ public class GoodsSearchResponse {
             return hasCoupon;
         }
 
-        public GoodDeatil setHasCoupon(Integer hasCoupon) {
+        public GoodDetail setHasCoupon(Integer hasCoupon) {
             this.hasCoupon = hasCoupon;
             return this;
         }
@@ -60,18 +63,18 @@ public class GoodsSearchResponse {
             return price;
         }
 
-        public GoodDeatil setPrice(BigDecimal price) {
+        public GoodDetail setPrice(BigDecimal price) {
             this.price = price;
             return this;
         }
     }
 
-    public List<GoodDeatil> getGoodDeatilList() {
-        return goodDeatilList;
+    public List<GoodDetail> getGoodsDetailList() {
+        return goodsDetailList;
     }
 
-    public GoodsSearchResponse setGoodDeatilList(List<GoodDeatil> goodDeatilList) {
-        this.goodDeatilList = goodDeatilList;
+    public GoodsSearchResponse setGoodsDetailList(List<GoodDetail> goodsDetailList) {
+        this.goodsDetailList = goodsDetailList;
         return this;
     }
 
@@ -84,6 +87,14 @@ public class GoodsSearchResponse {
         return this;
     }
 
+    public Integer getTotalCount() {
+        return totalCount;
+    }
+
+    public GoodsSearchResponse setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
+        return this;
+    }
     public Integer getPageNo() {
         return pageNo;
     }
